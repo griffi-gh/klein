@@ -1,0 +1,9 @@
+[submodule "vendor/SFML"]
+	path = vendor/SFML
+	url = https://github.com/SFML/SFML.git
+[submodule "vendor/entt"]
+	path = vendor/entt
+	url = https://github.com/skypjack/entt.git
+[submodule "vendor/edyn"]
+	path = vendor/edyn
+	url = https://github.com/xissburg/edyn.git

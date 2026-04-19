@@ -1,0 +1,3 @@
+# Vendored dependencies: keep out of GitHub language statistics (linguist)
+vendor/** linguist-vendored
+vendor/** linguist-generated
