@@ -1,7 +1,3 @@
-#include "SFML/Graphics/Drawable.hpp"
-#include "SFML/Graphics/RenderTarget.hpp"
-#include "SFML/Graphics/Transform.hpp"
-#include "entt/entt.hpp"
 #include "drawie.hpp"
 
 void drawie::render_drawables(entt::registry &registry, sf::RenderTarget &sf_target) {
@@ -13,7 +9,6 @@ void drawie::render_drawables(entt::registry &registry, sf::RenderTarget &sf_tar
         }
 
         const sf::Drawable& sf_drawable = *drawable.sf_drawable.get();
-
         sf_target.draw(sf_drawable, sf_transform);
     });
 }

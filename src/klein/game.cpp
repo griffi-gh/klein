@@ -1,11 +1,9 @@
-#include "SFML/Graphics/CircleShape.hpp"
-#include "entt/entt.hpp"
-#include "SFML/Graphics/RenderWindow.hpp"
-#include "app.hpp"
-#include "drawie.hpp"
 #include <memory>
+#include "SFML/Graphics/CircleShape.hpp"
+#include "drawie/drawie.hpp"
+#include "game.hpp"
 
-void Game::init() {
+void klein::Game::init() {
     window = sf::RenderWindow(sf::VideoMode({1280, 720}), "thingy");
 
     sf::CircleShape shape(50.f);
@@ -20,20 +18,20 @@ void Game::init() {
     });
 }
 
-void Game::update() {
+void klein::Game::update() {
     while (const std::optional event = window.pollEvent())
     {
         if (event->is<sf::Event::Closed>()) window.close();
     }
 }
 
-void Game::render() {
+void klein::Game::render() {
     window.clear();
     drawie::render_drawables(registry, window);
     window.display();
 }
 
-void Game::run() {
+void klein::Game::run() {
     while (window.isOpen())
     {
         update();
