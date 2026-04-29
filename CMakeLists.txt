@@ -21,23 +21,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 
-# HACK: workaround for edyn find_package
-set(_entt_package_dir "${CMAKE_CURRENT_BINARY_DIR}/cmake/EnTT")
-file(MAKE_DIRECTORY "${_entt_package_dir}")
-file(WRITE "${_entt_package_dir}/EnTTConfig.cmake"
-"include(CMakeFindDependencyMacro)\n"
-"if(NOT TARGET EnTT::EnTT)\n"
-"  if(TARGET EnTT)\n"
-"    add_library(EnTT::EnTT ALIAS EnTT)\n"
-"  endif()\n"
-"endif()\n"
-)
-set(EnTT_DIR "${_entt_package_dir}")
-
 # vendored deps:
 add_subdirectory(vendor/SFML)
 add_subdirectory(vendor/entt)
-add_subdirectory(vendor/edyn)
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
   src/*.cpp
@@ -50,7 +36,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   sfml-window
   sfml-system
   EnTT::EnTT
-  edyn
 )
 target_compile_options(${PROJECT_NAME} PRIVATE
   -Wall
