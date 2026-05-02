@@ -1,5 +1,6 @@
 #include "klein/tilemap/tilemap_drawable.hpp"
 #include "SFML/Graphics/Vertex.hpp"
+#include "SFML/Graphics/VertexBuffer.hpp"
 #include "klein/tilemap/tilemap.hpp"
 
 namespace klein::tilemap {
@@ -18,6 +19,11 @@ namespace klein::tilemap {
     // built using this example as a general reference, rewrote it using VertexBuffer though
     // https://www.sfml-dev.org/tutorials/3.0/graphics/vertex-array/#example-tile-map
     void TileMapDrawableLayer::update(const TileMapLayer &layer) {
+        if (layer.tiles.size() == 0) {
+            if (!buffer.create(0))
+                throw std::runtime_error("VertexBuffer::create failed");
+            return;
+        }
 
         std::vector<sf::Vertex> vertices;
         vertices.reserve(layer.tiles.size() * 6);
@@ -25,9 +31,6 @@ namespace klein::tilemap {
         const int tiles_per_row = spritesheet->texture.getSize().x / spritesheet->tile_size.x;
 
         for (const auto &tile: layer.tiles) {
-            // Tile 0 is special-case (always empty)
-            if (tile.tex_id == 0) continue;
-
             const int x = tile.pos.x;
             const int y = tile.pos.y;
             const int tex_x = tile.tex_id % tiles_per_row;
@@ -61,10 +64,13 @@ namespace klein::tilemap {
             });
         }
 
+
         // TODO reuse existing buffer if possible
+        assert(sf::VertexBuffer::isAvailable());
+        assert(vertices.size() != 0);
         if (!buffer.create(vertices.size()))
             throw std::runtime_error("VertexBuffer::create failed");
-        if (!buffer.update(vertices.data()))
+        if (!buffer.update(vertices.data(), vertices.size(), 0))
             throw std::runtime_error("VertexBuffer::update failed");
     }
 
@@ -74,11 +80,15 @@ namespace klein::tilemap {
         target.draw(buffer, states);
     }
 
-    TileMapDrawable::TileMapDrawable(TileMapDrawableLayer layer)
-        :layers{std::move(layer)} {}
-
     TileMapDrawable::TileMapDrawable(std::vector<TileMapDrawableLayer> layers)
         :layers(std::move(layers)) {}
+
+    TileMapDrawable::TileMapDrawable(std::shared_ptr<Spritesheet> tile_set, const TileMap &map) {
+        layers.reserve(map.layers.size());
+        for (const auto &layer: map.layers) {
+            layers.push_back(TileMapDrawableLayer(tile_set, layer));
+        }
+    }
 
     void TileMapDrawable::draw(sf::RenderTarget& target, sf::RenderStates states) const {
         for (const auto &layer: layers) {

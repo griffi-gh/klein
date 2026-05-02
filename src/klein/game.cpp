@@ -1,9 +1,15 @@
 #include "SFML/Graphics/CircleShape.hpp"
 #include "SFML/Graphics/Rect.hpp"
+#include "SFML/System/Vector2.hpp"
+#include "klein/tilemap/tilemap.hpp"
+#include "klein/tilemap/tilemap_drawable.hpp"
 #include "spdlog/spdlog.h"
-#include "klein/tilemap/tilemap_loader.hpp"
-#include "klein/kdraw/drawable.hpp"
 #include "klein/game.hpp"
+
+#include "klein/kdraw/drawable.hpp"
+#include "klein/tilemap/tilemap_loader.hpp"
+#include <memory>
+#include <stdexcept>
 
 namespace klein {
     void Game::run() {
@@ -20,18 +26,25 @@ namespace klein {
     void Game::init() {
         window = sf::RenderWindow(sf::VideoMode({1280, 720}), "klein");
 
-        sf::CircleShape shape(50.f);
-        shape.setFillColor(sf::Color(100, 250, 50));
+        sf::Texture texture;
+        if (!texture.loadFromFile("assets/spritesheet.png")) {
+            throw std::runtime_error("spritesheet loading failed");
+        }
+
+        auto spritesheet = std::make_shared<tilemap::Spritesheet>(tilemap::Spritesheet {
+            .texture = texture,
+            .tile_size = sf::Vector2u(32, 32),
+        });
+        auto map = tilemap::load_tile_map_data("map.json.gz", "map");
+        tilemap::TileMapDrawable map_drawable(spritesheet, map);
 
         auto entity = registry.create();
         registry.emplace<kdraw::Drawable>(entity, kdraw::Drawable {
-            .sf_drawable = std::make_unique<sf::CircleShape>(std::move(shape))
+            .sf_drawable = std::make_unique<tilemap::TileMapDrawable>(std::move(map_drawable))
         });
         registry.emplace<kdraw::Transform>(entity, kdraw::Transform {
             .sf_transform = sf::Transform{}
         });
-
-        tilemap::load_tile_map_data("map.json.gz", "map");
 
         spdlog::info("init done");
     }

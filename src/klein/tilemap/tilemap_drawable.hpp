@@ -26,8 +26,8 @@ namespace klein::tilemap {
     class TileMapDrawable: public sf::Drawable, public sf::Transformable {
     public:
         std::vector<TileMapDrawableLayer> layers = {};
-        TileMapDrawable(TileMapDrawableLayer layer);
         TileMapDrawable(std::vector<TileMapDrawableLayer> layers);
+        TileMapDrawable(std::shared_ptr<Spritesheet> tile_set, const TileMap &map);
 
     private:
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
