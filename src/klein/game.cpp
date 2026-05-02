@@ -1,6 +1,7 @@
 #include "SFML/Graphics/CircleShape.hpp"
 #include "SFML/Graphics/Rect.hpp"
 #include "SFML/System/Vector2.hpp"
+#include "klein/assets.hpp"
 #include "klein/tilemap/tilemap.hpp"
 #include "klein/tilemap/tilemap_drawable.hpp"
 #include "spdlog/spdlog.h"
@@ -26,8 +27,10 @@ namespace klein {
     void Game::init() {
         window = sf::RenderWindow(sf::VideoMode({1280, 720}), "klein");
 
+        auto spritesheet_path = assets::resolve_path("spritesheet.png");
+
         sf::Texture texture;
-        if (!texture.loadFromFile("assets/spritesheet.png")) {
+        if (!texture.loadFromFile(spritesheet_path)) {
             throw std::runtime_error("spritesheet loading failed");
         }
 
