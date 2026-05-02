@@ -7,9 +7,15 @@ namespace klein {
     public:
         entt::registry registry = {};
         sf::RenderWindow window;
+
+    public:
+        void run();
+
+    private:
         void init();
+        void process_events();
         void update();
         void render();
-        void run();
+        void shutdown();
     };
 }

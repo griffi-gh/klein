@@ -18,13 +18,19 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(CMAKE_CXX_CLANG_TIDY "")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 
-# vendored deps:
-add_subdirectory(vendor/SFML)
-add_subdirectory(vendor/entt)
+add_compile_options(-fdiagnostics-color=always)
 
+set(SPDLOG_USE_STD_FORMAT ON CACHE BOOL "" FORCE)
+set(SPDLOG_NO_EXCEPTIONS ON CACHE BOOL "" FORCE)
+
+# vendored deps:
+add_subdirectory(vendor EXCLUDE_FROM_ALL)
+
+# project
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
   src/*.cpp
 )
@@ -36,16 +42,18 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   sfml-window
   sfml-system
   EnTT::EnTT
+  nlohmann_json::nlohmann_json
+  zlib
+  spdlog
 )
 target_compile_options(${PROJECT_NAME} PRIVATE
   -Wall
-  -fdiagnostics-color=always
   $<$<CONFIG:Debug>:-Og>
 )
 target_compile_definitions(${PROJECT_NAME}
   PRIVATE
     $<$<CONFIG:Debug>:DEBUG>
   PUBLIC
-    $<$<CONFIG:Debug>:ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets/">
-    $<$<NOT:$<CONFIG:Debug>>:ASSETS_PATH="./assets/">
+    $<$<CONFIG:Debug>:ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets">
+    $<$<NOT:$<CONFIG:Debug>>:ASSETS_PATH="./assets">
 )

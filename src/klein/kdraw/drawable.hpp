@@ -3,8 +3,9 @@
 #include "SFML/Graphics/RenderTarget.hpp"
 #include "SFML/Graphics/Transform.hpp"
 #include "entt/entt.hpp"
+#include <memory>
 
-namespace drawie {
+namespace klein::kdraw {
     struct Drawable {
         std::unique_ptr<sf::Drawable> sf_drawable;
     };
