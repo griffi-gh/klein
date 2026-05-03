@@ -1,4 +1,3 @@
-#include "SFML/Graphics/CircleShape.hpp"
 #include "SFML/Graphics/Rect.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "klein/assets.hpp"
@@ -7,12 +6,14 @@
 #include "spdlog/spdlog.h"
 #include "klein/game.hpp"
 
-#include "klein/kdraw/drawable.hpp"
 #include "klein/tilemap/tilemap_loader.hpp"
+#include "klein/drawable.hpp"
 #include <memory>
 #include <stdexcept>
 
 namespace klein {
+    /// Bootstraps and runs through the complete lifecycle of the game
+    ///
     void Game::run() {
         init();
         while (window.isOpen())
@@ -69,7 +70,7 @@ namespace klein {
 
     void Game::render() {
         window.clear();
-        kdraw::render_drawables(registry, window);
+        render_drawable(registry, window);
         window.display();
     }
 

@@ -1,7 +1,7 @@
 #include "drawable.hpp"
 
-namespace klein::kdraw {
-    void render_drawables(entt::registry &registry, sf::RenderTarget &sf_target) {
+namespace klein {
+    void render_drawable(entt::registry &registry, sf::RenderTarget &sf_target) {
         auto view = registry.view<std::unique_ptr<sf::Drawable>>();
         view.each([&registry, &sf_target](entt::entity entity, const auto &drawable) {
             sf::Transform sf_transform{};
