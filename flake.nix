@@ -33,6 +33,7 @@
                     ninja
                     pkg-config
                     llvmPackages.clang-tools
+                    llvmPackages.lldb
                   ];
                   buildInputs = with pkgs; [
                     libcxx
