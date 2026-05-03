@@ -13,8 +13,6 @@
 #include "klein/tilemap/tilemap_loader.hpp"
 #include "klein/drawable.hpp"
 
-struct tilemap_tag {};
-
 namespace klein {
     /// Bootstraps and runs through the complete lifecycle of the game
     ///
@@ -51,7 +49,7 @@ namespace klein {
             tilemap_entity,
             std::make_unique<tilemap::TileMapDrawable>(std::move(map_drawable))
         );
-        registry.emplace<tilemap_tag>(tilemap_entity);
+        registry.emplace<tilemap::TileMap>(tilemap_entity, std::move(map));
 
         sf::CircleShape player_drawable(10.);
 
@@ -89,7 +87,7 @@ namespace klein {
             registry,
             window,
             entt::const_runtime_view{}
-                .iterate(registry.storage<tilemap_tag>())
+                .iterate(registry.storage<tilemap::TileMap>())
         );
 
         render_drawable(
