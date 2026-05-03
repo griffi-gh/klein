@@ -14,7 +14,8 @@
     "request": "launch",
     "adapter": "CodeLLDB",
     "env": {
-      "COLORTERM": "color",
+      "TERM": "ansi",
+      "COLORTERM": "1",
     },
   },
 ]
