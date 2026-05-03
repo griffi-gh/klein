@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <memory>
 #include "klein/game.hpp"
-#include "klein/assets.hpp"
+#include "klein/vfs/assets.hpp"
 #include "klein/tilemap/tilemap.hpp"
 #include "klein/tilemap/tilemap_drawable.hpp"
 #include "klein/tilemap/tilemap_loader.hpp"
@@ -30,7 +30,7 @@ namespace klein {
     void Game::init() {
         window = sf::RenderWindow(sf::VideoMode({1280, 720}), "klein");
 
-        auto spritesheet_path = assets::resolve_path("spritesheet.png");
+        auto spritesheet_path = vfs::asset_path("spritesheet.png");
 
         sf::Texture texture;
         if (!texture.loadFromFile(spritesheet_path)) {

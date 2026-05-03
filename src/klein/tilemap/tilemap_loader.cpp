@@ -3,7 +3,7 @@
 #include <fstream>
 #include <zlib.h>
 #include <nlohmann/json.hpp>
-#include "klein/assets.hpp"
+#include "klein/vfs/assets.hpp"
 #include "klein/tilemap/tilemap.hpp"
 #include "spdlog/spdlog.h"
 #include "klein/tilemap/tilemap_loader.hpp"
@@ -15,7 +15,7 @@ namespace klein::tilemap {
         spdlog::info("loading map data for \"{}\" ({}, {})",
             name, asset, compressed ? "compressed" : "raw");
 
-        auto asset_path = assets::resolve_path(asset);
+        auto asset_path = vfs::asset_path(asset);
 
         std::string json_data;
 
