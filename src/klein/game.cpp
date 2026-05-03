@@ -1,8 +1,6 @@
 #include "SFML/Graphics/CircleShape.hpp"
 #include "SFML/Graphics/Rect.hpp"
-#include "SFML/Graphics/Transform.hpp"
 #include "SFML/System/Vector2.hpp"
-#include "klein/player.hpp"
 #include "spdlog/spdlog.h"
 #include <stdexcept>
 #include <memory>
@@ -12,6 +10,8 @@
 #include "klein/tilemap/tilemap_drawable.hpp"
 #include "klein/tilemap/tilemap_loader.hpp"
 #include "klein/drawable.hpp"
+#include "klein/player.hpp"
+#include "klein/raytrace_portals.hpp"
 
 namespace klein {
     /// Bootstraps and runs through the complete lifecycle of the game
@@ -96,6 +96,8 @@ namespace klein {
             entt::const_runtime_view{}
                 .iterate(registry.storage<Player>())
         );
+
+        raytrace_portals(registry, window);
 
         window.display();
     }

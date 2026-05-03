@@ -1,6 +1,7 @@
 #include "klein/tilemap/tilemap.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "spdlog/spdlog.h"
+#include <optional>
 #include <ranges>
 
 namespace klein::tilemap {
@@ -36,11 +37,35 @@ namespace klein::tilemap {
         tiles_lut.resize(aabb.size.x * aabb.size.y);
         for (const auto& [i, tile]: std::views::zip(std::views::iota(0uz), tiles)) {
             const size_t lut_idx = (tile.pos.y - pos_min.y) * aabb.size.x + (tile.pos.x - pos_min.x);
-            tiles_lut[lut_idx] = i;
+            tiles_lut[lut_idx] = i + 1;
         }
 
         spdlog::debug("layer \"{}\" update_tiles: aabb pos={},{} size={},{}",
             name, aabb.position.x, aabb.position.y, aabb.size.x, aabb.size.y);
     }
 
+    const Tile* TileMapLayer::get(sf::Vector2i tile_coord) const {
+        const auto aabb_coord = tile_coord - aabb.position;
+
+        if (
+            aabb_coord.x < 0 ||
+            aabb_coord.y < 0 ||
+            aabb_coord.x >= aabb.size.x ||
+            aabb_coord.y >= aabb.size.y
+        ) return nullptr;
+
+        const size_t lut_idx = aabb_coord.y * aabb.size.x + aabb_coord.x;
+        const size_t tile_idx_plus_one = tiles_lut[lut_idx];
+        if (tile_idx_plus_one == 0) return nullptr;
+
+        return &tiles[tile_idx_plus_one - 1];
+    }
+
+    const TileMapLayer* TileMap::get_layer_by_name(const std::string &name) const {
+        // TODO O(1) lookup
+        for (const auto &layer: layers) {
+            if (layer.name == name) return &layer;
+        }
+        return nullptr;
+    }
 }

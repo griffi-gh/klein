@@ -91,7 +91,7 @@ namespace klein::tilemap {
     }
 
     void TileMapDrawable::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-        for (const auto &layer: layers) {
+        for (const auto &layer: layers | std::views::reverse) {
             target.draw(layer, states);
         }
     }

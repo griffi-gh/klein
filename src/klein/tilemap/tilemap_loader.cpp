@@ -71,6 +71,9 @@ namespace klein::tilemap {
                         tile_data["y"].get<unsigned int>()
                     ),
                     .tex_id = static_cast<uint16_t>(sprite_id),
+                    .attributes = tile_data["attributes"].is_null()
+                        ? std::nullopt
+                        : std::make_optional(tile_data["attributes"]),
                 };
                 layer.tiles.push_back(tile);
             }

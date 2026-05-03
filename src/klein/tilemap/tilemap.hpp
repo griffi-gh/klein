@@ -5,6 +5,9 @@
 #include "SFML/Graphics/Rect.hpp"
 #include "SFML/Graphics/Texture.hpp"
 #include "SFML/System/Vector2.hpp"
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 namespace klein::tilemap {
     class Spritesheet {
@@ -16,7 +19,7 @@ namespace klein::tilemap {
     struct Tile {
         sf::Vector2i pos; /**< Global position (NOT offset by layer's aabb_origin */
         uint16_t tex_id;
-        // TODO: attributes (json map in fmt)
+        std::optional<json> attributes = std::nullopt;
     };
 
     class TileMapLayer {
@@ -35,7 +38,12 @@ namespace klein::tilemap {
         bool collider = false;
 
         /// Call after mutating tiles
+        ///
         void update_tiles();
+
+        /// Get tile at specified coord (world-space)
+        ///
+        const Tile* get(sf::Vector2i tile_coord) const;
 
     private:
         /// Maps maps Pos -> Index in `tiles`
@@ -51,5 +59,7 @@ namespace klein::tilemap {
         std::string name = "unnamed";
         sf::Vector2u map_size = {};
         std::vector<TileMapLayer> layers = {};
+
+        const TileMapLayer* get_layer_by_name(const std::string& name) const;
     };
 };
