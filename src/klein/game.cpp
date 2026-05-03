@@ -1,5 +1,6 @@
 #include "SFML/Graphics/CircleShape.hpp"
 #include "SFML/Graphics/Rect.hpp"
+#include "SFML/Graphics/Transform.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "klein/player.hpp"
 #include "spdlog/spdlog.h"
@@ -12,7 +13,7 @@
 #include "klein/tilemap/tilemap_loader.hpp"
 #include "klein/drawable.hpp"
 
-struct tilemap_marker {};
+struct tilemap_tag {};
 
 namespace klein {
     /// Bootstraps and runs through the complete lifecycle of the game
@@ -50,16 +51,16 @@ namespace klein {
             tilemap_entity,
             std::make_unique<tilemap::TileMapDrawable>(std::move(map_drawable))
         );
-        registry.emplace<tilemap_marker>(tilemap_entity);
+        registry.emplace<tilemap_tag>(tilemap_entity);
 
         sf::CircleShape player_drawable(10.);
 
         auto player_entity = registry.create();
-        registry.emplace<drawable_ptr>(
-            player_entity,
-            std::make_unique<sf::CircleShape>(std::move(player_drawable))
-        );
+        registry.emplace<drawable_ptr>(player_entity,
+            std::make_unique<sf::CircleShape>(std::move(player_drawable)));
         registry.emplace<Player>(player_entity);
+        registry.emplace<sf::Transform>(player_entity,
+            sf::Transform{}.translate({128., 200.}));
 
         spdlog::info("init done");
     }
@@ -88,7 +89,7 @@ namespace klein {
             registry,
             window,
             entt::const_runtime_view{}
-                .iterate(registry.storage<tilemap_marker>())
+                .iterate(registry.storage<tilemap_tag>())
         );
 
         render_drawable(
