@@ -4,6 +4,11 @@
 #include <optional>
 
 namespace klein {
+    struct ResultContinue {
+        sf::Vector2f offset = {};
+    };
+    struct ResultBlock {};
+    using StepResult = std::variant<ResultContinue, ResultBlock>;
 
     /// which axis the ray crossed to enter this tile
     ///
@@ -27,9 +32,11 @@ namespace klein {
     ) {
         assert(direction.x != 0.0f || direction.y != 0.0f);
 
+        sf::Vector2f pos = origin_tile;
+
         sf::Vector2i tile(
-            (int)std::floor(origin_tile.x),
-            (int)std::floor(origin_tile.y)
+            (int)std::floor(pos.x),
+            (int)std::floor(pos.y)
         );
         sf::Vector2f delta(
             std::abs(1.0f / direction.x),
@@ -38,34 +45,53 @@ namespace klein {
 
         sf::Vector2i step;
         sf::Vector2f side;
-        if (direction.x < 0) { step.x = -1; side.x = (origin_tile.x - tile.x) * delta.x; }
-        else                 { step.x =  1; side.x = (tile.x + 1.0f - origin_tile.x) * delta.x; }
-        if (direction.y < 0) { step.y = -1; side.y = (origin_tile.y - tile.y) * delta.y; }
-        else                 { step.y =  1; side.y = (tile.y + 1.0f - origin_tile.y) * delta.y; }
+        auto recompute_sides = [&]() {
+            if (direction.x < 0) { step.x = -1; side.x = (pos.x - tile.x) * delta.x; }
+            else                 { step.x =  1; side.x = (tile.x + 1.0f - pos.x) * delta.x; }
+            if (direction.y < 0) { step.y = -1; side.y = (pos.y - tile.y) * delta.y; }
+            else                 { step.y =  1; side.y = (tile.y + 1.0f - pos.y) * delta.y; }
+        };
+        recompute_sides();
+
+        float dist_accum = 0.0f;
 
         while(true) {
             Side crossed;
-            float distance;
+            float local_t;
             if (side.x < side.y) {
-                distance = side.x;
-                if (distance > MAX_DISTANCE) return std::nullopt;
+                local_t = side.x;
                 crossed = Side::XAxis;
                 tile.x += step.x;
                 side.x += delta.x;
             } else {
-                distance = side.y;
-                if (distance > MAX_DISTANCE) return std::nullopt;
+                local_t = side.y;
                 crossed = Side::YAxis;
                 tile.y += step.y;
                 side.y += delta.y;
             }
 
-            if (step_callback(tile)) {
-                return Hit {
+            const float dist_total = dist_accum + local_t;
+            if (dist_total > MAX_DISTANCE) return std::nullopt;
+
+            StepResult res = step_callback(tile);
+
+            if (std::holds_alternative<ResultBlock>(res)) {
+                return Hit{
                     .tile = tile,
-                    .distance = distance,
+                    .distance = dist_total,
                     .side = crossed,
                 };
+            }
+
+            if (auto* cont = std::get_if<ResultContinue>(&res);
+                cont && (cont->offset.x != 0 || cont->offset.y != 0))
+            {
+                pos.x += direction.x * local_t + cont->offset.x;
+                pos.y += direction.y * local_t + cont->offset.y;
+                tile.x = (int)std::floor(pos.x);
+                tile.y = (int)std::floor(pos.y);
+                recompute_sides();
+                dist_accum = dist_total;
             }
 
         }

@@ -58,7 +58,7 @@ namespace klein {
             std::make_unique<sf::CircleShape>(std::move(player_drawable)));
         registry.emplace<Player>(player_entity);
         registry.emplace<sf::Transform>(player_entity,
-            sf::Transform{}.translate({128., 200.}));
+            sf::Transform{}.translate({500., 200.}));
 
         spdlog::info("init done");
     }

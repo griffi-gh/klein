@@ -5,10 +5,22 @@
 #include "klein/player.hpp"
 #include "klein/raytrace_impl.hpp"
 #include "klein/tilemap/tilemap.hpp"
-#include <cstddef>
 #include "klein/raytrace_portals.hpp"
+#include "spdlog/spdlog.h"
+#include "util/hash_combine.hpp"
 
 namespace klein {
+    size_t ViewKeyHash::operator()(const klein::ViewKey& k) const noexcept {
+        size_t seed = 0;
+        hash_combine(seed, k.trans.x);
+        hash_combine(seed, k.trans.y);
+        hash_combine(seed, k.scale.x);
+        hash_combine(seed, k.scale.y);
+        return seed;
+    }
+
+    constexpr const int RAY_COUNT = 200;
+
     void raytrace_portals(entt::registry &registry, sf::RenderTarget &target) {
         // get player
         const auto player_view = registry.view<Player, sf::Transform>();
@@ -18,18 +30,21 @@ namespace klein {
             .transformPoint({})
             .componentWiseDiv({32.0f, 32.0f});
 
-        const int ray_count = 100;
-        for (int i = 0; i < ray_count; ++i){
-            const float a = ((float)i / (float)(ray_count - 1)) * 2 * 3.14;
+        // TODO
+        std::unordered_set<ViewKey, ViewKeyHash> unique_views{};
+
+        for (int i = 0; i < RAY_COUNT; ++i){
+            const float a = ((float)i / (float)(RAY_COUNT - 1)) * 2 * 3.14;
             const sf::Vector2f direction(
                 std::cos(a),
                 std::sin(a)
             );
-            // TODO
+
+            sf::Vector2i last_portal_target(INT_MIN, INT_MIN);
             if (const auto hit = raytrace(
                 player_tile,
                 direction,
-                [&](sf::Vector2i tile){
+                [&](sf::Vector2i tile) mutable -> StepResult {
                     for (auto [map_entity, map]: registry.view<tilemap::TileMap>().each()) {
                         const auto *special_layer = map.get_layer_by_name("_special");
                         if (!special_layer) continue;
@@ -37,14 +52,29 @@ namespace klein {
                         const auto *tile_data = special_layer->get(tile);
                         if (!tile_data) continue;
 
-                        if (const auto &attributes = tile_data->attributes) {
-                            // TODO impl portals
-                            return false;
-                        } else {
-                            return true;
+                        if (!tile_data->attributes)
+                            return ResultBlock{}; // no attributes -> wall
+                        const auto &attributes = *tile_data->attributes;
+
+                        if (attributes["type"] == "portal") {
+                            if (last_portal_target == tile) {
+                                return ResultContinue{};
+                            }
+
+                            sf::Vector2f trans(
+                                attributes["trans_x"].get<float>(),
+                                attributes["trans_y"].get<float>()
+                            );
+                            unique_views.insert(ViewKey(trans));
+
+                            last_portal_target = {
+                                (int)std::floor(tile.x + trans.x),
+                                (int)std::floor(tile.y + trans.y),
+                            };
+                            return ResultContinue(trans);
                         }
                     }
-                    return false;
+                    return ResultContinue{};
                 }
             )) {
                 sf::Vector2f hit_pos = player_tile + direction * hit->distance;
@@ -54,8 +84,9 @@ namespace klein {
                 };
                 target.draw(line, 2, sf::PrimitiveType::Lines);
             }
+
         }
 
-
+        // spdlog::debug("unique_views cnt {}", unique_views.size());
     }
 }
