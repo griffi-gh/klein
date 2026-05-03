@@ -42,6 +42,10 @@ namespace klein {
                 std::sin(a)
             );
 
+            // TODO: during raycast, on each portal cross, record the length
+            // this will be the basis for constructing the stencil buffer ie
+            // visibility cone would be split ito "layers" wher eeach one is separated by portal crossing
+            // to achieve this wed prob have to render outermost to innermost (closest to player) poly first
             sf::Vector2i last_portal_target(INT_MIN, INT_MIN);
             if (const auto hit = raytrace(
                 player_tile,
