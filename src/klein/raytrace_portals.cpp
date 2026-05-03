@@ -21,7 +21,7 @@ namespace klein {
 
     constexpr const int RAY_COUNT = 200;
 
-    void raytrace_portals(entt::registry &registry, sf::RenderTarget &target) {
+    void raytrace_portals(entt::registry &registry, sf::RenderTarget &debug_target) {
         // get player
         const auto player_view = registry.view<Player, sf::Transform>();
         auto [player_transform] = player_view.get(player_view.front());
@@ -31,7 +31,9 @@ namespace klein {
             .componentWiseDiv({32.0f, 32.0f});
 
         // TODO
-        std::unordered_set<ViewKey, ViewKeyHash> unique_views{};
+        std::unordered_set<ViewKey, ViewKeyHash> unique_views{
+            ViewKey{} // default view
+        };
 
         for (int i = 0; i < RAY_COUNT; ++i){
             const float a = ((float)i / (float)(RAY_COUNT - 1)) * 2 * 3.14;
@@ -82,7 +84,7 @@ namespace klein {
                     sf::Vertex(player_tile.componentWiseMul({32.0, 32.0}), sf::Color::White),
                     sf::Vertex(hit_pos.componentWiseMul({32.f, 32.f}), sf::Color::White)
                 };
-                target.draw(line, 2, sf::PrimitiveType::Lines);
+                debug_target.draw(line, 2, sf::PrimitiveType::Lines);
             }
 
         }
