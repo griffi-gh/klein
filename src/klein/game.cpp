@@ -1,15 +1,18 @@
+#include "SFML/Graphics/CircleShape.hpp"
 #include "SFML/Graphics/Rect.hpp"
 #include "SFML/System/Vector2.hpp"
+#include "klein/player.hpp"
+#include "spdlog/spdlog.h"
+#include <stdexcept>
+#include <memory>
+#include "klein/game.hpp"
 #include "klein/assets.hpp"
 #include "klein/tilemap/tilemap.hpp"
 #include "klein/tilemap/tilemap_drawable.hpp"
-#include "spdlog/spdlog.h"
-#include "klein/game.hpp"
-
 #include "klein/tilemap/tilemap_loader.hpp"
 #include "klein/drawable.hpp"
-#include <memory>
-#include <stdexcept>
+
+struct tilemap_marker {};
 
 namespace klein {
     /// Bootstraps and runs through the complete lifecycle of the game
@@ -42,11 +45,21 @@ namespace klein {
         auto map = tilemap::load_tile_map_data("map.json.gz", "map");
         tilemap::TileMapDrawable map_drawable(spritesheet, map);
 
-        auto entity = registry.create();
-        registry.emplace<std::unique_ptr<sf::Drawable>>(
-            entity,
+        auto tilemap_entity = registry.create();
+        registry.emplace<drawable_ptr>(
+            tilemap_entity,
             std::make_unique<tilemap::TileMapDrawable>(std::move(map_drawable))
         );
+        registry.emplace<tilemap_marker>(tilemap_entity);
+
+        sf::CircleShape player_drawable(10.);
+
+        auto player_entity = registry.create();
+        registry.emplace<drawable_ptr>(
+            player_entity,
+            std::make_unique<sf::CircleShape>(std::move(player_drawable))
+        );
+        registry.emplace<Player>(player_entity);
 
         spdlog::info("init done");
     }
@@ -70,7 +83,21 @@ namespace klein {
 
     void Game::render() {
         window.clear();
-        render_drawable(registry, window);
+
+        render_drawable(
+            registry,
+            window,
+            entt::const_runtime_view{}
+                .iterate(registry.storage<tilemap_marker>())
+        );
+
+        render_drawable(
+            registry,
+            window,
+            entt::const_runtime_view{}
+                .iterate(registry.storage<Player>())
+        );
+
         window.display();
     }
 

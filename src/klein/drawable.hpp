@@ -4,5 +4,11 @@
 #include "entt/entt.hpp"
 
 namespace klein {
-    void render_drawable(entt::registry &registry, sf::RenderTarget &target);
+    using drawable_ptr = std::unique_ptr<sf::Drawable>;
+
+    void render_drawable(
+        entt::registry &registry,
+        sf::RenderTarget &target,
+        entt::const_runtime_view view
+    );
 }
