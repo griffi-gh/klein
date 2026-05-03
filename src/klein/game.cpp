@@ -42,12 +42,10 @@ namespace klein {
         tilemap::TileMapDrawable map_drawable(spritesheet, map);
 
         auto entity = registry.create();
-        registry.emplace<kdraw::Drawable>(entity, kdraw::Drawable {
-            .sf_drawable = std::make_unique<tilemap::TileMapDrawable>(std::move(map_drawable))
-        });
-        registry.emplace<kdraw::Transform>(entity, kdraw::Transform {
-            .sf_transform = sf::Transform{}
-        });
+        registry.emplace<std::unique_ptr<sf::Drawable>>(
+            entity,
+            std::make_unique<tilemap::TileMapDrawable>(std::move(map_drawable))
+        );
 
         spdlog::info("init done");
     }
