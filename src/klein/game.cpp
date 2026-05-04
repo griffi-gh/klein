@@ -11,7 +11,7 @@
 #include "klein/tilemap/tilemap_loader.hpp"
 #include "klein/drawable.hpp"
 #include "klein/player.hpp"
-#include "klein/raytrace_portals.hpp"
+#include "klein/raycast_view.hpp"
 
 namespace klein {
     /// Bootstraps and runs through the complete lifecycle of the game
@@ -97,7 +97,8 @@ namespace klein {
                 .iterate(registry.storage<Player>())
         );
 
-        raytrace_portals(registry, window);
+        auto raycast_result = raycast_view(registry);
+        raycast_view_debug(raycast_result, window);
 
         window.display();
     }

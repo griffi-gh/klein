@@ -20,12 +20,12 @@ namespace klein {
         Side side;
     };
 
-    constexpr float MAX_DISTANCE = 256.0;
+    constexpr float RAYCAST_MAX_DISTANCE = 256.0;
 
     /// Traces a ray through the tilemap(s), calling the callback for each step taken
     /// (implementation of the DDA algorithm)
     ///
-    inline std::optional<Hit> raytrace(
+    inline std::optional<Hit> raycast_tiles(
         const sf::Vector2f origin_tile, // (in tile coords, 1u = 1 tile)
         const sf::Vector2f direction,
         auto step_callback
@@ -71,9 +71,9 @@ namespace klein {
             }
 
             const float dist_total = dist_accum + local_t;
-            if (dist_total > MAX_DISTANCE) return std::nullopt;
+            if (dist_total > RAYCAST_MAX_DISTANCE) return std::nullopt;
 
-            StepResult res = step_callback(tile);
+            StepResult res = step_callback(tile, dist_total);
 
             if (std::holds_alternative<ResultBlock>(res)) {
                 return Hit{
