@@ -39,12 +39,13 @@ namespace klein::view {
 
             int last_pgroup = INT_MIN;
 
-            bool was_inside_wall = false; // XXX: for correctness sake this ideally should be per-map?
+            bool been_inside_wall = false; // XXX: for correctness sake this ideally should be per-map?
 
             ray.hit = raycast_tiles(
                 ray.origin_t,
                 ray.direction,
                 [&](sf::Vector2i tile, float distance) mutable -> StepResult {
+                    bool is_inside_wall = false;
                     // TODO: fix multiple maps here
                     for (auto [map_entity, map]: registry.view<tilemap::TileMap>().each()) {
                         const auto *special_layer = map.get_layer_by_name("_special");
@@ -55,13 +56,14 @@ namespace klein::view {
 
                         // no attributes -> treat as basic wall
                         if (!tile_data->attributes) {
-                            was_inside_wall = true;
+                            is_inside_wall = true;
+                            been_inside_wall = true;
                             last_pgroup = INT_MIN;
                             continue; // actually continue just until the wall ends
                         };
 
                         // just exited wall -> non-air
-                        if (was_inside_wall) return ResultBlock{};
+                        if (been_inside_wall && !is_inside_wall) return ResultBlock{};
 
                         const auto &attributes = *tile_data->attributes;
 
@@ -95,7 +97,7 @@ namespace klein::view {
                     }
 
                     // just exited wall -> air
-                    if (was_inside_wall) return ResultBlock{};
+                    if (been_inside_wall & !is_inside_wall) return ResultBlock{};
 
                     last_pgroup = INT_MIN; // reset last_pgroup as soon as we leave the portal bounds into e.g. air
                     return ResultContinue{};
