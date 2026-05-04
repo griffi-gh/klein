@@ -1,15 +1,13 @@
-#include "SFML/Graphics/CircleShape.hpp"
 #include "SFML/Graphics/Color.hpp"
 #include "SFML/Graphics/Transform.hpp"
 #include "SFML/System/Vector2.hpp"
-#include "klein/raycast_impl.hpp"
 #include "util/hash_combine.hpp"
 #include "klein/player.hpp"
 #include "klein/tilemap/tilemap.hpp"
-#include "klein/raycast_view.hpp"
+#include "klein/view/view_raycast.hpp"
 
-namespace klein {
-    size_t ViewKeyHash::operator()(const klein::ViewKey& k) const noexcept {
+namespace klein::view {
+    size_t ViewKeyHash::operator()(const ViewKey& k) const noexcept {
         size_t seed = 0;
         hash_combine(seed, k.trans.x);
         hash_combine(seed, k.trans.y);
@@ -30,10 +28,10 @@ namespace klein {
         // TODO
         RaycastViewResponse response{};
         response.unique_views.insert(ViewKey{}); // insert current/default view
-        response.rays.resize(RAYCAST_VIEW_RAY_COUNT);
+        response.rays.resize(VIEW_RAY_COUNT);
 
-        for (int i = 0; i < RAYCAST_VIEW_RAY_COUNT; ++i){
-            const float a = ((float)i / (float)(RAYCAST_VIEW_RAY_COUNT - 1)) * 2 * 3.14;
+        for (int i = 0; i < VIEW_RAY_COUNT; ++i){
+            const float a = ((float)i / (float)(VIEW_RAY_COUNT - 1)) * 2 * 3.14;
 
             RayPath &ray = response.rays[i];
             ray.origin_t = player_tile;
@@ -41,10 +39,13 @@ namespace klein {
 
             int last_pgroup = INT_MIN;
 
+            bool was_inside_wall = false; // XXX: for correctness sake this ideally should be per-map?
+
             ray.hit = raycast_tiles(
                 ray.origin_t,
                 ray.direction,
                 [&](sf::Vector2i tile, float distance) mutable -> StepResult {
+                    // TODO: fix multiple maps here
                     for (auto [map_entity, map]: registry.view<tilemap::TileMap>().each()) {
                         const auto *special_layer = map.get_layer_by_name("_special");
                         if (!special_layer) continue;
@@ -53,14 +54,21 @@ namespace klein {
                         if (!tile_data) continue;
 
                         // no attributes -> treat as basic wall
-                        if (!tile_data->attributes) return ResultBlock{};
+                        if (!tile_data->attributes) {
+                            was_inside_wall = true;
+                            last_pgroup = INT_MIN;
+                            continue; // actually continue just until the wall ends
+                        };
+
+                        // just exited wall -> non-air
+                        if (was_inside_wall) return ResultBlock{};
 
                         const auto &attributes = *tile_data->attributes;
 
                         if (attributes["type"] == "portal") {
                             float pgroup = attributes["pgroup"];
                             if (pgroup == last_pgroup) {
-                                return ResultContinue{};
+                                continue;
                             }
                             last_pgroup = pgroup;
 
@@ -85,6 +93,9 @@ namespace klein {
                             return ResultContinue(trans);
                         }
                     }
+
+                    // just exited wall -> air
+                    if (was_inside_wall) return ResultBlock{};
 
                     last_pgroup = INT_MIN; // reset last_pgroup as soon as we leave the portal bounds into e.g. air
                     return ResultContinue{};
@@ -132,7 +143,7 @@ namespace klein {
             if (ray.hit.has_value()) {
                 ray_end += ray.direction * ray.hit->distance;
             } else {
-                ray_end += ray.direction * RAYCAST_MAX_DISTANCE;
+                ray_end += ray.direction * RAYCAST_MAX_DISTANCE_TILES;
             }
 
             sf::Vertex line[] = {

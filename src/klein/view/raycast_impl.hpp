@@ -3,7 +3,7 @@
 #include "entt/entt.hpp"
 #include <optional>
 
-namespace klein {
+namespace klein::view {
     struct ResultContinue {
         sf::Vector2f offset = {};
     };
@@ -20,7 +20,7 @@ namespace klein {
         Side side;
     };
 
-    constexpr float RAYCAST_MAX_DISTANCE = 256.0;
+    constexpr float RAYCAST_MAX_DISTANCE_TILES = 100.0;
 
     /// Traces a ray through the tilemap(s), calling the callback for each step taken
     /// (implementation of the DDA algorithm)
@@ -71,7 +71,7 @@ namespace klein {
             }
 
             const float dist_total = dist_accum + local_t;
-            if (dist_total > RAYCAST_MAX_DISTANCE) return std::nullopt;
+            if (dist_total > RAYCAST_MAX_DISTANCE_TILES) return std::nullopt;
 
             StepResult res = step_callback(tile, dist_total);
 
@@ -81,11 +81,10 @@ namespace klein {
                     .distance = dist_total,
                     .side = crossed,
                 };
-            }
-
-            if (auto* cont = std::get_if<ResultContinue>(&res);
-                cont && (cont->offset.x != 0 || cont->offset.y != 0))
-            {
+            } else if (
+                auto* cont = std::get_if<ResultContinue>(&res);
+                cont && (cont->offset.x != 0 || cont->offset.y != 0)
+            ) {
                 pos.x += direction.x * local_t + cont->offset.x;
                 pos.y += direction.y * local_t + cont->offset.y;
                 tile.x = (int)std::floor(pos.x);

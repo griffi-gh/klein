@@ -2,9 +2,9 @@
 #include "SFML/Graphics/RenderTarget.hpp"
 #include "entt/entt.hpp"
 #include "SFML/System/Vector2.hpp"
-#include "klein/raycast_impl.hpp"
+#include "klein/view/raycast_impl.hpp"
 
-namespace klein {
+namespace klein::view {
     // XXX: i am aware hashing floats is a bad idea
     // quite frankly i dont give a fk though,
     // they come from same literals either way, so *in practice* should always hash to same value
@@ -15,7 +15,7 @@ namespace klein {
         bool operator==(const ViewKey&) const = default;
     };
     struct ViewKeyHash {
-        size_t operator()(const klein::ViewKey& k) const noexcept;
+        size_t operator()(const ViewKey& k) const noexcept;
     };
 
     struct RayTransition {
@@ -36,7 +36,7 @@ namespace klein {
         std::unordered_set<ViewKey, ViewKeyHash> unique_views = { };
     };
 
-    constexpr int RAYCAST_VIEW_RAY_COUNT = 200;
+    constexpr int VIEW_RAY_COUNT = 200;
 
     RaycastViewResponse raycast_view(entt::registry &registry);
 
