@@ -1,10 +1,10 @@
 #pragma once
 #include <memory>
-#include "SFML/Graphics/Drawable.hpp"
-#include "SFML/Graphics/Transformable.hpp"
-#include "SFML/Graphics/RenderTarget.hpp"
-#include "SFML/Graphics/VertexBuffer.hpp"
-#include "SFML/Graphics/PrimitiveType.hpp"
+#include <SFML/Graphics/Drawable.hpp>
+#include <SFML/Graphics/PrimitiveType.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/Transformable.hpp>
+#include <SFML/Graphics/VertexBuffer.hpp>
 #include "klein/tilemap/tilemap.hpp"
 
 namespace klein::tilemap {

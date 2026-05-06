@@ -1,12 +1,14 @@
-#include <SFML/System/Vector2.hpp>
+#include "klein/tilemap/tilemap_loader.hpp"
+
 #include <cstdint>
 #include <fstream>
-#include <zlib.h>
+#include <SFML/System/Vector2.hpp>
 #include <nlohmann/json.hpp>
-#include "klein/vfs/assets.hpp"
+#include <spdlog/spdlog.h>
+#include <zlib.h>
+
 #include "klein/tilemap/tilemap.hpp"
-#include "spdlog/spdlog.h"
-#include "klein/tilemap/tilemap_loader.hpp"
+#include "klein/vfs/assets.hpp"
 
 using json = nlohmann::json;
 

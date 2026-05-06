@@ -1,10 +1,12 @@
 #pragma once
+
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
-#include "SFML/Graphics/Rect.hpp"
-#include "SFML/Graphics/Texture.hpp"
-#include "SFML/System/Vector2.hpp"
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;

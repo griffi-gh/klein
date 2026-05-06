@@ -1,16 +1,18 @@
+#include "klein/view/view_stencil.hpp"
+
 #include <ranges>
 #include <stdexcept>
 #include <unordered_map>
-#include "klein/view/view_stencil.hpp"
-#include "SFML/Graphics/Color.hpp"
-#include "SFML/Graphics/RenderStates.hpp"
-#include "SFML/Graphics/StencilMode.hpp"
-#include "SFML/Graphics/Vertex.hpp"
-#include "SFML/System/Vector2.hpp"
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/RenderStates.hpp>
+#include <SFML/Graphics/StencilMode.hpp>
+#include <SFML/Graphics/Vertex.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <spdlog/spdlog.h>
+
 #include "klein/tilemap/tilemap.hpp"
 #include "klein/view/raycast_impl.hpp"
 #include "klein/view/view_raycast.hpp"
-#include "spdlog/spdlog.h"
 
 using std::views::zip, std::views::iota;
 

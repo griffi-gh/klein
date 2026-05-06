@@ -1,7 +1,11 @@
 #pragma once
-#include "SFML/System/Vector2.hpp"
-#include "entt/entt.hpp"
+
+#include <cassert>
+#include <cmath>
 #include <optional>
+#include <variant>
+#include <SFML/System/Vector2.hpp>
+#include <entt/entt.hpp>
 
 namespace klein::view {
     struct ResultContinue {

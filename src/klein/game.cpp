@@ -1,26 +1,25 @@
 #include "klein/game.hpp"
 
-#include <stdexcept>
 #include <memory>
-
-#include "SFML/Graphics/CircleShape.hpp"
-#include "SFML/Graphics/Rect.hpp"
-#include "SFML/Graphics/StencilMode.hpp"
-#include "SFML/System/Vector2.hpp"
-#include "SFML/System/Clock.hpp"
-#include "SFML/Window/Keyboard.hpp"
-#include "SFML/Window/WindowEnums.hpp"
-#include "imgui-SFML.h"
-#include "spdlog/spdlog.h"
+#include <stdexcept>
+#include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/StencilMode.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Window/Keyboard.hpp>
+#include <SFML/Window/WindowEnums.hpp>
+#include <imgui-SFML.h>
+#include <spdlog/spdlog.h>
 
 #include "klein/debug_ui.hpp"
+#include "klein/drawable.hpp"
 #include "klein/input.hpp"
-#include "klein/vfs/assets.hpp"
+#include "klein/player.hpp"
 #include "klein/tilemap/tilemap.hpp"
 #include "klein/tilemap/tilemap_drawable.hpp"
 #include "klein/tilemap/tilemap_loader.hpp"
-#include "klein/drawable.hpp"
-#include "klein/player.hpp"
+#include "klein/vfs/assets.hpp"
 #include "klein/view/view_raycast.hpp"
 #include "klein/view/view_stencil.hpp"
 #include "klein/view/view_tiles.hpp"

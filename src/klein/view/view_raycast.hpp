@@ -1,9 +1,16 @@
 #pragma once
-#include "SFML/Graphics/RenderTarget.hpp"
-#include "entt/entt.hpp"
-#include "SFML/System/Vector2.hpp"
-#include "klein/view/raycast_impl.hpp"
+
+#include <cstddef>
+#include <cstdint>
+#include <optional>
 #include <unordered_map>
+#include <unordered_set>
+#include <vector>
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <entt/entt.hpp>
+
+#include "klein/view/raycast_impl.hpp"
 
 namespace klein::view {
     // XXX: i am aware hashing floats is a bad idea

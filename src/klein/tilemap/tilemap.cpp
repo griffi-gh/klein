@@ -1,7 +1,7 @@
 #include "klein/tilemap/tilemap.hpp"
-#include "SFML/System/Vector2.hpp"
-#include "spdlog/spdlog.h"
 #include <ranges>
+#include <SFML/System/Vector2.hpp>
+#include <spdlog/spdlog.h>
 
 using std::views::zip, std::views::iota;
 

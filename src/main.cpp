@@ -1,6 +1,7 @@
 #include "klein/game.hpp"
-#include "spdlog/spdlog.h"
+
 #include <print>
+#include <spdlog/spdlog.h>
 
 const char* ASCII_ART = R"( _    _      _
 | |  | |    (_)

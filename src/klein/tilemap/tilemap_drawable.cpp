@@ -1,6 +1,11 @@
 #include "klein/tilemap/tilemap_drawable.hpp"
-#include "SFML/Graphics/Vertex.hpp"
-#include "SFML/Graphics/VertexBuffer.hpp"
+
+#include <memory>
+#include <stdexcept>
+#include <vector>
+#include <SFML/Graphics/Vertex.hpp>
+#include <SFML/Graphics/VertexBuffer.hpp>
+
 #include "klein/debug_ui.hpp"
 #include "klein/tilemap/tilemap.hpp"
 

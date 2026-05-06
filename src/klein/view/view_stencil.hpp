@@ -1,11 +1,14 @@
 #pragma once
+
+#include <cstddef>
 #include <cstdint>
 #include <unordered_map>
 #include <vector>
-#include "SFML/Graphics/PrimitiveType.hpp"
-#include "SFML/Graphics/RenderTarget.hpp"
-#include "SFML/Graphics/Vertex.hpp"
-#include "SFML/Graphics/VertexBuffer.hpp"
+#include <SFML/Graphics/PrimitiveType.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/Vertex.hpp>
+#include <SFML/Graphics/VertexBuffer.hpp>
+
 #include "klein/view/view_raycast.hpp"
 
 namespace klein::view {

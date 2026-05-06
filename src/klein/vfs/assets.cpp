@@ -1,6 +1,7 @@
-#include <format>
-#include "spdlog/spdlog.h"
 #include "klein/vfs/assets.hpp"
+
+#include <format>
+#include <spdlog/spdlog.h>
 
 namespace klein::vfs {
     std::filesystem::path asset_path(const std::string asset) {
