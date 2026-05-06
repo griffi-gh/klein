@@ -1,5 +1,6 @@
 #include <ranges>
 #include <stdexcept>
+#include <unordered_map>
 #include "klein/view/view_stencil.hpp"
 #include "SFML/Graphics/BlendMode.hpp"
 #include "SFML/Graphics/Color.hpp"
@@ -81,6 +82,37 @@ namespace klein::view {
             }
         }
 
+        //HACK: for quick debugging
+        constexpr std::array<sf::Color, 7> colors {
+            sf::Color::Red,
+            sf::Color::Green,
+            sf::Color::Blue,
+            sf::Color::Yellow,
+            sf::Color::Magenta,
+            sf::Color::Cyan,
+            sf::Color::White
+        };
+        // assign each seen viewkey a sequential index
+        std::unordered_map<ViewKey, size_t, ViewKeyHash> viewkey_indices{};
+        size_t index = 0;
+        for (const auto &layer: layers_chunks) {
+            for (const auto &[viewkey, chunk]: layer) {
+                if (viewkey_indices.find(viewkey) == viewkey_indices.end()) {
+                    viewkey_indices[viewkey] = index++;
+                }
+            }
+        }
+        //update debug color based on it
+        for (auto &layer: layers_chunks) {
+            for (auto &[viewkey, chunk]: layer) {
+                const auto color_index = viewkey_indices[viewkey] % colors.size();
+                chunk._debug_color = colors[color_index];
+                for (auto &vertex: chunk.vertices) {
+                    vertex.color = chunk._debug_color;
+                }
+            }
+        }
+
         // grow buffer to fit
         size_t desired_size = vertex_count ? std::bit_ceil(vertex_count) : 0;
         if (buffer.getVertexCount() < desired_size) {
@@ -101,15 +133,12 @@ namespace klein::view {
 
     // draw the stuff to stencil only
     void ViewStencilState::draw(sf::RenderTarget &target) const {
-
         for (const auto &layer: layers_chunks) {
             for (const auto& chunk: layer | std::views::values) {
                 if (chunk.vertices.size() < 3) continue;
                 target.draw(buffer, chunk.buffer_offset, chunk.vertices.size());
             }
         }
-
-
     }
 
 }
