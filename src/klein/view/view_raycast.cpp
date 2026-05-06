@@ -4,9 +4,12 @@
 #include "util/hash_combine.hpp"
 #include "klein/player.hpp"
 #include "klein/tilemap/tilemap.hpp"
+#include <ranges>
 #include "klein/view/view_raycast.hpp"
 #define _USE_MATH_DEFINES
 #include <cmath>
+
+using std::views::zip, std::views::iota;
 
 namespace klein::view {
     ViewKey ViewKey::operator*(const ViewKey& other) const noexcept {
@@ -121,13 +124,15 @@ namespace klein::view {
             response.max_segments_depth = std::max(response.max_segments_depth, ray.segments.size());
         }
 
+        for (const auto &[idx, view]: zip(iota(0), response.unique_views)) {
+            response.view_stencil_map[view] = idx;
+        }
 
         return response;
     }
 
-    void raycast_view_debug(const RaycastViewResponse &response, sf::RenderTarget &target) {
-        for (const auto &ray : response.rays) {
-
+    void RaycastViewResponse::draw_debug(sf::RenderTarget &target) const {
+        for (const auto &ray: rays) {
             sf::Color segment_start_color = sf::Color::Red;
             segment_start_color.a = 128;
             sf::Color segment_end_color = sf::Color::Green;

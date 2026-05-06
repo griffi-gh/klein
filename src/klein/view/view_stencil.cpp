@@ -3,6 +3,8 @@
 #include <unordered_map>
 #include "klein/view/view_stencil.hpp"
 #include "SFML/Graphics/Color.hpp"
+#include "SFML/Graphics/RenderStates.hpp"
+#include "SFML/Graphics/StencilMode.hpp"
 #include "SFML/Graphics/Vertex.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "klein/tilemap/tilemap.hpp"
@@ -36,6 +38,9 @@ namespace klein::view {
                 auto &layer_ref = layers_chunks[layer];
                 auto [it, inserted] = layer_ref.try_emplace(view);
                 auto &chunk = it->second;
+                if (inserted) {
+                    chunk.stencil_value = raycast_result.view_stencil_map.at(view);
+                }
 
                 sf::Vector2f ray_origin_s = ray.origin_t.componentWiseMul(tilemap::TILE_SCREEN_SIZE);
 
@@ -128,7 +133,7 @@ namespace klein::view {
         }
     }
 
-    void ViewStencilState::_debug_draw(sf::RenderTarget &target) const {
+    void ViewStencilState::draw_debug(sf::RenderTarget &target) const {
         for (const auto &layer: layers_chunks | std::views::reverse) {
             for (const auto& chunk: layer | std::views::values) {
                 if (chunk.vertices.size() < 3) continue;
@@ -138,8 +143,22 @@ namespace klein::view {
     }
 
     // draw the stuff to stencil only
-    void ViewStencilState::draw(sf::RenderTarget &target) const {
-        // TODO
+    void ViewStencilState::draw_stencil(sf::RenderTarget &target) const {
+        sf::RenderStates state;
+        state.stencilMode = sf::StencilMode {
+            .stencilComparison = sf::StencilComparison::Never,
+            .stencilOnly = true,
+        };
+
+        for (const auto &layer: layers_chunks | std::views::reverse) {
+            for (const auto& [view, chunk]: layer) {
+                if (chunk.vertices.size() < 3) continue;
+
+                unsigned int vk_reference = ViewKeyHash{}(view);
+                state.stencilMode.stencilReference = sf::StencilValue(vk_reference);
+                target.draw(buffer, chunk.buffer_offset, chunk.vertices.size(), state);
+            }
+        }
     }
 
 }

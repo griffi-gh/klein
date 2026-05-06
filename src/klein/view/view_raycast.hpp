@@ -3,6 +3,7 @@
 #include "entt/entt.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "klein/view/raycast_impl.hpp"
+#include <unordered_map>
 
 namespace klein::view {
     // XXX: i am aware hashing floats is a bad idea
@@ -37,12 +38,13 @@ namespace klein::view {
         std::vector<RayPath> rays = {};
         // cache:
         std::unordered_set<ViewKey, ViewKeyHash> unique_views = { };
+        std::unordered_map<ViewKey, uint8_t, ViewKeyHash> view_stencil_map = { };
         size_t max_segments_depth = 0;
+
+        void draw_debug(sf::RenderTarget &target) const;
     };
 
-    constexpr int VIEW_RAY_COUNT = 300;
+    constexpr int VIEW_RAY_COUNT = 500;
 
     RaycastViewResponse raycast_view(entt::registry &registry);
-
-    void raycast_view_debug(const RaycastViewResponse &response, sf::RenderTarget &target);
 }

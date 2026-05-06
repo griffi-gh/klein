@@ -1,8 +1,10 @@
 #include "SFML/Graphics/CircleShape.hpp"
 #include "SFML/Graphics/Rect.hpp"
+#include "SFML/Graphics/StencilMode.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "SFML/System/Clock.hpp"
 #include "SFML/Window/Keyboard.hpp"
+#include "SFML/Window/WindowEnums.hpp"
 #include "imgui-SFML.h"
 #include "klein/debug_ui.hpp"
 #include "klein/input.hpp"
@@ -34,7 +36,15 @@ namespace klein {
     }
 
     void Game::init() {
-        window = sf::RenderWindow(sf::VideoMode({1280, 720}), "klein");
+        window = sf::RenderWindow(
+            sf::VideoMode({1280, 720}),
+            "klein",
+            sf::State::Windowed,
+            sf::ContextSettings{
+                .depthBits = 0,
+                .stencilBits = 8,
+            }
+        );
 
         if (!ImGui::SFML::Init(window))
             throw new std::runtime_error("ImGui init failed");
@@ -109,7 +119,7 @@ namespace klein {
     }
 
     void Game::render() {
-        window.clear();
+        window.clear(sf::Color::Black, sf::StencilValue(0));
 
         render_drawable(
             registry,
@@ -124,9 +134,12 @@ namespace klein {
         stencil_state->update_staging(raycast_result);
         if (debug_state.enable_segments) stencil_state->_debug_colorize();
         stencil_state->upload_staging();
+        stencil_state->draw_stencil(window);
 
-        if (debug_state.enable_segments) stencil_state->_debug_draw(window);
-        if (debug_state.enable_rays) view::raycast_view_debug(raycast_result, window);
+        window.clearStencil(sf::StencilValue(0));
+
+        if (debug_state.enable_segments) stencil_state->draw_debug(window);
+        if (debug_state.enable_rays) raycast_result.draw_debug(window);
 
         render_drawable(
             registry,

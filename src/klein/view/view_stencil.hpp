@@ -12,6 +12,7 @@ namespace klein::view {
     struct ViewStencilChunk {
         std::vector<sf::Vertex> vertices{};
         unsigned int buffer_offset;
+        uint8_t stencil_value;
 
         // implementation detail
         size_t _last_ray_idx = SIZE_MAX;
@@ -42,13 +43,13 @@ namespace klein::view {
         /// draw the segments as vertices
         ///
         /// requires _debug_colorize to be actually useful
-        void _debug_draw(sf::RenderTarget &target) const;
+        void draw_debug(sf::RenderTarget &target) const;
 
         /// draw the buffer to the specified target's stencil buffer
         ///
         /// the target (window/texture) needs to have a stencil buffer
         ///
-        void draw(sf::RenderTarget &target) const;
+        void draw_stencil(sf::RenderTarget &target) const;
 
 
     };
