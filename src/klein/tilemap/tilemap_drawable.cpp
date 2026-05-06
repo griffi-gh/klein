@@ -1,6 +1,7 @@
 #include "klein/tilemap/tilemap_drawable.hpp"
 #include "SFML/Graphics/Vertex.hpp"
 #include "SFML/Graphics/VertexBuffer.hpp"
+#include "klein/debug_ui.hpp"
 #include "klein/tilemap/tilemap.hpp"
 
 using std::views::reverse;
@@ -12,15 +13,15 @@ namespace klein::tilemap {
     TileMapDrawableLayer::TileMapDrawableLayer(
         std::shared_ptr<Spritesheet> tile_set,
         const TileMapLayer &layer
-    )
-        : spritesheet(std::move(tile_set))
-    {
+    ) : spritesheet(std::move(tile_set)) {
         update(layer);
     }
 
     // built using this example as a general reference, rewrote it using VertexBuffer though
     // https://www.sfml-dev.org/tutorials/3.0/graphics/vertex-array/#example-tile-map
     void TileMapDrawableLayer::update(const TileMapLayer &layer) {
+        is_special = layer.name == LAYER_SPECIAL;
+
         if (layer.tiles.size() == 0) {
             if (!buffer.create(0))
                 throw std::runtime_error("VertexBuffer::create failed");
@@ -94,6 +95,7 @@ namespace klein::tilemap {
 
     void TileMapDrawable::draw(sf::RenderTarget& target, sf::RenderStates states) const {
         for (const auto &layer: layers | reverse) {
+            if (layer.is_special && !debug_state.show_special) continue;
             target.draw(layer, states);
         }
     }

@@ -14,6 +14,8 @@ namespace klein::tilemap {
         sf::VertexBuffer buffer{sf::PrimitiveType::Triangles, sf::VertexBuffer::Usage::Static};
 
     public:
+        bool is_special = false;
+
         TileMapDrawableLayer(std::shared_ptr<Spritesheet> tile_set);
         TileMapDrawableLayer(std::shared_ptr<Spritesheet> tile_set, const TileMapLayer &layer);
 

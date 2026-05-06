@@ -63,7 +63,7 @@ namespace klein::view {
 
                     // TODO: fix multiple maps here
                     for (auto [map_entity, map]: registry.view<tilemap::TileMap>().each()) {
-                        const auto *special_layer = map.get_layer_by_name("_special");
+                        const auto *special_layer = map.get_layer_by_name(tilemap::LAYER_SPECIAL);
                         if (!special_layer) continue;
 
                         const auto *tile_data = special_layer->get(tile);
