@@ -1,3 +1,8 @@
+#include "klein/game.hpp"
+
+#include <stdexcept>
+#include <memory>
+
 #include "SFML/Graphics/CircleShape.hpp"
 #include "SFML/Graphics/Rect.hpp"
 #include "SFML/Graphics/StencilMode.hpp"
@@ -6,12 +11,10 @@
 #include "SFML/Window/Keyboard.hpp"
 #include "SFML/Window/WindowEnums.hpp"
 #include "imgui-SFML.h"
+#include "spdlog/spdlog.h"
+
 #include "klein/debug_ui.hpp"
 #include "klein/input.hpp"
-#include "spdlog/spdlog.h"
-#include <stdexcept>
-#include <memory>
-#include "klein/game.hpp"
 #include "klein/vfs/assets.hpp"
 #include "klein/tilemap/tilemap.hpp"
 #include "klein/tilemap/tilemap_drawable.hpp"
@@ -20,6 +23,7 @@
 #include "klein/player.hpp"
 #include "klein/view/view_raycast.hpp"
 #include "klein/view/view_stencil.hpp"
+#include "klein/view/view_tiles.hpp"
 
 namespace klein {
     /// Bootstraps and runs through the complete lifecycle of the game
@@ -121,26 +125,39 @@ namespace klein {
     void Game::render() {
         window.clear(sf::Color::Black, sf::StencilValue(0));
 
-        render_drawable(
-            registry,
-            window,
-            entt::const_runtime_view{}
-                .iterate(registry.storage<tilemap::TileMap>())
-        );
+        // draw tilemap
+        // render_drawable(
+        //     registry,
+        //     window,
+        //     entt::const_runtime_view{}
+        //         .iterate(registry.storage<tilemap::TileMap>())
+        // );
 
+        // Tilemap/world rendering
+
+        // raycast
         auto raycast_result = view::raycast_view(registry);
 
+        // update stencil state buffer
         static auto *stencil_state = new view::ViewStencilState();
         stencil_state->update_staging(raycast_result);
         if (debug_state.enable_segments) stencil_state->_debug_colorize();
         stencil_state->upload_staging();
+
+        // draw to main stencil
         stencil_state->draw_stencil(window);
 
+        // draw main map
+        // view::render_tilemap_views(registry, *stencil_state);
+
+        // reset stencil (ideally id just use a texture as target so this wont be needed)
         window.clearStencil(sf::StencilValue(0));
 
+        // debug overlays
         if (debug_state.enable_segments) stencil_state->draw_debug(window);
         if (debug_state.enable_rays) raycast_result.draw_debug(window);
 
+        // player
         render_drawable(
             registry,
             window,
@@ -148,6 +165,7 @@ namespace klein {
                 .iterate(registry.storage<Player>())
         );
 
+        // debug ui/imgui
         ImGui::SFML::Render(window);
 
         window.display();
