@@ -34,3 +34,5 @@ Thumbs.db
 *.log
 
 imgui.ini
+perf.data
+*.perf
