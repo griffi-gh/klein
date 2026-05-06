@@ -55,13 +55,13 @@ namespace klein::view {
 
             ViewKey last_viewkey = response.default_view;
             int last_pgroup = INT_MIN;
-            bool been_inside_wall = false; // XXX: for correctness sake this ideally should be per-map?
+            bool been_inside_soft_wall = false; // XXX: for correctness sake this ideally should be per-map?
 
             ray.hit = raycast_tiles(
                 ray.origin_t,
                 ray.direction,
                 [&](sf::Vector2i tile, float distance) mutable -> StepResult {
-                    bool is_inside_wall = false;
+                    bool is_inside_soft_wall = false;
                     bool is_inside_portal = false;
 
                     // TODO: fix multiple maps here
@@ -70,28 +70,25 @@ namespace klein::view {
                         if (!special_layer) continue;
 
                         const auto *tile_data = special_layer->get(tile);
-                        if (!tile_data) continue;
+                        if (!(tile_data && tile_data->attributes)) continue;
+                        const auto &attributes = *tile_data->attributes;
 
-                        // no attributes -> treat as basic wall
-                        if (!tile_data->attributes) {
-                            is_inside_wall = true;
-                            been_inside_wall = true;
+                        if (attributes["type"] == "soft") {
+                            is_inside_soft_wall = true;
+                            been_inside_soft_wall = true;
                             last_pgroup = INT_MIN;
                             continue; // actually continue just until the wall ends
                         };
-
                         // just exited wall -> non-air
-                        if (been_inside_wall && !is_inside_wall) return ResultBlock{};
+                        if (been_inside_soft_wall && !is_inside_soft_wall) return ResultBlock{};
 
-                        const auto &attributes = *tile_data->attributes;
-
-                        if (attributes["type"] == "portal") {
+                        if (attributes["type"] == "hard") {
+                            return ResultBlock{};
+                        } else if (attributes["type"] == "portal") {
                             is_inside_portal = true;
 
                             float pgroup = attributes["pgroup"];
-                            if (pgroup == last_pgroup) {
-                                continue;
-                            }
+                            if (pgroup == last_pgroup) continue;
                             last_pgroup = pgroup;
 
                             sf::Vector2f trans {
@@ -117,7 +114,7 @@ namespace klein::view {
                     }
 
                     // just exited wall -> air
-                    if (been_inside_wall & !is_inside_wall) return ResultBlock{};
+                    if (been_inside_soft_wall & !is_inside_soft_wall) return ResultBlock{};
                     if (!is_inside_portal) last_pgroup = INT_MIN; // reset last_pgroup as soon as we leave the portal bounds into e.g. air
 
                     return ResultContinue{};

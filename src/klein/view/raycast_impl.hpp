@@ -24,7 +24,7 @@ namespace klein::view {
         Side side;
     };
 
-    constexpr float RAYCAST_MAX_DISTANCE_TILES = 100.0;
+    constexpr float RAYCAST_MAX_DISTANCE_TILES = 50.0;
 
     /// Traces a ray through the tilemap(s), calling the callback for each step taken
     /// (implementation of the DDA algorithm)
