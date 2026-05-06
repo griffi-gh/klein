@@ -38,13 +38,13 @@ namespace klein::view {
             if (inserted) {
                 // if just inserted insert the fan center
                 sf::Vector2f ray_origin_s = ray.origin_t.componentWiseMul(tilemap::TILE_SCREEN_SIZE);
-                chunk.vertices.push_back(sf::Vertex(ray_origin_s, chunk._debug_color));
+                chunk.vertices.push_back(sf::Vertex(ray_origin_s));
                 vertex_count += 1;
             }
 
             sf::Vector2f segment_pos = ray.origin_t + ray.direction * distance;
             sf::Vector2f segment_pos_s = segment_pos.componentWiseMul(tilemap::TILE_SCREEN_SIZE);
-            chunk.vertices.push_back(sf::Vertex(segment_pos_s, chunk._debug_color));
+            chunk.vertices.push_back(sf::Vertex(segment_pos_s));
             vertex_count += 1;
         };
 
@@ -97,19 +97,15 @@ namespace klein::view {
         size_t index = 0;
         for (const auto &layer: layers_chunks) {
             for (const auto &[viewkey, chunk]: layer) {
-                if (viewkey_indices.find(viewkey) == viewkey_indices.end()) {
+                if (viewkey_indices.find(viewkey) == viewkey_indices.end())
                     viewkey_indices[viewkey] = index++;
-                }
             }
         }
         //update debug color based on it
         for (auto &layer: layers_chunks) {
             for (auto &[viewkey, chunk]: layer) {
                 const auto color_index = viewkey_indices[viewkey] % colors.size();
-                chunk._debug_color = colors[color_index];
-                for (auto &vertex: chunk.vertices) {
-                    vertex.color = chunk._debug_color;
-                }
+                for (auto &vertex: chunk.vertices) vertex.color = colors[color_index];
             }
         }
 

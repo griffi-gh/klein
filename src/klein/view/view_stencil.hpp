@@ -11,8 +11,6 @@ namespace klein::view {
     struct ViewStencilChunk {
         std::vector<sf::Vertex> vertices{};
         unsigned int buffer_offset;
-
-        sf::Color _debug_color = sf::Color(rand() % 256, rand() % 256, rand() % 256, 255);
     };
 
     class ViewStencilState {
