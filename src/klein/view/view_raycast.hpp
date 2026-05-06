@@ -13,13 +13,15 @@
 #include "klein/view/raycast_impl.hpp"
 
 namespace klein::view {
+    constexpr int VIEW_RAY_COUNT = 1024;
+
     // XXX: i am aware hashing floats is a bad idea
     // quite frankly i dont give a fk though,
     // they come from same literals either way, so *in practice* should always hash to same value
     // juuuust following the "if it works, it works, don't touch it" principle here :p
     struct ViewKey {
         sf::Vector2f trans {0, 0};
-        sf::Vector2f scale {1, 1};
+        sf::Vector2f scale {1, 1}; // (currently unused)
         ViewKey operator*(const ViewKey&) const noexcept;
         bool operator==(const ViewKey&) const noexcept = default;
     };
@@ -50,8 +52,6 @@ namespace klein::view {
 
         void draw_debug(sf::RenderTarget &target) const;
     };
-
-    constexpr int VIEW_RAY_COUNT = 500;
 
     RaycastViewResponse raycast_view(entt::registry &registry);
 }

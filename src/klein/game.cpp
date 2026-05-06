@@ -21,12 +21,9 @@
 #include "klein/tilemap/tilemap_loader.hpp"
 #include "klein/vfs/assets.hpp"
 #include "klein/view/view_raycast.hpp"
-#include "klein/view/view_stencil.hpp"
 #include "klein/view/view_tiles.hpp"
 
 namespace klein {
-    /// Bootstraps and runs through the complete lifecycle of the game
-    ///
     void Game::run() {
         init();
         while (window.isOpen())
@@ -46,8 +43,10 @@ namespace klein {
             sf::ContextSettings{
                 .depthBits = 0,
                 .stencilBits = 8,
+                .sRgbCapable = false, // todo
             }
         );
+        window.setVerticalSyncEnabled(false);
 
         if (!ImGui::SFML::Init(window))
             throw new std::runtime_error("ImGui init failed");
@@ -135,26 +134,26 @@ namespace klein {
         // Tilemap/world rendering
 
         // raycast
-        auto raycast_result = view::raycast_view(registry);
+        const auto raycast = view::raycast_view(registry);
+
+        // draw map views
+        // (todo: cache views so we can render map at lower framerate)
+        view_tiles.render_views_offscreen(registry, raycast, window.getSize());
 
         // update stencil state buffer
-        static auto *stencil_state = new view::ViewStencilState();
-        stencil_state->update_staging(raycast_result);
-        if (debug_state.enable_segments) stencil_state->_debug_colorize();
-        stencil_state->upload_staging();
+        view_stencil.update_staging(raycast);
+        if (debug_state.enable_segments) view_stencil._debug_colorize();
+        view_stencil.upload_staging();
 
-        // draw to main stencil
-        stencil_state->draw_stencil(window);
+        // draw to window stencil
+        view_stencil.draw_stencil(window, raycast);
 
-        // draw main map
-        // view::render_tilemap_views(registry, *stencil_state);
-
-        // reset stencil (ideally id just use a texture as target so this wont be needed)
-        window.clearStencil(sf::StencilValue(0));
+        // draw view textures using the stencil
+        view_tiles.compose_views(window, raycast);
 
         // debug overlays
-        if (debug_state.enable_segments) stencil_state->draw_debug(window);
-        if (debug_state.enable_rays) raycast_result.draw_debug(window);
+        if (debug_state.enable_segments) view_stencil.draw_debug(window);
+        if (debug_state.enable_rays) raycast.draw_debug(window);
 
         // player
         render_drawable(

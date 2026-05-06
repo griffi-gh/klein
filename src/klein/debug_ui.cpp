@@ -7,17 +7,12 @@
 namespace klein {
     DebugState debug_state = {};
 
-
-
     void debug_ui() {
         ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-        {
 
-        }
         static sf::Clock clock {};
         static std::deque<float> samples {};
         constexpr size_t WINDOW_SIZE = 600;
-
 
         float dt = clock.restart().asSeconds();
         samples.push_back(dt);

@@ -52,9 +52,7 @@ namespace klein::view {
         ///
         /// the target (window/texture) needs to have a stencil buffer
         ///
-        void draw_stencil(sf::RenderTarget &target) const;
-
-
+        void draw_stencil(sf::RenderTarget &target, const RaycastViewResponse &raycast_result) const;
     };
 
 }

@@ -118,9 +118,10 @@ namespace klein::view {
 
     void ViewStencilState::upload_staging() {
         // grow buffer to fit
+        size_t current_size = buffer.getVertexCount();
         size_t desired_size = vertex_count ? std::bit_ceil(vertex_count) : 0;
-        if (buffer.getVertexCount() < desired_size) {
-            spdlog::info("growing view stencil buffer to {} vertices", desired_size);
+        if (current_size < desired_size) {
+            spdlog::debug("ViewStencilState: growing vertex buffer {} -> {} vertices", current_size, desired_size);
             if (!buffer.create(desired_size))
                 throw std::runtime_error("VertexBuffer::create failed");
         }
@@ -145,10 +146,12 @@ namespace klein::view {
     }
 
     // draw the stuff to stencil only
-    void ViewStencilState::draw_stencil(sf::RenderTarget &target) const {
+    void ViewStencilState::draw_stencil(sf::RenderTarget &target, const RaycastViewResponse &raycast) const {
+        target.clearStencil(sf::StencilValue(0xff));
+
         sf::RenderStates state;
         state.stencilMode = sf::StencilMode {
-            .stencilComparison = sf::StencilComparison::Never,
+            .stencilUpdateOperation = sf::StencilUpdateOperation::Replace,
             .stencilOnly = true,
         };
 
@@ -156,7 +159,7 @@ namespace klein::view {
             for (const auto& [view, chunk]: layer) {
                 if (chunk.vertices.size() < 3) continue;
 
-                unsigned int vk_reference = ViewKeyHash{}(view);
+                const unsigned int vk_reference = raycast.view_stencil_map.at(view);
                 state.stencilMode.stencilReference = sf::StencilValue(vk_reference);
                 target.draw(buffer, chunk.buffer_offset, chunk.vertices.size(), state);
             }
