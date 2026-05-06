@@ -2,7 +2,6 @@
 #include <stdexcept>
 #include <unordered_map>
 #include "klein/view/view_stencil.hpp"
-#include "SFML/Graphics/BlendMode.hpp"
 #include "SFML/Graphics/Color.hpp"
 #include "SFML/Graphics/Vertex.hpp"
 #include "SFML/System/Vector2.hpp"
@@ -16,7 +15,7 @@ using std::views::zip,
     std::views::reverse;
 
 namespace klein::view {
-    void ViewStencilState::update(const RaycastViewResponse &raycast_result) {
+    void ViewStencilState::update_staging(const RaycastViewResponse &raycast_result) {
         // TODO: do sth clever here (we could prob reuse most of the stuff in there)
         const size_t layer_count = (raycast_result.max_segments_depth + 1) * 2;
         if (layers_chunks.size() != layer_count) {
@@ -24,7 +23,7 @@ namespace klein::view {
         }
         for (auto& layer: layers_chunks) layer.clear();
 
-        size_t vertex_count = 0;
+        vertex_count = 0;
 
         const auto handle_segment = [&](
             const RayPath &ray,
@@ -81,7 +80,9 @@ namespace klein::view {
                 buffer_head += chunk.vertices.size();
             }
         }
+    }
 
+    void ViewStencilState::_debug_colorize() {
         //HACK: for quick debugging
         constexpr std::array<sf::Color, 7> colors {
             sf::Color::Red,
@@ -108,7 +109,9 @@ namespace klein::view {
                 for (auto &vertex: chunk.vertices) vertex.color = colors[color_index];
             }
         }
+    }
 
+    void ViewStencilState::upload_staging() {
         // grow buffer to fit
         size_t desired_size = vertex_count ? std::bit_ceil(vertex_count) : 0;
         if (buffer.getVertexCount() < desired_size) {
@@ -118,8 +121,8 @@ namespace klein::view {
         }
 
         // upload
-        for (auto& layer: layers_chunks) {
-            for (auto& chunk: layer | std::views::values) {
+        for (const auto& layer: layers_chunks) {
+            for (const auto& chunk: layer | std::views::values) {
                 if (chunk.vertices.size() < 3) continue;
                 if (!buffer.update(chunk.vertices.data(), chunk.vertices.size(), chunk.buffer_offset))
                     throw std::runtime_error("VertexBuffer::update failed");
@@ -127,14 +130,18 @@ namespace klein::view {
         }
     }
 
-    // draw the stuff to stencil only
-    void ViewStencilState::draw(sf::RenderTarget &target) const {
+    void ViewStencilState::_debug_draw(sf::RenderTarget &target) const {
         for (const auto &layer: layers_chunks) {
             for (const auto& chunk: layer | std::views::values) {
                 if (chunk.vertices.size() < 3) continue;
                 target.draw(buffer, chunk.buffer_offset, chunk.vertices.size());
             }
         }
+    }
+
+    // draw the stuff to stencil only
+    void ViewStencilState::draw(sf::RenderTarget &target) const {
+        // TODO
     }
 
 }
