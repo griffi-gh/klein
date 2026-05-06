@@ -3,6 +3,8 @@
 #include "SFML/Graphics/VertexBuffer.hpp"
 #include "klein/tilemap/tilemap.hpp"
 
+using std::views::reverse;
+
 namespace klein::tilemap {
     TileMapDrawableLayer::TileMapDrawableLayer(std::shared_ptr<Spritesheet> tile_set)
         : spritesheet(std::move(tile_set)) {}
@@ -91,7 +93,7 @@ namespace klein::tilemap {
     }
 
     void TileMapDrawable::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-        for (const auto &layer: layers | std::views::reverse) {
+        for (const auto &layer: layers | reverse) {
             target.draw(layer, states);
         }
     }

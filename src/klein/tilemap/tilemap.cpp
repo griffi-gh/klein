@@ -1,8 +1,9 @@
 #include "klein/tilemap/tilemap.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "spdlog/spdlog.h"
-#include <optional>
 #include <ranges>
+
+using std::views::zip, std::views::iota;
 
 namespace klein::tilemap {
 
@@ -35,7 +36,7 @@ namespace klein::tilemap {
         // update tiles_lut
         tiles_lut.clear();
         tiles_lut.resize(aabb.size.x * aabb.size.y);
-        for (const auto& [i, tile]: std::views::zip(std::views::iota(0uz), tiles)) {
+        for (const auto& [i, tile]: zip(iota(0uz), tiles)) {
             const size_t lut_idx = (tile.pos.y - pos_min.y) * aabb.size.x + (tile.pos.x - pos_min.x);
             tiles_lut[lut_idx] = i + 1;
         }

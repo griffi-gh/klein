@@ -10,9 +10,10 @@ namespace klein::view {
     // they come from same literals either way, so *in practice* should always hash to same value
     // juuuust following the "if it works, it works, don't touch it" principle here :p
     struct ViewKey {
-        sf::Vector2f trans{};
-        sf::Vector2f scale{};
-        bool operator==(const ViewKey&) const = default;
+        sf::Vector2f trans {0, 0};
+        sf::Vector2f scale {1, 1};
+        ViewKey operator*(const ViewKey&) const noexcept;
+        bool operator==(const ViewKey&) const noexcept = default;
     };
     struct ViewKeyHash {
         size_t operator()(const ViewKey& k) const noexcept;
@@ -32,8 +33,11 @@ namespace klein::view {
     };
 
     struct RaycastViewResponse {
+        ViewKey default_view;
         std::vector<RayPath> rays = {};
+        // cache:
         std::unordered_set<ViewKey, ViewKeyHash> unique_views = { };
+        size_t max_segments_depth = 0;
     };
 
     constexpr int VIEW_RAY_COUNT = 200;

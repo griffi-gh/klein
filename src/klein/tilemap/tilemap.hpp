@@ -10,6 +10,8 @@
 using json = nlohmann::json;
 
 namespace klein::tilemap {
+    constexpr sf::Vector2f TILE_SCREEN_SIZE { 32, 32 };
+
     class Spritesheet {
     public:
         sf::Texture texture;

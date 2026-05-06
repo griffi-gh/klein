@@ -1,6 +1,7 @@
 #include "SFML/Graphics/CircleShape.hpp"
 #include "SFML/Graphics/Rect.hpp"
 #include "SFML/System/Vector2.hpp"
+#include "klein/view/view_stencil.hpp"
 #include "spdlog/spdlog.h"
 #include <stdexcept>
 #include <memory>
@@ -89,7 +90,6 @@ namespace klein {
             entt::const_runtime_view{}
                 .iterate(registry.storage<tilemap::TileMap>())
         );
-
         render_drawable(
             registry,
             window,
@@ -99,6 +99,12 @@ namespace klein {
 
         auto raycast_result = view::raycast_view(registry);
         view::raycast_view_debug(raycast_result, window);
+
+        static auto *stencil_state = new view::ViewStencilState();
+        static bool first_run = true;
+        if (first_run) stencil_state->update(raycast_result);
+        first_run = false;
+        stencil_state->draw(window);
 
         window.display();
     }

@@ -7,6 +7,13 @@
 #include "klein/view/view_raycast.hpp"
 
 namespace klein::view {
+    ViewKey ViewKey::operator*(const ViewKey& other) const noexcept {
+        return {
+            .trans = trans + other.trans,
+            .scale = scale.componentWiseMul(other.scale)
+        };
+    }
+
     size_t ViewKeyHash::operator()(const ViewKey& k) const noexcept {
         size_t seed = 0;
         hash_combine(seed, k.trans.x);
@@ -27,6 +34,7 @@ namespace klein::view {
 
         // TODO
         RaycastViewResponse response{};
+        response.default_view = ViewKey{}; //todo handle this shit
         response.unique_views.insert(ViewKey{}); // insert current/default view
         response.rays.resize(VIEW_RAY_COUNT);
 
@@ -37,8 +45,8 @@ namespace klein::view {
             ray.origin_t = player_tile;
             ray.direction = { std::cos(a), std::sin(a)};
 
+            ViewKey last_viewkey = response.default_view;
             int last_pgroup = INT_MIN;
-
             bool been_inside_wall = false; // XXX: for correctness sake this ideally should be per-map?
 
             ray.hit = raycast_tiles(
@@ -78,9 +86,9 @@ namespace klein::view {
                                 attributes["trans_x"].get<float>(),
                                 attributes["trans_y"].get<float>()
                             };
-                            // TODO: this is incorrect for nested portals.
-                            // we should combine current viewkey instead of only taking current portal's
-                            ViewKey viewkey(trans);
+
+                            auto viewkey = last_viewkey * ViewKey(trans);
+                            last_viewkey = viewkey;
 
                             // XXX: during raycast, on each portal cross, we record the length
                             // this will be the basis for constructing the stencil buffer ie
@@ -104,18 +112,9 @@ namespace klein::view {
                 }
             );
 
-            // if (hit.has_value()) {
-            //     sf::Vector2f hit_pos = ray.origin_t + ray.direction * hit->distance;
-            //     sf::Vertex line[] = {
-            //         sf::Vertex(ray.origin_t.componentWiseMul({32.0, 32.0}), sf::Color::White),
-            //         sf::Vertex(hit_pos.componentWiseMul({32.f, 32.f}), sf::Color::White)
-            //     };
-            //     debug_draw_target.draw(line, 2, sf::PrimitiveType::Lines);
-            // }
-
+            response.max_segments_depth = std::max(response.max_segments_depth, ray.segments.size());
         }
 
-        // spdlog::debug("unique_views cnt {}", unique_views.size());
 
         return response;
     }
@@ -133,24 +132,20 @@ namespace klein::view {
                 auto segment_end = ray.origin_t + ray.direction * segment.distance;
 
                 sf::Vertex line[] = {
-                    sf::Vertex(segment_start.componentWiseMul({32,32}), segment_start_color),
-                    sf::Vertex(segment_end.componentWiseMul({32,32}), segment_end_color)
+                    sf::Vertex(segment_start.componentWiseMul(tilemap::TILE_SCREEN_SIZE), segment_start_color),
+                    sf::Vertex(segment_end.componentWiseMul(tilemap::TILE_SCREEN_SIZE), segment_end_color)
                 };
                 target.draw(line, 2, sf::PrimitiveType::Lines);
 
                 segment_start = segment_end;
             }
 
-            sf::Vector2f ray_end = ray.origin_t;
-            if (ray.hit.has_value()) {
-                ray_end += ray.direction * ray.hit->distance;
-            } else {
-                ray_end += ray.direction * RAYCAST_MAX_DISTANCE_TILES;
-            }
+            float ray_length = ray.hit ? ray.hit->distance : RAYCAST_MAX_DISTANCE_TILES;
+            sf::Vector2f ray_end = ray.origin_t + ray.direction * ray_length;
 
             sf::Vertex line[] = {
-                sf::Vertex(segment_start.componentWiseMul({32,32}), segment_start_color),
-                sf::Vertex(ray_end.componentWiseMul({32,32}), segment_end_color)
+                sf::Vertex(segment_start.componentWiseMul(tilemap::TILE_SCREEN_SIZE), segment_start_color),
+                sf::Vertex(ray_end.componentWiseMul(tilemap::TILE_SCREEN_SIZE), segment_end_color)
             };
             target.draw(line, 2, sf::PrimitiveType::Lines);
         }
