@@ -54,6 +54,8 @@ namespace klein::view {
                 ray.direction,
                 [&](sf::Vector2i tile, float distance) mutable -> StepResult {
                     bool is_inside_wall = false;
+                    bool is_inside_portal = false;
+
                     // TODO: fix multiple maps here
                     for (auto [map_entity, map]: registry.view<tilemap::TileMap>().each()) {
                         const auto *special_layer = map.get_layer_by_name("_special");
@@ -76,6 +78,8 @@ namespace klein::view {
                         const auto &attributes = *tile_data->attributes;
 
                         if (attributes["type"] == "portal") {
+                            is_inside_portal = true;
+
                             float pgroup = attributes["pgroup"];
                             if (pgroup == last_pgroup) {
                                 continue;
@@ -106,8 +110,8 @@ namespace klein::view {
 
                     // just exited wall -> air
                     if (been_inside_wall & !is_inside_wall) return ResultBlock{};
+                    if (!is_inside_portal) last_pgroup = INT_MIN; // reset last_pgroup as soon as we leave the portal bounds into e.g. air
 
-                    last_pgroup = INT_MIN; // reset last_pgroup as soon as we leave the portal bounds into e.g. air
                     return ResultContinue{};
                 }
             );
