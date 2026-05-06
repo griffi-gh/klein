@@ -32,3 +32,5 @@ Testing/
 Thumbs.db
 
 *.log
+
+imgui.ini
