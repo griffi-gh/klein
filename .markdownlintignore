@@ -1,0 +1,8 @@
+*
+!*/
+!*.md
+!*.mdx
+vendor/
+build/
+LICENSE.md
+LICENSE-*.md
