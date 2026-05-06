@@ -68,11 +68,8 @@ namespace klein::view {
 
         unsigned int buffer_head = 0;
         for (auto &layer: layers_chunks) {
-            for (auto& [_, chunk] : layer) {
-                if (chunk.vertices.size() < 2) {
-                    chunk.buffer_offset = 0;
-                    continue;
-                }
+            for (auto& chunk: layer | std::views::values) {
+                if (chunk.vertices.size() < 2) continue;
 
                 // complete the fan shape by copying first vertex as last
                 chunk.vertices.push_back(chunk.vertices[1]);
@@ -93,8 +90,8 @@ namespace klein::view {
         }
 
         // upload
-        for (auto& layer : layers_chunks) {
-            for (auto& [_, chunk] : layer) {
+        for (auto& layer: layers_chunks) {
+            for (auto& chunk: layer | std::views::values) {
                 if (chunk.vertices.size() < 3) continue;
                 if (!buffer.update(chunk.vertices.data(), chunk.vertices.size(), chunk.buffer_offset))
                     throw std::runtime_error("VertexBuffer::update failed");
@@ -104,12 +101,14 @@ namespace klein::view {
 
     // draw the stuff to stencil only
     void ViewStencilState::draw(sf::RenderTarget &target) const {
+
         for (const auto &layer: layers_chunks) {
-            for (auto& [_, chunk]: layer) {
+            for (const auto& chunk: layer | std::views::values) {
                 if (chunk.vertices.size() < 3) continue;
                 target.draw(buffer, chunk.buffer_offset, chunk.vertices.size());
             }
         }
+
 
     }
 
