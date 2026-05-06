@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 #include <unordered_map>
 #include <vector>
 #include "SFML/Graphics/PrimitiveType.hpp"
@@ -11,6 +12,9 @@ namespace klein::view {
     struct ViewStencilChunk {
         std::vector<sf::Vertex> vertices{};
         unsigned int buffer_offset;
+
+        // implementation detail
+        size_t _last_ray_idx = SIZE_MAX;
     };
 
     class ViewStencilState {

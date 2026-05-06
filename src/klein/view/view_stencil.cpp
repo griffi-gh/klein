@@ -10,9 +10,7 @@
 #include "klein/view/view_raycast.hpp"
 #include "spdlog/spdlog.h"
 
-using std::views::zip,
-    std::views::iota,
-    std::views::reverse;
+using std::views::zip, std::views::iota;
 
 namespace klein::view {
     void ViewStencilState::update_staging(const RaycastViewResponse &raycast_result) {
@@ -23,57 +21,51 @@ namespace klein::view {
         }
         for (auto& layer: layers_chunks) layer.clear();
 
-        vertex_count = 0;
+        for (const auto &[ray_idx, ray]: zip(iota(0uz), raycast_result.rays)) {
+            const size_t layer_cnt = ray.segments.size() + 1;
+            for (int layer = 0; layer < layer_cnt; ++layer) {
+                const auto view =
+                    layer == 0 ?
+                    raycast_result.default_view :
+                    ray.segments[layer - 1].view;
+                const auto distance =
+                    (layer == layer_cnt - 1) ?
+                    (ray.hit ? ray.hit->distance : RAYCAST_MAX_DISTANCE_TILES):
+                    ray.segments[layer].distance;
 
-        const auto handle_segment = [&](
-            const RayPath &ray,
-            size_t layer,
-            ViewKey viewkey,
-            float distance
-        ) {
-            auto &layer_ref = layers_chunks[layer];
-            auto [it, inserted] = layer_ref.try_emplace(viewkey);
-            auto &chunk = it->second;
-            if (inserted) {
-                // if just inserted insert the fan center
+                auto &layer_ref = layers_chunks[layer];
+                auto [it, inserted] = layer_ref.try_emplace(view);
+                auto &chunk = it->second;
+
                 sf::Vector2f ray_origin_s = ray.origin_t.componentWiseMul(tilemap::TILE_SCREEN_SIZE);
-                chunk.vertices.push_back(sf::Vertex(ray_origin_s));
-                vertex_count += 1;
-            }
 
-            sf::Vector2f segment_pos = ray.origin_t + ray.direction * distance;
-            sf::Vector2f segment_pos_s = segment_pos.componentWiseMul(tilemap::TILE_SCREEN_SIZE);
-            chunk.vertices.push_back(sf::Vertex(segment_pos_s));
-            vertex_count += 1;
-        };
+                // just inserted -> ray origin as starting point
+                // not consecutive -> push ray origin to "cap off" previous chunk part
+                const bool is_consecutive = chunk._last_ray_idx == (ray_idx - 1);
+                if (inserted || !is_consecutive) {
+                    chunk.vertices.push_back(sf::Vertex(ray_origin_s));
+                }
 
-        for (auto &ray: raycast_result.rays) {
-            const size_t seg_cnt = ray.segments.size();
-            const auto distance = ray.hit ? ray.hit->distance : RAYCAST_MAX_DISTANCE_TILES;
-            const auto exit_view = ray.segments.empty() ? raycast_result.default_view : ray.segments.back().view;
-            handle_segment(ray, seg_cnt, exit_view, distance);
+                sf::Vector2f segment_pos = ray.origin_t + ray.direction * distance;
+                sf::Vector2f segment_pos_s = segment_pos.componentWiseMul(tilemap::TILE_SCREEN_SIZE);
+                chunk.vertices.push_back(sf::Vertex(segment_pos_s));
 
-            for (int i = 0; i < ray.segments.size(); ++i) {
-                const auto layer = seg_cnt + i + 1;
-                const auto exit_view = (i == seg_cnt - 1) ? raycast_result.default_view : ray.segments[seg_cnt - i - 2].view;
-                const auto distance = ray.segments[seg_cnt - i - 1].distance;
-                handle_segment(
-                    ray,
-                    layer,
-                    exit_view,
-                    distance
-                );
+                chunk._last_ray_idx = ray_idx;
             }
         }
 
+        // reset vertex_count
+        vertex_count = 0;
         unsigned int buffer_head = 0;
         for (auto &layer: layers_chunks) {
             for (auto& chunk: layer | std::views::values) {
                 if (chunk.vertices.size() < 2) continue;
 
-                // complete the fan shape by copying first vertex as last
-                chunk.vertices.push_back(chunk.vertices[1]);
-                vertex_count += 1;
+                // "close off" last chunk
+                chunk.vertices.push_back(chunk.vertices[0]);
+
+                // update vertex_count
+                vertex_count += chunk.vertices.size();
 
                 // update buffer_offset
                 chunk.buffer_offset = buffer_head;
@@ -84,22 +76,23 @@ namespace klein::view {
 
     void ViewStencilState::_debug_colorize() {
         //HACK: for quick debugging
+        constexpr uint8_t alpha = 255;
         constexpr std::array<sf::Color, 7> colors {
-            sf::Color::Red,
-            sf::Color::Green,
-            sf::Color::Blue,
-            sf::Color::Yellow,
-            sf::Color::Magenta,
-            sf::Color::Cyan,
-            sf::Color::White
+            sf::Color{255, 0, 0, alpha},
+            sf::Color{0, 255, 0, alpha},
+            sf::Color{0, 0, 255, alpha},
+            sf::Color{255, 255, 0, alpha},
+            sf::Color{255, 0, 255, alpha},
+            sf::Color{0, 255, 255, alpha},
+            sf::Color{255, 255, 255, alpha}
         };
         // assign each seen viewkey a sequential index
         std::unordered_map<ViewKey, size_t, ViewKeyHash> viewkey_indices{};
         size_t index = 0;
         for (const auto &layer: layers_chunks) {
             for (const auto &[viewkey, chunk]: layer) {
-                if (viewkey_indices.find(viewkey) == viewkey_indices.end())
-                    viewkey_indices[viewkey] = index++;
+                if (viewkey_indices.contains(viewkey)) continue;
+                viewkey_indices[viewkey] = index++;
             }
         }
         //update debug color based on it
@@ -131,7 +124,7 @@ namespace klein::view {
     }
 
     void ViewStencilState::_debug_draw(sf::RenderTarget &target) const {
-        for (const auto &layer: layers_chunks) {
+        for (const auto &layer: layers_chunks | std::views::reverse) {
             for (const auto& chunk: layer | std::views::values) {
                 if (chunk.vertices.size() < 3) continue;
                 target.draw(buffer, chunk.buffer_offset, chunk.vertices.size());

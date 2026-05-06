@@ -116,13 +116,14 @@ namespace klein {
         );
 
         auto raycast_result = view::raycast_view(registry);
-        view::raycast_view_debug(raycast_result, window);
 
         static auto *stencil_state = new view::ViewStencilState();
         stencil_state->update_staging(raycast_result);
         stencil_state->_debug_colorize();
         stencil_state->upload_staging();
         stencil_state->_debug_draw(window);
+
+        view::raycast_view_debug(raycast_result, window);
 
         window.display();
     }
