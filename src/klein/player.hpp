@@ -1,5 +1,7 @@
 #pragma once
 
 namespace klein {
-    struct Player {};
+    struct Player {
+        float move_speed = 200.0f; // units/sec
+    };
 }

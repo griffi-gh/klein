@@ -1,7 +1,8 @@
 #include "SFML/Graphics/CircleShape.hpp"
 #include "SFML/Graphics/Rect.hpp"
 #include "SFML/System/Vector2.hpp"
-#include "klein/view/view_stencil.hpp"
+#include "SFML/System/Clock.hpp"
+#include "klein/input.hpp"
 #include "spdlog/spdlog.h"
 #include <stdexcept>
 #include <memory>
@@ -13,6 +14,7 @@
 #include "klein/drawable.hpp"
 #include "klein/player.hpp"
 #include "klein/view/view_raycast.hpp"
+#include "klein/view/view_stencil.hpp"
 
 namespace klein {
     /// Bootstraps and runs through the complete lifecycle of the game
@@ -78,7 +80,23 @@ namespace klein {
     }
 
     void Game::update() {
+        static sf::Clock clock;
+        const float dt = clock.restart().asSeconds();
 
+        InputState input;
+        input.update();
+
+        // this is stub/debug code, should be moved to player controller eventually
+        const float x = (input.right ? 1.0f : 0.0f) - (input.left ? 1.0f : 0.0f);
+        const float y = (input.down ? 1.0f : 0.0f) - (input.up ? 1.0f : 0.0f);
+        if (x != 0.0f || y != 0.0f) {
+            auto view = registry.view<Player, sf::Transform>();
+            for (auto entity : view) {
+                auto& player = view.get<Player>(entity);
+                auto& transform = view.get<sf::Transform>(entity);
+                transform.translate({x * player.move_speed * dt, y * player.move_speed * dt});
+            }
+        }
     }
 
     void Game::render() {

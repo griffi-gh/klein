@@ -26,7 +26,7 @@ namespace klein::view {
     RaycastViewResponse raycast_view(entt::registry &registry) {
         // get player
         const auto player_view = registry.view<Player, sf::Transform>();
-        auto [player_transform] = player_view.get(player_view.front());
+        auto [_, player_transform] = player_view.get(player_view.front());
 
         const auto player_tile = player_transform
             .transformPoint({})
