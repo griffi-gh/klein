@@ -5,6 +5,8 @@
 #include "klein/player.hpp"
 #include "klein/tilemap/tilemap.hpp"
 #include "klein/view/view_raycast.hpp"
+#define _USE_MATH_DEFINES
+#include <cmath>
 
 namespace klein::view {
     ViewKey ViewKey::operator*(const ViewKey& other) const noexcept {
@@ -39,7 +41,7 @@ namespace klein::view {
         response.rays.resize(VIEW_RAY_COUNT);
 
         for (int i = 0; i < VIEW_RAY_COUNT; ++i){
-            const float a = ((float)i / (float)(VIEW_RAY_COUNT - 1)) * 2 * 3.14;
+            const float a = ((float)i / (float)(VIEW_RAY_COUNT)) * 2 * M_PI;
 
             RayPath &ray = response.rays[i];
             ray.origin_t = player_tile;

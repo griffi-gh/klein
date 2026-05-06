@@ -50,6 +50,11 @@ namespace klein::view {
                 sf::Vector2f segment_pos_s = segment_pos.componentWiseMul(tilemap::TILE_SCREEN_SIZE);
                 chunk.vertices.push_back(sf::Vertex(segment_pos_s));
 
+                const auto &next_ray = raycast_result.rays[(ray_idx + 1) % raycast_result.rays.size()];
+                sf::Vector2f segment_pos_next = ray.origin_t + next_ray.direction * distance;
+                sf::Vector2f segment_pos_next_s = segment_pos_next.componentWiseMul(tilemap::TILE_SCREEN_SIZE);
+                chunk.vertices.push_back(sf::Vertex(segment_pos_next_s));
+
                 chunk._last_ray_idx = ray_idx;
             }
         }

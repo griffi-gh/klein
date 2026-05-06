@@ -2,6 +2,7 @@
 #include "SFML/Graphics/Rect.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "SFML/System/Clock.hpp"
+#include "SFML/Window/Keyboard.hpp"
 #include "klein/input.hpp"
 #include "spdlog/spdlog.h"
 #include <stdexcept>
@@ -102,6 +103,10 @@ namespace klein {
     void Game::render() {
         window.clear();
 
+        using sf::Keyboard::Key;
+        static const bool _debug_rays = sf::Keyboard::isKeyPressed(Key::Num1);
+        static const bool _debug_segments = sf::Keyboard::isKeyPressed(Key::Num2);
+
         render_drawable(
             registry,
             window,
@@ -119,11 +124,11 @@ namespace klein {
 
         static auto *stencil_state = new view::ViewStencilState();
         stencil_state->update_staging(raycast_result);
-        stencil_state->_debug_colorize();
+        if (_debug_segments) stencil_state->_debug_colorize();
         stencil_state->upload_staging();
-        stencil_state->_debug_draw(window);
 
-        view::raycast_view_debug(raycast_result, window);
+        if (_debug_segments) stencil_state->_debug_draw(window);
+        if (_debug_rays) view::raycast_view_debug(raycast_result, window);
 
         window.display();
     }

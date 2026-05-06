@@ -40,7 +40,7 @@ namespace klein::view {
         size_t max_segments_depth = 0;
     };
 
-    constexpr int VIEW_RAY_COUNT = 200;
+    constexpr int VIEW_RAY_COUNT = 300;
 
     RaycastViewResponse raycast_view(entt::registry &registry);
 
