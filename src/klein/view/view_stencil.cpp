@@ -113,7 +113,7 @@ namespace klein::view {
         // grow buffer to fit
         size_t desired_size = vertex_count ? std::bit_ceil(vertex_count) : 0;
         if (buffer.getVertexCount() < desired_size) {
-            spdlog::info("growing view stencil buffer to {}", desired_size);
+            spdlog::info("growing view stencil buffer to {} vertices", desired_size);
             if (!buffer.create(desired_size))
                 throw std::runtime_error("VertexBuffer::create failed");
         }

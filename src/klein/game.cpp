@@ -3,6 +3,8 @@
 #include "SFML/System/Vector2.hpp"
 #include "SFML/System/Clock.hpp"
 #include "SFML/Window/Keyboard.hpp"
+#include "imgui-SFML.h"
+#include "klein/debug_ui.hpp"
 #include "klein/input.hpp"
 #include "spdlog/spdlog.h"
 #include <stdexcept>
@@ -34,12 +36,14 @@ namespace klein {
     void Game::init() {
         window = sf::RenderWindow(sf::VideoMode({1280, 720}), "klein");
 
+        if (!ImGui::SFML::Init(window))
+            throw new std::runtime_error("ImGui init failed");
+
         auto spritesheet_path = vfs::asset_path("spritesheet.png");
 
         sf::Texture texture;
-        if (!texture.loadFromFile(spritesheet_path)) {
+        if (!texture.loadFromFile(spritesheet_path))
             throw std::runtime_error("spritesheet loading failed");
-        }
 
         auto spritesheet = std::make_shared<tilemap::Spritesheet>(tilemap::Spritesheet {
             .texture = texture,
@@ -70,9 +74,8 @@ namespace klein {
     void Game::process_events() {
         while (const std::optional event = window.pollEvent())
         {
-            if (event->is<sf::Event::Closed>()) {
-                window.close();
-            }
+            ImGui::SFML::ProcessEvent(window, *event);
+            if (event->is<sf::Event::Closed>()) window.close();
             if (const auto *resized = event->getIf<sf::Event::Resized>()) {
                 sf::FloatRect area({0.f, 0.f}, sf::Vector2f(resized->size));
                 window.setView(sf::View(area));
@@ -82,7 +85,12 @@ namespace klein {
 
     void Game::update() {
         static sf::Clock clock;
-        const float dt = clock.restart().asSeconds();
+        const auto dt = clock.restart();
+
+        ImGui::SFML::Update(window, dt);
+#ifndef NDEBUG
+        debug_ui();
+#endif
 
         InputState input;
         input.update();
@@ -95,7 +103,7 @@ namespace klein {
             for (auto entity : view) {
                 auto& player = view.get<Player>(entity);
                 auto& transform = view.get<sf::Transform>(entity);
-                transform.translate({x * player.move_speed * dt, y * player.move_speed * dt});
+                transform.translate({x * player.move_speed * dt.asSeconds(), y * player.move_speed * dt.asSeconds()});
             }
         }
     }
@@ -103,16 +111,23 @@ namespace klein {
     void Game::render() {
         window.clear();
 
-        using sf::Keyboard::Key;
-        static const bool _debug_rays = sf::Keyboard::isKeyPressed(Key::Num1);
-        static const bool _debug_segments = sf::Keyboard::isKeyPressed(Key::Num2);
-
         render_drawable(
             registry,
             window,
             entt::const_runtime_view{}
                 .iterate(registry.storage<tilemap::TileMap>())
         );
+
+        auto raycast_result = view::raycast_view(registry);
+
+        static auto *stencil_state = new view::ViewStencilState();
+        stencil_state->update_staging(raycast_result);
+        if (debug_state.enable_segments) stencil_state->_debug_colorize();
+        stencil_state->upload_staging();
+
+        if (debug_state.enable_segments) stencil_state->_debug_draw(window);
+        if (debug_state.enable_rays) view::raycast_view_debug(raycast_result, window);
+
         render_drawable(
             registry,
             window,
@@ -120,15 +135,7 @@ namespace klein {
                 .iterate(registry.storage<Player>())
         );
 
-        auto raycast_result = view::raycast_view(registry);
-
-        static auto *stencil_state = new view::ViewStencilState();
-        stencil_state->update_staging(raycast_result);
-        if (_debug_segments) stencil_state->_debug_colorize();
-        stencil_state->upload_staging();
-
-        if (_debug_segments) stencil_state->_debug_draw(window);
-        if (_debug_rays) view::raycast_view_debug(raycast_result, window);
+        ImGui::SFML::Render(window);
 
         window.display();
     }

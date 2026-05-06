@@ -51,6 +51,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   nlohmann_json::nlohmann_json
   zlib
   spdlog
+  ImGui-SFML::ImGui-SFML
 )
 target_compile_options(${PROJECT_NAME} PRIVATE
   -Wall
@@ -63,3 +64,5 @@ target_compile_definitions(${PROJECT_NAME}
     $<$<CONFIG:Debug>:ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets">
     $<$<NOT:$<CONFIG:Debug>>:ASSETS_PATH="./assets">
 )
+
+install(FILES $<TARGET_RUNTIME_DLLS:${PROJECT_NAME}> TYPE BIN)
