@@ -30,6 +30,7 @@ namespace klein::tilemap {
                 .scale_x = attributes["scale_x"],
                 .scale_y = attributes["scale_y"],
                 .pgroup = attributes["pgroup"],
+                .face_mask = attributes["face_mask"],
             };
 
         return TileBase {};

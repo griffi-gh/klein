@@ -46,7 +46,7 @@ namespace klein {
                 .sRgbCapable = false, // todo
             }
         );
-        window.setVerticalSyncEnabled(false);
+        window.setVerticalSyncEnabled(true);
 
         if (!ImGui::SFML::Init(window))
             throw new std::runtime_error("ImGui init failed");

@@ -14,14 +14,20 @@ namespace klein::view {
     struct ResultBlock {};
     using StepResult = std::variant<ResultContinue, ResultBlock>;
 
-    /// which axis the ray crossed to enter this tile
+    /// which side the ray crossed to enter/exit this tile
     ///
-    enum class Side { XAxis, YAxis };
+    enum class TileFace: uint8_t {
+        Top    = 0,
+        Left   = 1,
+        Right  = 2,
+        Bottom = 3,
+    };
 
     struct Hit {
         sf::Vector2i tile;
         float distance;
-        std::optional<Side> side;
+        TileFace entry_face;
+        TileFace exit_face;
     };
 
     constexpr float RAYCAST_MAX_DISTANCE_TILES = 64.0;
@@ -39,17 +45,13 @@ namespace klein::view {
         sf::Vector2f pos = origin_tile;
 
         sf::Vector2i tile(
-            (int)std::floor(pos.x),
-            (int)std::floor(pos.y)
-        );
+            (int)std::floor(pos.x), (int)std::floor(pos.y));
         sf::Vector2f delta(
-            std::abs(1.0f / direction.x),
-            std::abs(1.0f / direction.y)
-        );
+            std::abs(1.0f / direction.x), std::abs(1.0f / direction.y));
 
         sf::Vector2i step {};
         sf::Vector2f side {};
-        auto recompute_sides = [&]() {
+        const auto recompute_sides = [&]() {
             step = {0, 0};
             side = {0, 0};
 
@@ -71,20 +73,36 @@ namespace klein::view {
         };
         recompute_sides();
 
-        float dist_accum = 0.0f;
+        const auto get_entry_exit = [&]() -> std::tuple<TileFace, TileFace> {
+            TileFace entry, exit;
+            if (side.x < side.y) {
+                entry = (step.x > 0) ? TileFace::Left : TileFace::Right;
+                exit  = (step.x > 0) ? TileFace::Right : TileFace::Left;
+            } else {
+                entry = (step.y > 0) ? TileFace::Top : TileFace::Bottom;
+                exit  = (step.y > 0) ? TileFace::Bottom : TileFace::Top;
+            }
+            return { entry, exit };
+        };
 
-        auto handle_result = [&](
+        const auto get_potential_hit = [&](float distance) -> Hit {
+            const auto [entry, exit] = get_entry_exit();
+            return Hit {
+                .tile = tile,
+                .distance = distance,
+                .entry_face = entry,
+                .exit_face = exit,
+            };
+        };
+
+        float dist_accum = 0.0f;
+        const auto handle_result = [&](
             StepResult res,
             float local_t,
-            float distance,
-            std::optional<Side> crossed = std::nullopt
-        ) -> std::optional<Hit> {
+            float distance
+        ) -> bool {
             if (std::holds_alternative<ResultBlock>(res)) {
-                return Hit{
-                    .tile = tile,
-                    .distance = distance,
-                    .side = crossed,
-                };
+                return true;
             } else if (
                 auto* cont = std::get_if<ResultContinue>(&res);
                 cont && (cont->offset.x != 0 || cont->offset.y != 0)
@@ -99,23 +117,22 @@ namespace klein::view {
                 recompute_sides();
                 dist_accum = distance;
             }
-            return std::nullopt;
+            return false;
         };
 
-        if (auto hit = handle_result(step_callback(tile, 0.0f), 0.0f, 0.0f))
-            return hit;
+        const auto maybe_hit = get_potential_hit(0.0f);
+        const auto res = step_callback(maybe_hit);
+        if (handle_result(res, 0.0f, 0.0f)) // XXX: local_t == 0 is bad
+            return maybe_hit;
 
         while(true) {
-            Side crossed;
             float local_t;
             if (side.x < side.y) {
                 local_t = side.x;
-                crossed = Side::XAxis;
                 tile.x += step.x;
                 side.x += delta.x;
             } else {
                 local_t = side.y;
-                crossed = Side::YAxis;
                 tile.y += step.y;
                 side.y += delta.y;
             }
@@ -124,8 +141,10 @@ namespace klein::view {
             if (dist_total > RAYCAST_MAX_DISTANCE_TILES)
                 return std::nullopt;
 
-            if (auto hit = handle_result(step_callback(tile, dist_total), local_t, dist_total, crossed))
-                return hit;
+            const auto maybe_hit = get_potential_hit(dist_total);
+            const auto res = step_callback(maybe_hit);
+            if (handle_result(res, local_t, dist_total))
+                return maybe_hit;
         }
     }
 

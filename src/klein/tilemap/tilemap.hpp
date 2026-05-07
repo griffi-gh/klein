@@ -28,6 +28,7 @@ namespace klein::tilemap {
         float scale_x;
         float scale_y;
         uint16_t pgroup;
+        uint8_t face_mask;
     };
     struct TileHard: TileBase {
         const static constexpr std::string type = "hard";

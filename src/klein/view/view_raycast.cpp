@@ -1,4 +1,9 @@
 #include "klein/view/view_raycast.hpp"
+#include "klein/view/raycast_impl.hpp"
+#include <cstdint>
+#include <optional>
+#include <type_traits>
+#include <utility>
 
 #define _USE_MATH_DEFINES
 #include <cmath>
@@ -37,7 +42,7 @@ namespace klein::view {
 
         const auto player_tile = player_transform
             .transformPoint({})
-            .componentWiseDiv({32.0f, 32.0f});
+            .componentWiseDiv(tilemap::TILE_SCREEN_SIZE);
 
         // TODO
         RaycastViewResponse response{};
@@ -47,29 +52,48 @@ namespace klein::view {
         response.views.emplace(response.default_view, ViewMeta {});
 
         for (int i = 0; i < VIEW_RAY_COUNT; ++i){
-            const float a = ((float)i / (float)(VIEW_RAY_COUNT)) * 2 * M_PI;
+            const float a = ((float)i / (float)VIEW_RAY_COUNT) * 2 * M_PI;
 
             RayPath &ray = response.rays[i];
             ray.origin_t = player_tile;
             ray.direction = { std::cos(a), std::sin(a)};
 
-            ViewKey last_viewkey = response.default_view;
-            int last_pgroup = INT_MIN;
+            ViewKey viewkey_accum = response.default_view;
             bool been_inside_soft_wall = false; // XXX: for correctness sake this ideally should be per-map?
+
+            std::optional<tilemap::TilePortal> exiting_portal = std::nullopt;
 
             ray.hit = raycast_tiles(
                 ray.origin_t,
                 ray.direction,
-                [&](sf::Vector2i tile, float distance) mutable -> StepResult {
+                [&](Hit hit) mutable -> StepResult {
                     bool is_inside_soft_wall = false;
-                    bool is_inside_portal = false;
+
+                    if (exiting_portal.has_value()) {
+                        // XXX: during raycast, on each portal cross, we record the length
+                        // this will be the basis for constructing the stencil buffer
+                        // visibility cone would be split into "layers" wher eeach one is separated by portal crossing
+                        // to achieve this wed prob have to render outermost to innermost (closest to player) poly first
+
+                        sf::Vector2f trans(exiting_portal->trans_x, exiting_portal->trans_y);
+
+                        auto viewkey = viewkey_accum * ViewKey(trans);
+                        viewkey_accum = viewkey;
+
+                        response.views.emplace(viewkey, ViewMeta{});
+                        ray.segments.push_back(RayTransition { viewkey, hit.distance, hit.tile });
+
+                        exiting_portal = std::nullopt;
+
+                        return ResultContinue(trans);
+                    }
 
                     // TODO: fix multiple maps here
                     for (auto [map_entity, map]: registry.view<tilemap::TileMap>().each()) {
                         const auto *special_layer = map.get_layer_by_name(tilemap::LAYER_SPECIAL);
                         if (!special_layer) continue;
 
-                        const auto *tile_data = special_layer->get(tile);
+                        const auto *tile_data = special_layer->get(hit.tile);
                         if (!tile_data) continue;
                         const auto &attributes = tile_data->attributes;
 
@@ -79,45 +103,23 @@ namespace klein::view {
                         } else if (std::holds_alternative<tilemap::TileSoft>(attributes)) {
                             is_inside_soft_wall = true;
                             been_inside_soft_wall = true;
-                            last_pgroup = INT_MIN;
+                            // last_pgroup = INT_MIN;
                             continue; // actually continue just until the wall ends
                         } else if (been_inside_soft_wall && !is_inside_soft_wall) {
                             // just exited wall -> non-air
                             return ResultBlock{};
                         } else if (std::holds_alternative<tilemap::TilePortal>(attributes)) { // portals
-                            is_inside_portal = true;
-
                             const auto &portal = std::get<tilemap::TilePortal>(attributes);
-                            float pgroup = portal.pgroup;
-                            if (pgroup == last_pgroup) continue;
-                            last_pgroup = pgroup;
-
-                            sf::Vector2f trans {
-                                portal.trans_x,
-                                portal.trans_y
-                            };
-
-                            auto viewkey = last_viewkey * ViewKey(trans);
-                            last_viewkey = viewkey;
-
-                            // XXX: during raycast, on each portal cross, we record the length
-                            // this will be the basis for constructing the stencil buffer ie
-                            // visibility cone would be split ito "layers" wher eeach one is separated by portal crossing
-                            // to achieve this wed prob have to render outermost to innermost (closest to player) poly first
-                            //
-                            // unique_views is recorded to then render each view to then be drawn using the stencil buffer generated from ray transitions
-                            //
-                            response.views.emplace(viewkey, ViewMeta{});
-                            ray.segments.push_back(RayTransition { viewkey, distance, tile });
-
-                            return ResultContinue(trans);
+                            const uint8_t ray_face_mask = 1 << std::to_underlying(hit.exit_face);
+                            if (portal.face_mask & ray_face_mask) {
+                                exiting_portal = std::make_optional(portal);
+                                continue;
+                            }
                         }
                     }
 
                     // just exited wall -> air
                     if (been_inside_soft_wall & !is_inside_soft_wall) return ResultBlock{};
-                    // reset last_pgroup as soon as we leave the portal bounds into e.g. air
-                    if (!is_inside_portal) last_pgroup = INT_MIN;
 
                     return ResultContinue{};
                 }
