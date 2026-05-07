@@ -21,10 +21,10 @@ namespace klein::view {
     struct Hit {
         sf::Vector2i tile;
         float distance;
-        Side side;
+        std::optional<Side> side;
     };
 
-    constexpr float RAYCAST_MAX_DISTANCE_TILES = 50.0;
+    constexpr float RAYCAST_MAX_DISTANCE_TILES = 64.0;
 
     /// Traces a ray through the tilemap(s), calling the callback for each step taken
     /// (implementation of the DDA algorithm)
@@ -73,6 +73,38 @@ namespace klein::view {
 
         float dist_accum = 0.0f;
 
+        auto handle_result = [&](
+            StepResult res,
+            float local_t,
+            float distance,
+            std::optional<Side> crossed = std::nullopt
+        ) -> std::optional<Hit> {
+            if (std::holds_alternative<ResultBlock>(res)) {
+                return Hit{
+                    .tile = tile,
+                    .distance = distance,
+                    .side = crossed,
+                };
+            } else if (
+                auto* cont = std::get_if<ResultContinue>(&res);
+                cont && (cont->offset.x != 0 || cont->offset.y != 0)
+            ) {
+                // HACK: workaround hangs when ray is redirected and local_t == 0
+                constexpr float NUDGE = 1e-5f;
+                pos.x += direction.x * (local_t + NUDGE) + cont->offset.x;
+                pos.y += direction.y * (local_t + NUDGE) + cont->offset.y;
+
+                tile.x = (int)std::floor(pos.x);
+                tile.y = (int)std::floor(pos.y);
+                recompute_sides();
+                dist_accum = distance;
+            }
+            return std::nullopt;
+        };
+
+        if (auto hit = handle_result(step_callback(tile, 0.0f), 0.0f, 0.0f))
+            return hit;
+
         while(true) {
             Side crossed;
             float local_t;
@@ -89,28 +121,11 @@ namespace klein::view {
             }
 
             const float dist_total = dist_accum + local_t;
-            if (dist_total > RAYCAST_MAX_DISTANCE_TILES) return std::nullopt;
+            if (dist_total > RAYCAST_MAX_DISTANCE_TILES)
+                return std::nullopt;
 
-            StepResult res = step_callback(tile, dist_total);
-
-            if (std::holds_alternative<ResultBlock>(res)) {
-                return Hit{
-                    .tile = tile,
-                    .distance = dist_total,
-                    .side = crossed,
-                };
-            } else if (
-                auto* cont = std::get_if<ResultContinue>(&res);
-                cont && (cont->offset.x != 0 || cont->offset.y != 0)
-            ) {
-                pos.x += direction.x * local_t + cont->offset.x;
-                pos.y += direction.y * local_t + cont->offset.y;
-                tile.x = (int)std::floor(pos.x);
-                tile.y = (int)std::floor(pos.y);
-                recompute_sides();
-                dist_accum = dist_total;
-            }
-
+            if (auto hit = handle_result(step_callback(tile, dist_total), local_t, dist_total, crossed))
+                return hit;
         }
     }
 

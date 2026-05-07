@@ -17,21 +17,48 @@
 
 using std::views::zip, std::views::iota;
 
+constexpr float EPSILON = 1e-6f;
+
 namespace klein::view {
-    void ViewStencilState::update_staging(const RaycastViewResponse &raycast_result) {
+    static void simplify_mesh(std::vector<sf::Vertex>& vtx) {
+        static std::vector<sf::Vertex> temp; // (reused)
+
+        temp.clear();
+        temp.reserve(vtx.size());
+
+        for (const auto& v : vtx) {
+            // exact duplicate
+            if (!temp.empty() && temp.back().position == v.position) continue;
+            temp.push_back(v);
+
+            // collapse collinear triple at the LAST vtx
+            while (temp.size() >= 3) {
+                const auto& a = temp[temp.size() - 3].position;
+                const auto& b = temp[temp.size() - 2].position;
+                const auto& c = temp[temp.size() - 1].position;
+                if (std::abs((b - a).cross(c - a)) > EPSILON) break;
+                temp[temp.size() - 2] = temp.back();
+                temp.pop_back();
+            }
+        }
+
+        vtx.swap(temp);
+    }
+
+    void ViewStencilState::update_staging(const RaycastViewResponse &raycast) {
         // TODO: do sth clever here (we could prob reuse most of the stuff in there)
-        const size_t layer_count = (raycast_result.max_segments_depth + 1) * 2;
+        const size_t layer_count = (raycast.max_segments_depth + 1) * 2;
         if (layers_chunks.size() != layer_count) {
             layers_chunks.resize(layer_count);
         }
         for (auto& layer: layers_chunks) layer.clear();
 
-        for (const auto &[ray_idx, ray]: zip(iota(0uz), raycast_result.rays)) {
+        auto process_ray = [&] (const size_t ray_idx, const RayPath& ray) {
             const size_t layer_cnt = ray.segments.size() + 1;
             for (int layer = 0; layer < layer_cnt; ++layer) {
                 const auto view =
                     layer == 0 ?
-                    raycast_result.default_view :
+                    raycast.default_view :
                     ray.segments[layer - 1].view;
                 const auto distance =
                     (layer == layer_cnt - 1) ?
@@ -41,8 +68,9 @@ namespace klein::view {
                 auto &layer_ref = layers_chunks[layer];
                 auto [it, inserted] = layer_ref.try_emplace(view);
                 auto &chunk = it->second;
+
                 if (inserted) {
-                    chunk.stencil_value = raycast_result.views.at(view).stencil_idx;
+                    chunk.stencil_value = raycast.views.at(view).stencil_idx;
                 }
 
                 sf::Vector2f ray_origin_s = ray.origin_t.componentWiseMul(tilemap::TILE_SCREEN_SIZE);
@@ -58,14 +86,21 @@ namespace klein::view {
                 sf::Vector2f segment_pos_s = segment_pos.componentWiseMul(tilemap::TILE_SCREEN_SIZE);
                 chunk.vertices.push_back(sf::Vertex(segment_pos_s));
 
-                const auto &next_ray = raycast_result.rays[(ray_idx + 1) % raycast_result.rays.size()];
-                sf::Vector2f segment_pos_next = ray.origin_t + next_ray.direction * distance;
-                sf::Vector2f segment_pos_next_s = segment_pos_next.componentWiseMul(tilemap::TILE_SCREEN_SIZE);
-                chunk.vertices.push_back(sf::Vertex(segment_pos_next_s));
+                // const auto &next_ray = raycast_result.rays[(ray_idx + 1) % raycast_result.rays.size()];
+                // sf::Vector2f segment_pos_next = ray.origin_t + next_ray.direction * distance;
+                // sf::Vector2f segment_pos_next_s = segment_pos_next.componentWiseMul(tilemap::TILE_SCREEN_SIZE);
+                // chunk.vertices.push_back(sf::Vertex(segment_pos_next_s));
 
                 chunk._last_ray_idx = ray_idx;
             }
+        };
+
+        for (const auto &[ray_idx, ray]: zip(iota(0uz), raycast.rays)) {
+            process_ray(ray_idx, ray);
         }
+        // sneakily pretent first ray is also the non-existend last one
+        // this is needed so that shapes we get are pproperly closed off
+        process_ray(raycast.rays.size(), raycast.rays[0]);
 
         // reset vertex_count
         vertex_count = 0;
@@ -76,6 +111,11 @@ namespace klein::view {
 
                 // "close off" last chunk
                 chunk.vertices.push_back(chunk.vertices[0]);
+
+                simplify_mesh(chunk.vertices);
+
+                // mesh nuked after simplification - skip
+                if (chunk.vertices.size() < 3) continue;
 
                 // update vertex_count
                 vertex_count += chunk.vertices.size();
