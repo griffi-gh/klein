@@ -4,7 +4,6 @@
 #include <cstdint>
 #include <optional>
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/System/Vector2.hpp>

@@ -12,7 +12,6 @@
 #include "SFML/Graphics/Color.hpp"
 #include "klein/drawable.hpp"
 #include "klein/tilemap/tilemap.hpp"
-#include "klein/view/view_stencil.hpp"
 
 using klein::tilemap::TileMap;
 
