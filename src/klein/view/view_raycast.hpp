@@ -7,9 +7,9 @@
 #include <vector>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics/Rect.hpp>
 #include <entt/entt.hpp>
 
-#include "SFML/Graphics/Rect.hpp"
 #include "klein/view/raycast_impl.hpp"
 
 namespace klein::view {
