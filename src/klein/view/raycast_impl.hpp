@@ -47,13 +47,27 @@ namespace klein::view {
             std::abs(1.0f / direction.y)
         );
 
-        sf::Vector2i step;
-        sf::Vector2f side;
+        sf::Vector2i step {};
+        sf::Vector2f side {};
         auto recompute_sides = [&]() {
-            if (direction.x < 0) { step.x = -1; side.x = (pos.x - tile.x) * delta.x; }
-            else                 { step.x =  1; side.x = (tile.x + 1.0f - pos.x) * delta.x; }
-            if (direction.y < 0) { step.y = -1; side.y = (pos.y - tile.y) * delta.y; }
-            else                 { step.y =  1; side.y = (tile.y + 1.0f - pos.y) * delta.y; }
+            step = {0, 0};
+            side = {0, 0};
+
+            if (direction.x < 0) {
+                step.x = -1;
+                side.x = (pos.x - tile.x) * delta.x;
+            } else {
+                step.x =  1;
+                side.x = (tile.x + 1.0f - pos.x) * delta.x;
+            }
+
+            if (direction.y < 0) {
+                step.y = -1;
+                side.y = (pos.y - tile.y) * delta.y;
+            } else {
+                step.y =  1;
+                side.y = (tile.y + 1.0f - pos.y) * delta.y;
+            }
         };
         recompute_sides();
 
