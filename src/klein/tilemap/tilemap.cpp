@@ -61,10 +61,9 @@ namespace klein::tilemap {
     }
 
     const TileMapLayer* TileMap::get_layer_by_name(const std::string &name) const {
-        // TODO O(1) lookup
-        for (const auto &layer: layers) {
+        // TODO O(1) lookup?
+        for (const auto &layer: layers)
             if (layer.name == name) return &layer;
-        }
         return nullptr;
     }
 }
