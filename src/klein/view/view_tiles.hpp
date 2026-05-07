@@ -17,6 +17,7 @@ namespace klein::view {
         bool dirty = true;
         sf::RenderTexture target {};
         // sf::Clock render_time {};
+        uint8_t _debug_state = 0;
     };
 
     class ViewTilesState {

@@ -48,6 +48,11 @@ namespace klein::view {
             // bool dirty = texture.render_time.getElapsedTime().asSeconds() > TILE_RENDER_TICKRATE;
             bool dirty = false;
 
+            // mark as dirty when toggling debug shit
+            const uint8_t current_debug_state = debug_state.show_special ? 1 : 0;
+            dirty |= texture._debug_state != current_debug_state;
+            texture._debug_state = current_debug_state;
+
             sf::Vector2u current_resolution = texture.target.getSize();
             // minimum acceptable resolution
             const sf::Vector2u needs_resolution {
@@ -79,10 +84,10 @@ namespace klein::view {
                 dirty = true;
             }
 
-            texture.target.setView(sf::View(sf::FloatRect {
-                sf::Vector2f(0, 0),
-                sf::Vector2f(current_resolution)
-            }));
+            // texture.target.setView(sf::View(sf::FloatRect {
+            //     sf::Vector2f(0, 0),
+            //     sf::Vector2f(current_resolution)
+            // }));
 
             // ensure viewport match
             // TODO: more efficient viewport reuse
