@@ -11,7 +11,6 @@
 #include "klein/tilemap/tilemap.hpp"
 #include "util/hash_combine.hpp"
 
-
 using std::views::zip, std::views::iota;
 
 namespace klein::view {
@@ -43,8 +42,9 @@ namespace klein::view {
         // TODO
         RaycastViewResponse response{};
         response.default_view = ViewKey{}; //todo handle this shit
-        response.unique_views.insert(ViewKey{}); // insert current/default view
         response.rays.resize(VIEW_RAY_COUNT);
+
+        response.views.emplace(response.default_view, ViewMeta {});
 
         for (int i = 0; i < VIEW_RAY_COUNT; ++i){
             const float a = ((float)i / (float)(VIEW_RAY_COUNT)) * 2 * M_PI;
@@ -70,30 +70,31 @@ namespace klein::view {
                         if (!special_layer) continue;
 
                         const auto *tile_data = special_layer->get(tile);
-                        if (!(tile_data && tile_data->attributes)) continue;
-                        const auto &attributes = *tile_data->attributes;
+                        if (!tile_data) continue;
+                        const auto &attributes = tile_data->attributes;
 
-                        if (attributes["type"] == "soft") {
+                        // walls
+                        if (std::holds_alternative<tilemap::TileHard>(attributes)) {
+                            return ResultBlock{};
+                        } else if (std::holds_alternative<tilemap::TileSoft>(attributes)) {
                             is_inside_soft_wall = true;
                             been_inside_soft_wall = true;
                             last_pgroup = INT_MIN;
                             continue; // actually continue just until the wall ends
-                        };
-                        // just exited wall -> non-air
-                        if (been_inside_soft_wall && !is_inside_soft_wall) return ResultBlock{};
-
-                        if (attributes["type"] == "hard") {
+                        } else if (been_inside_soft_wall && !is_inside_soft_wall) {
+                            // just exited wall -> non-air
                             return ResultBlock{};
-                        } else if (attributes["type"] == "portal") {
+                        } else if (std::holds_alternative<tilemap::TilePortal>(attributes)) { // portals
                             is_inside_portal = true;
 
-                            float pgroup = attributes["pgroup"];
+                            const auto &portal = std::get<tilemap::TilePortal>(attributes);
+                            float pgroup = portal.pgroup;
                             if (pgroup == last_pgroup) continue;
                             last_pgroup = pgroup;
 
                             sf::Vector2f trans {
-                                attributes["trans_x"].get<float>(),
-                                attributes["trans_y"].get<float>()
+                                portal.trans_x,
+                                portal.trans_y
                             };
 
                             auto viewkey = last_viewkey * ViewKey(trans);
@@ -106,7 +107,7 @@ namespace klein::view {
                             //
                             // unique_views is recorded to then render each view to then be drawn using the stencil buffer generated from ray transitions
                             //
-                            response.unique_views.insert(viewkey);
+                            response.views.emplace(viewkey, ViewMeta{});
                             ray.segments.push_back(RayTransition { viewkey, distance, tile });
 
                             return ResultContinue(trans);
@@ -115,7 +116,8 @@ namespace klein::view {
 
                     // just exited wall -> air
                     if (been_inside_soft_wall & !is_inside_soft_wall) return ResultBlock{};
-                    if (!is_inside_portal) last_pgroup = INT_MIN; // reset last_pgroup as soon as we leave the portal bounds into e.g. air
+                    // reset last_pgroup as soon as we leave the portal bounds into e.g. air
+                    if (!is_inside_portal) last_pgroup = INT_MIN;
 
                     return ResultContinue{};
                 }
@@ -124,8 +126,9 @@ namespace klein::view {
             response.max_segments_depth = std::max(response.max_segments_depth, ray.segments.size());
         }
 
-        for (const auto &[idx, view]: zip(iota(0), response.unique_views)) {
-            response.view_stencil_map[view] = idx;
+        // assign stencil idx
+        for (auto [idx, view_meta]: zip(iota(0uz), response.views | std::views::values)) {
+            view_meta.stencil_idx = (uint8_t)idx;
         }
 
         return response;

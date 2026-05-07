@@ -10,6 +10,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <entt/entt.hpp>
 
+#include "SFML/Graphics/Rect.hpp"
 #include "klein/view/raycast_impl.hpp"
 
 namespace klein::view {
@@ -42,12 +43,16 @@ namespace klein::view {
         std::optional<Hit> hit;
     };
 
+    struct ViewMeta {
+        uint8_t stencil_idx = 0;
+        sf::IntRect visible_aabb{};
+    };
+
     struct RaycastViewResponse {
         ViewKey default_view;
-        std::vector<RayPath> rays = {};
-        // cache:
-        std::unordered_set<ViewKey, ViewKeyHash> unique_views = { };
-        std::unordered_map<ViewKey, uint8_t, ViewKeyHash> view_stencil_map = { };
+        std::vector<RayPath> rays {};
+        std::unordered_map<ViewKey, ViewMeta, ViewKeyHash> views {};
+
         size_t max_segments_depth = 0;
 
         void draw_debug(sf::RenderTarget &target) const;

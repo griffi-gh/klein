@@ -25,10 +25,13 @@ namespace klein::view {
         // TODO culling
         // TODO cache view textures
 
-        for (const auto &view: raycast.unique_views) {
+        for (auto &tex: offscreen_pool | std::views::values) {
+            tex.active = false;
+        }
+        for (const auto &view: raycast.views | std::views::keys) {
             auto [it, inserted] = offscreen_pool.try_emplace(view);
             auto &tex = it->second;
-            tex.active = raycast.unique_views.contains(view);
+            tex.active = true;
         }
 
         sf::RenderStates states;
@@ -58,10 +61,9 @@ namespace klein::view {
     ) const {
         sf::RenderStates states {};
         states.stencilMode.stencilComparison = sf::StencilComparison::Equal;
-        for (const ViewKey &view: raycast.unique_views) {
-            const auto stencil = raycast.view_stencil_map.at(view);
+        for (const auto &[view, meta]: raycast.views) {
             const auto &texture = offscreen_pool.at(view);
-            states.stencilMode.stencilReference = sf::StencilValue((unsigned int) stencil);
+            states.stencilMode.stencilReference = sf::StencilValue((unsigned int) meta.stencil_idx);
             sf::Sprite sprite(texture.target.getTexture());
             target.draw(sprite, states);
         }

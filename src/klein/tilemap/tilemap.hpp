@@ -1,15 +1,12 @@
 #pragma once
 
 #include <cstdint>
-#include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <nlohmann/json.hpp>
-
-using json = nlohmann::json;
 
 namespace klein::tilemap {
     constexpr sf::Vector2f TILE_SCREEN_SIZE { 32, 32 };
@@ -21,10 +18,29 @@ namespace klein::tilemap {
         sf::Vector2u tile_size;
     };
 
+    struct TileBase {
+        const static constexpr std::string type = "";
+    };
+    struct TilePortal: TileBase {
+        const static constexpr std::string type = "portal";
+        float trans_x;
+        float trans_y;
+        float scale_x;
+        float scale_y;
+        uint16_t pgroup;
+    };
+    struct TileHard: TileBase {
+        const static constexpr std::string type = "hard";
+    };
+    struct TileSoft: TileBase {
+        const static constexpr std::string type = "soft";
+    };
+    using TileAttributes = std::variant<TileBase, TilePortal, TileHard, TileSoft>;
+
     struct Tile {
         sf::Vector2i pos; /**< Global position (NOT offset by layer's aabb_origin */
         uint16_t tex_id;
-        std::optional<json> attributes = std::nullopt;
+        TileAttributes attributes = TileBase{};
     };
 
     class TileMapLayer {
@@ -43,6 +59,9 @@ namespace klein::tilemap {
         bool collider = false;
 
         /// Call after mutating tiles
+        ///
+        /// Updates internal layer lookup table and aabb
+        /// (required for TileMapLayer::get to work)
         ///
         void update_tiles();
 

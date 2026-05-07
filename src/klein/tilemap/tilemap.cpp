@@ -6,11 +6,9 @@
 using std::views::zip, std::views::iota;
 
 namespace klein::tilemap {
-
+    // Update layer lookup table and aabb
     // TODO don't expose this directly, instead do sth to keep tiles consistent
     // mark dirty -> update automatically in getter?
-
-    /// Update layer lookup table and aabb
     void TileMapLayer::update_tiles() {
         if (tiles.size() == 0) {
             aabb.position = sf::Vector2i(0, 0);

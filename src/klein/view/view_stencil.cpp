@@ -1,5 +1,6 @@
 #include "klein/view/view_stencil.hpp"
 
+#include <bit>
 #include <ranges>
 #include <stdexcept>
 #include <unordered_map>
@@ -41,7 +42,7 @@ namespace klein::view {
                 auto [it, inserted] = layer_ref.try_emplace(view);
                 auto &chunk = it->second;
                 if (inserted) {
-                    chunk.stencil_value = raycast_result.view_stencil_map.at(view);
+                    chunk.stencil_value = raycast_result.views.at(view).stencil_idx;
                 }
 
                 sf::Vector2f ray_origin_s = ray.origin_t.componentWiseMul(tilemap::TILE_SCREEN_SIZE);
@@ -159,7 +160,7 @@ namespace klein::view {
             for (const auto& [view, chunk]: layer) {
                 if (chunk.vertices.size() < 3) continue;
 
-                const unsigned int vk_reference = raycast.view_stencil_map.at(view);
+                const unsigned int vk_reference = raycast.views.at(view).stencil_idx;
                 state.stencilMode.stencilReference = sf::StencilValue(vk_reference);
                 target.draw(buffer, chunk.buffer_offset, chunk.vertices.size(), state);
             }

@@ -1,5 +1,6 @@
 #include "klein/tilemap/tilemap_loader.hpp"
 
+#include <string>
 #include <cstdint>
 #include <fstream>
 #include <SFML/System/Vector2.hpp>
@@ -13,6 +14,27 @@
 using json = nlohmann::json;
 
 namespace klein::tilemap {
+    TileAttributes parse_tile_attributes(const nlohmann::json &attributes) {
+        if (attributes.is_null() || !attributes["type"].is_string())
+            return TileBase {};
+
+        const std::string &decl_type = attributes["type"];
+        if (decl_type == TileHard::type)
+            return TileHard{};
+        if (decl_type == TileSoft::type)
+            return TileSoft{};
+        if (decl_type == TilePortal::type)
+            return TilePortal {
+                .trans_x = attributes["trans_x"],
+                .trans_y = attributes["trans_y"],
+                .scale_x = attributes["scale_x"],
+                .scale_y = attributes["scale_y"],
+                .pgroup = attributes["pgroup"],
+            };
+
+        return TileBase {};
+    }
+
     TileMap load_tile_map_data(std::string asset, std::string name, bool compressed) {
         spdlog::info("loading map data for \"{}\" ({}, {})",
             name, asset, compressed ? "compressed" : "raw");
@@ -73,9 +95,7 @@ namespace klein::tilemap {
                         tile_data["y"].get<unsigned int>()
                     ),
                     .tex_id = static_cast<uint16_t>(sprite_id),
-                    .attributes = tile_data["attributes"].is_null()
-                        ? std::nullopt
-                        : std::make_optional(tile_data["attributes"]),
+                    .attributes = parse_tile_attributes(tile_data["attributes"]),
                 };
                 layer.tiles.push_back(tile);
             }
