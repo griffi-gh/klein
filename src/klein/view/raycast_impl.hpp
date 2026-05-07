@@ -3,16 +3,14 @@
 #include <cassert>
 #include <cmath>
 #include <optional>
-#include <variant>
 #include <SFML/System/Vector2.hpp>
 #include <entt/entt.hpp>
 
 namespace klein::view {
-    struct ResultContinue {
-        sf::Vector2f offset = {};
+    struct StepResult {
+        sf::Vector2f offset {};
+        bool block = false;
     };
-    struct ResultBlock {};
-    using StepResult = std::variant<ResultContinue, ResultBlock>;
 
     /// which side the ray crossed to enter/exit this tile
     ///
@@ -101,23 +99,16 @@ namespace klein::view {
             float local_t,
             float distance
         ) -> bool {
-            if (std::holds_alternative<ResultBlock>(res)) {
-                return true;
-            } else if (
-                auto* cont = std::get_if<ResultContinue>(&res);
-                cont && (cont->offset.x != 0 || cont->offset.y != 0)
-            ) {
-                // HACK: workaround hangs when ray is redirected and local_t == 0
-                constexpr float NUDGE = 1e-5f;
-                pos.x += direction.x * (local_t + NUDGE) + cont->offset.x;
-                pos.y += direction.y * (local_t + NUDGE) + cont->offset.y;
-
+            if (res.offset.x != 0. || res.offset.y != 0.) {
+                constexpr float NUDGE = 1e-5f; // (HACK: workaround hangs when ray is redirected and local_t == 0)
+                pos.x += direction.x * (local_t + NUDGE) + res.offset.x;
+                pos.y += direction.y * (local_t + NUDGE) + res.offset.y;
                 tile.x = (int)std::floor(pos.x);
                 tile.y = (int)std::floor(pos.y);
                 recompute_sides();
                 dist_accum = distance;
             }
-            return false;
+            return res.block;
         };
 
         const auto maybe_hit = get_potential_hit(0.0f);

@@ -59,7 +59,7 @@ namespace klein::view {
             ray.direction = { std::cos(a), std::sin(a)};
 
             ViewKey viewkey_accum = response.default_view;
-            bool been_inside_soft_wall = false; // XXX: for correctness sake this ideally should be per-map?
+            bool been_inside_soft = false; // XXX: for correctness sake this ideally should be per-map?
 
             std::optional<tilemap::TilePortal> exiting_portal = std::nullopt;
 
@@ -67,7 +67,7 @@ namespace klein::view {
                 ray.origin_t,
                 ray.direction,
                 [&](Hit hit) mutable -> StepResult {
-                    bool is_inside_soft_wall = false;
+                    StepResult res {};
 
                     if (exiting_portal.has_value()) {
                         // XXX: during raycast, on each portal cross, we record the length
@@ -85,8 +85,10 @@ namespace klein::view {
 
                         exiting_portal = std::nullopt;
 
-                        return ResultContinue(trans);
+                        res.offset += trans;
                     }
+
+                    bool is_inside_soft = false;
 
                     // TODO: fix multiple maps here
                     for (auto [map_entity, map]: registry.view<tilemap::TileMap>().each()) {
@@ -95,33 +97,27 @@ namespace klein::view {
 
                         const auto *tile_data = special_layer->get(hit.tile);
                         if (!tile_data) continue;
+
                         const auto &attributes = tile_data->attributes;
 
                         // walls
                         if (std::holds_alternative<tilemap::TileHard>(attributes)) {
-                            return ResultBlock{};
+                            res.block = true;
                         } else if (std::holds_alternative<tilemap::TileSoft>(attributes)) {
-                            is_inside_soft_wall = true;
-                            been_inside_soft_wall = true;
-                            // last_pgroup = INT_MIN;
-                            continue; // actually continue just until the wall ends
-                        } else if (been_inside_soft_wall && !is_inside_soft_wall) {
-                            // just exited wall -> non-air
-                            return ResultBlock{};
+                            is_inside_soft = true;
+                            been_inside_soft = true;
                         } else if (std::holds_alternative<tilemap::TilePortal>(attributes)) { // portals
                             const auto &portal = std::get<tilemap::TilePortal>(attributes);
                             const uint8_t ray_face_mask = 1 << std::to_underlying(hit.exit_face);
-                            if (portal.face_mask & ray_face_mask) {
+                            if (portal.face_mask & ray_face_mask)
                                 exiting_portal = std::make_optional(portal);
-                                continue;
-                            }
                         }
                     }
 
-                    // just exited wall -> air
-                    if (been_inside_soft_wall & !is_inside_soft_wall) return ResultBlock{};
+                    // just exited soft wall -> air
+                    res.block |= been_inside_soft & !is_inside_soft;
 
-                    return ResultContinue{};
+                    return res;
                 }
             );
 
