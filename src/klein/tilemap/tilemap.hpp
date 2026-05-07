@@ -10,6 +10,7 @@
 
 namespace klein::tilemap {
     constexpr sf::Vector2f TILE_SCREEN_SIZE { 32, 32 };
+
     constexpr std::string LAYER_SPECIAL = "_special";
 
     class Spritesheet {

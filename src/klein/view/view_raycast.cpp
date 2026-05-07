@@ -59,7 +59,7 @@ namespace klein::view {
             ray.origin_t = player_tile;
             ray.direction = { std::cos(a), std::sin(a)};
 
-            ViewKey viewkey_accum = response.default_view;
+            ViewKey viewkey_acc = response.default_view;
             bool been_inside_soft = false; // XXX: for correctness sake this ideally should be per-map?
 
             std::optional<tilemap::TilePortal> exiting_portal = std::nullopt;
@@ -67,8 +67,19 @@ namespace klein::view {
             ray.hit = raycast_tiles(
                 ray.origin_t,
                 ray.direction,
-                [&](Hit hit) mutable -> StepResult {
-                    StepResult res {};
+                [&](const Hit hit) mutable -> StepResult {
+                    StepResult step_result {};
+
+                    auto &meta = response.views.at(viewkey_acc);
+
+                    meta.visible_aabb_min = {
+                        std::min(hit.tile.x, meta.visible_aabb_min.x),
+                        std::min(hit.tile.y, meta.visible_aabb_min.y)
+                    };
+                    meta.visible_aabb_max = {
+                        std::max(hit.tile.x, meta.visible_aabb_max.x),
+                        std::max(hit.tile.y, meta.visible_aabb_max.y)
+                    };
 
                     if (exiting_portal.has_value()) {
                         // XXX: during raycast, on each portal cross, we record the length
@@ -78,15 +89,14 @@ namespace klein::view {
 
                         sf::Vector2f trans(exiting_portal->trans_x, exiting_portal->trans_y);
 
-                        auto viewkey = viewkey_accum * ViewKey(trans);
-                        viewkey_accum = viewkey;
+                        viewkey_acc = viewkey_acc * ViewKey(trans);
 
-                        response.views.emplace(viewkey, ViewMeta{});
-                        ray.segments.push_back(RayTransition { viewkey, hit.distance, hit.tile });
+                        response.views.emplace(viewkey_acc, ViewMeta{});
+                        ray.segments.push_back(RayTransition { viewkey_acc, hit.distance, hit.tile });
 
                         exiting_portal = std::nullopt;
 
-                        res.offset += trans;
+                        step_result.offset += trans;
                     }
 
                     bool is_inside_soft = false;
@@ -103,7 +113,7 @@ namespace klein::view {
 
                         // walls
                         if (std::holds_alternative<tilemap::TileHard>(attributes)) {
-                            res.block = true;
+                            step_result.block = true;
                         } else if (std::holds_alternative<tilemap::TileSoft>(attributes)) {
                             is_inside_soft = true;
                             been_inside_soft = true;
@@ -116,9 +126,9 @@ namespace klein::view {
                     }
 
                     // just exited soft wall -> air
-                    res.block |= been_inside_soft & !is_inside_soft;
+                    step_result.block |= been_inside_soft & !is_inside_soft;
 
-                    return res;
+                    return step_result;
                 }
             );
 

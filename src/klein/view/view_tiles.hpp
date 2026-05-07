@@ -10,24 +10,23 @@
 #include "klein/view/view_raycast.hpp"
 
 namespace klein::view {
-    constexpr float TILE_RENDER_TICKRATE = 1. / 10.; // 10 fps
+    // constexpr float TILE_RENDER_TICKRATE = 1. / 10.; // 10 fps
 
-    struct RenderedTiles {
+    struct RenderedTile {
         bool active = false;
         bool dirty = true;
         sf::RenderTexture target {};
-        sf::Clock render_time {};
+        // sf::Clock render_time {};
     };
 
     class ViewTilesState {
     private:
-        std::unordered_map<ViewKey, RenderedTiles, ViewKeyHash> offscreen_pool {};
+        std::unordered_map<ViewKey, RenderedTile, ViewKeyHash> offscreen_pool {};
 
     public:
         void render_views_offscreen(
             entt::registry& registry,
-            const RaycastViewResponse& raycast,
-            const sf::Vector2u resolution
+            const RaycastViewResponse& raycast
         );
 
         void compose_views(

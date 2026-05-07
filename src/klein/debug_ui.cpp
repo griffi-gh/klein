@@ -34,7 +34,7 @@ namespace klein {
         ImGui::Checkbox("Show Special layer", &debug_state.show_special);
         ImGui::Checkbox("Enable rays", &debug_state.enable_rays);
         ImGui::Checkbox("Enable segments", &debug_state.enable_segments);
-
+        ImGui::Checkbox("Enable debug tile composer", &debug_state.debug_tile_composer);
         ImGui::End();
     }
 }

@@ -44,7 +44,8 @@ namespace klein::view {
 
     struct ViewMeta {
         uint8_t stencil_idx = 0;
-        sf::IntRect visible_aabb{};
+        sf::Vector2i visible_aabb_min { INT_MAX, INT_MAX };
+        sf::Vector2i visible_aabb_max { INT_MIN, INT_MIN };
     };
 
     struct RaycastViewResponse {

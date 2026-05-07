@@ -131,7 +131,7 @@ namespace klein {
 
         // draw map views
         // (todo: cache views so we can render map at lower framerate)
-        view_tiles.render_views_offscreen(registry, raycast, window.getSize());
+        view_tiles.render_views_offscreen(registry, raycast);
 
         // update stencil state buffer
         view_stencil.update_staging(raycast);
