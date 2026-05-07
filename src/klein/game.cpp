@@ -72,6 +72,7 @@ namespace klein {
         registry.emplace<tilemap::TileMap>(tilemap_entity, std::move(map));
 
         sf::CircleShape player_drawable(10.);
+        player_drawable.setPosition({-5., -5.});
 
         auto player_entity = registry.create();
         registry.emplace<drawable_ptr>(player_entity,
@@ -122,14 +123,6 @@ namespace klein {
 
     void Game::render() {
         window.clear(sf::Color::Black, sf::StencilValue(0));
-
-        // draw tilemap
-        // render_drawable(
-        //     registry,
-        //     window,
-        //     entt::const_runtime_view{}
-        //         .iterate(registry.storage<tilemap::TileMap>())
-        // );
 
         // Tilemap/world rendering
 
