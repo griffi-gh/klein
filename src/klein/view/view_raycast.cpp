@@ -1,19 +1,20 @@
 #include "klein/view/view_raycast.hpp"
-#include "klein/view/raycast_impl.hpp"
-#include <cstdint>
-#include <optional>
-#include <type_traits>
-#include <utility>
 
 #define _USE_MATH_DEFINES
+
 #include <cmath>
+#include <cstdint>
+#include <optional>
+#include <utility>
 #include <ranges>
+
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Transform.hpp>
 #include <SFML/System/Vector2.hpp>
 
 #include "klein/player.hpp"
 #include "klein/tilemap/tilemap.hpp"
+#include "klein/view/raycast_impl.hpp"
 #include "util/hash_combine.hpp"
 
 using std::views::zip, std::views::iota;
