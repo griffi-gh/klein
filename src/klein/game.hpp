@@ -3,10 +3,11 @@
 #include <entt/entity/registry.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
+#include "klein/input.hpp"
 #include "klein/view/view_stencil.hpp"
 #include "klein/view/view_tiles.hpp"
 
-namespace klein {
+namespace klein::game {
     class Game {
     private:
         entt::registry registry = {};
@@ -15,6 +16,7 @@ namespace klein {
         // internal state
         view::ViewStencilState view_stencil {};
         view::ViewTilesState view_tiles {};
+        input::InputState input {};
 
         void init();
         void process_events();

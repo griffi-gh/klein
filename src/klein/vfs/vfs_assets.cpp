@@ -1,4 +1,4 @@
-#include "klein/vfs/assets.hpp"
+#include "klein/vfs/vfs_assets.hpp"
 
 #include <format>
 #include <spdlog/spdlog.h>

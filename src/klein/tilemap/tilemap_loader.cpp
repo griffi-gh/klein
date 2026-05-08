@@ -9,7 +9,7 @@
 #include <zlib.h>
 
 #include "klein/tilemap/tilemap.hpp"
-#include "klein/vfs/assets.hpp"
+#include "klein/vfs/vfs_assets.hpp"
 
 using json = nlohmann::json;
 

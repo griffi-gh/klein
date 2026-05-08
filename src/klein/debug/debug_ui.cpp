@@ -1,12 +1,13 @@
-#include "klein/debug_ui.hpp"
+#include "klein/debug/debug_ui.hpp"
 
+#include <deque>
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Clock.hpp>
 #include <imgui.h>
 
-namespace klein {
-    DebugState debug_state = {};
+#include "klein/debug/debug.hpp"
 
+namespace klein::debug {
     void debug_ui() {
         ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
@@ -31,10 +32,10 @@ namespace klein {
 
         ImGui::SeparatorText("Flags");
 
-        ImGui::Checkbox("Show Special layer", &debug_state.show_special);
-        ImGui::Checkbox("Enable rays", &debug_state.enable_rays);
-        ImGui::Checkbox("Enable segments", &debug_state.enable_segments);
-        ImGui::Checkbox("Enable debug tile composer", &debug_state.debug_tile_composer);
+        ImGui::Checkbox("Show Special layer", &flags.show_special);
+        ImGui::Checkbox("Enable rays", &flags.enable_rays);
+        ImGui::Checkbox("Enable segments", &flags.enable_segments);
+        ImGui::Checkbox("Enable debug tile composer", &flags.debug_tile_composer);
         ImGui::End();
     }
 }

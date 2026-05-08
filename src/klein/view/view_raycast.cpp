@@ -29,16 +29,16 @@ namespace klein::view {
 
     size_t ViewKeyHash::operator()(const ViewKey& k) const noexcept {
         size_t seed = 0;
-        hash_combine(seed, k.trans.x);
-        hash_combine(seed, k.trans.y);
-        hash_combine(seed, k.scale.x);
-        hash_combine(seed, k.scale.y);
+        util::hash_combine(seed, k.trans.x);
+        util::hash_combine(seed, k.trans.y);
+        util::hash_combine(seed, k.scale.x);
+        util::hash_combine(seed, k.scale.y);
         return seed;
     }
 
     RaycastViewResponse raycast_view(entt::registry &registry) {
         // get player
-        const auto player_view = registry.view<Player, sf::Transform>();
+        const auto player_view = registry.view<player::Player, sf::Transform>();
         auto [_, player_transform] = player_view.get(player_view.front());
 
         const auto player_tile = player_transform

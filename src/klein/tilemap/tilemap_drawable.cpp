@@ -1,12 +1,13 @@
 #include "klein/tilemap/tilemap_drawable.hpp"
 
+#include <ranges>
 #include <memory>
 #include <stdexcept>
 #include <vector>
 #include <SFML/Graphics/Vertex.hpp>
 #include <SFML/Graphics/VertexBuffer.hpp>
 
-#include "klein/debug_ui.hpp"
+#include "klein/debug/debug.hpp"
 #include "klein/tilemap/tilemap.hpp"
 
 using std::views::reverse;
@@ -100,7 +101,7 @@ namespace klein::tilemap {
 
     void TileMapDrawable::draw(sf::RenderTarget& target, sf::RenderStates states) const {
         for (const auto &layer: layers | reverse) {
-            if (layer.is_special && !debug_state.show_special) continue;
+            if (layer.is_special && !debug::flags.show_special) continue;
             target.draw(layer, states);
         }
     }

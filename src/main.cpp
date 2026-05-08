@@ -11,6 +11,8 @@ const char* ASCII_ART = R"( _    _      _
 |_|\_\_|\___|_|_| |_|
 )";
 
+using klein::game::Game;
+
 int main(int argc, char* argv[])
 {
     std::print("{}", ASCII_ART);
@@ -20,7 +22,7 @@ int main(int argc, char* argv[])
     spdlog::enable_backtrace(32);
 #endif
 
-    klein::Game app{};
+    Game app{};
     app.run();
 
     return 0;

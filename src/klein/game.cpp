@@ -2,6 +2,8 @@
 
 #include <memory>
 #include <stdexcept>
+#include <imgui-SFML.h>
+#include <spdlog/spdlog.h>
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/StencilMode.hpp>
@@ -9,21 +11,20 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/WindowEnums.hpp>
-#include <imgui-SFML.h>
-#include <spdlog/spdlog.h>
 
-#include "klein/debug_ui.hpp"
 #include "klein/drawable.hpp"
 #include "klein/input.hpp"
 #include "klein/player.hpp"
 #include "klein/tilemap/tilemap.hpp"
 #include "klein/tilemap/tilemap_drawable.hpp"
 #include "klein/tilemap/tilemap_loader.hpp"
-#include "klein/vfs/assets.hpp"
+#include "klein/vfs/vfs_assets.hpp"
 #include "klein/view/view_raycast.hpp"
 #include "klein/view/view_tiles.hpp"
+#include "klein/debug/debug.hpp"
+#include "klein/debug/debug_ui.hpp"
 
-namespace klein {
+namespace klein::game {
     void Game::run() {
         init();
         while (window.isOpen())
@@ -65,7 +66,7 @@ namespace klein {
         tilemap::TileMapDrawable map_drawable(spritesheet, map);
 
         auto tilemap_entity = registry.create();
-        registry.emplace<drawable_ptr>(
+        registry.emplace<drawable::drawable_ptr>(
             tilemap_entity,
             std::make_unique<tilemap::TileMapDrawable>(std::move(map_drawable))
         );
@@ -75,9 +76,9 @@ namespace klein {
         player_drawable.setPosition({-5., -5.});
 
         auto player_entity = registry.create();
-        registry.emplace<drawable_ptr>(player_entity,
+        registry.emplace<drawable::drawable_ptr>(player_entity,
             std::make_unique<sf::CircleShape>(std::move(player_drawable)));
-        registry.emplace<Player>(player_entity);
+        registry.emplace<player::Player>(player_entity);
         registry.emplace<sf::Transform>(player_entity,
             sf::Transform{}.translate({500., 200.}));
 
@@ -102,23 +103,12 @@ namespace klein {
 
         ImGui::SFML::Update(window, dt);
 #ifndef NDEBUG
-        debug_ui();
+        debug::debug_ui();
 #endif
 
-        InputState input;
         input.update();
 
-        // this is stub/debug code, should be moved to player controller eventually
-        const float x = (input.right ? 1.0f : 0.0f) - (input.left ? 1.0f : 0.0f);
-        const float y = (input.down ? 1.0f : 0.0f) - (input.up ? 1.0f : 0.0f);
-        if (x != 0.0f || y != 0.0f) {
-            auto view = registry.view<Player, sf::Transform>();
-            for (auto entity : view) {
-                auto& player = view.get<Player>(entity);
-                auto& transform = view.get<sf::Transform>(entity);
-                transform.translate({x * player.move_speed * dt.asSeconds(), y * player.move_speed * dt.asSeconds()});
-            }
-        }
+        player::update_player_movement(registry, input, dt);
     }
 
     void Game::render() {
@@ -135,7 +125,7 @@ namespace klein {
 
         // update stencil state buffer
         view_stencil.update_staging(raycast);
-        if (debug_state.enable_segments) view_stencil._debug_colorize();
+        if (debug::flags.enable_segments) view_stencil._debug_colorize();
         view_stencil.upload_staging();
 
         // draw to window stencil
@@ -145,15 +135,15 @@ namespace klein {
         view_tiles.compose_views(window, raycast);
 
         // debug overlays
-        if (debug_state.enable_segments) view_stencil.draw_debug(window);
-        if (debug_state.enable_rays) raycast.draw_debug(window);
+        if (debug::flags.enable_segments) view_stencil.draw_debug(window);
+        if (debug::flags.enable_rays) raycast.draw_debug(window);
 
         // player
-        render_drawable(
+        drawable::render_drawable(
             registry,
             window,
             entt::const_runtime_view{}
-                .iterate(registry.storage<Player>())
+                .iterate(registry.storage<player::Player>())
         );
 
         // debug ui/imgui

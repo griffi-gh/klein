@@ -14,10 +14,10 @@
 #include "SFML/Graphics/Rect.hpp"
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Graphics/Text.hpp"
-#include "klein/debug_ui.hpp"
 #include "klein/drawable.hpp"
 #include "klein/tilemap/tilemap.hpp"
 #include "klein/view/view_raycast.hpp"
+#include "klein/debug/debug.hpp"
 
 using klein::tilemap::TileMap;
 
@@ -49,7 +49,7 @@ namespace klein::view {
             bool dirty = false;
 
             // mark as dirty when toggling debug shit
-            const uint8_t current_debug_state = debug_state.show_special ? 1 : 0;
+            const uint8_t current_debug_state = debug::flags.show_special ? 1 : 0;
             dirty |= texture._debug_state != current_debug_state;
             texture._debug_state = current_debug_state;
 
@@ -105,10 +105,10 @@ namespace klein::view {
             if (!dirty) continue;
 
             texture.target.clear(sf::Color { 32, 32, 32, 255 });
-            for (const auto entity: registry.view<drawable_ptr, TileMap>()) {
+            for (const auto entity: registry.view<drawable::drawable_ptr, TileMap>()) {
                 // sf::RenderStates states;
                 // states.transform = sf::Transform{}.translate(view.trans.componentWiseMul(-tilemap::TILE_SCREEN_SIZE));
-                render_drawable(registry, texture.target, entity);
+                drawable::render_drawable(registry, texture.target, entity);
             }
             texture.target.display();
         }
@@ -126,14 +126,14 @@ namespace klein::view {
             sf::Sprite sprite(texture.target.getTexture());
             sprite.setPosition(view.trans.componentWiseMul(-tilemap::TILE_SCREEN_SIZE));
 
-            if (debug_state.debug_tile_composer) {
+            if (debug::flags.debug_tile_composer) {
                 sf::Color hash_color(static_cast<uint32_t>(0xA7F3C91D ^ ViewKeyHash{}(view)) | 0xff);
                 sprite.setColor(hash_color);
             }
 
             target.draw(sprite, states);
 
-            if (debug_state.debug_tile_composer) {
+            if (debug::flags.debug_tile_composer) {
                 sf::RectangleShape r {};
                 r.setFillColor(sf::Color::Transparent);
                 r.setOutlineColor(sf::Color::Red);

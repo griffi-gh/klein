@@ -5,7 +5,7 @@
 #include <entt/entity/fwd.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 
-namespace klein {
+namespace klein::drawable {
     void render_drawable(
         entt::registry &registry,
         sf::RenderTarget &sf_target,

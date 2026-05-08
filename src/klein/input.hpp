@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Window/Keyboard.hpp>
 
-namespace klein {
+namespace klein::input {
     struct InputState {
         bool up = false;
         bool down = false;

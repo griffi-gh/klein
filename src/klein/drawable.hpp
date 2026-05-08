@@ -4,7 +4,7 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <entt/entt.hpp>
 
-namespace klein {
+namespace klein::drawable {
     using drawable_ptr = std::unique_ptr<sf::Drawable>;
 
     void render_drawable(

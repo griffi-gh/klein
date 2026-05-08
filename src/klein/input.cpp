@@ -1,6 +1,6 @@
 #include "klein/input.hpp"
 
-namespace klein {
+namespace klein::input {
     void InputState::update() {
         up = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) ||
             sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up);
