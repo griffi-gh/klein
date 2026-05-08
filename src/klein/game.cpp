@@ -1,5 +1,6 @@
 #include "klein/game.hpp"
 
+#include <imgui_internal.h>
 #include <memory>
 #include <stdexcept>
 #include <imgui-SFML.h>
@@ -107,7 +108,6 @@ namespace klein::game {
 #endif
 
         input.update();
-
         player::update_player_movement(registry, input, dt);
     }
 
@@ -154,5 +154,7 @@ namespace klein::game {
 
     void Game::shutdown() {
         spdlog::info("shutting down...");
+
+        ImGui::SFML::Shutdown();
     }
 }
