@@ -38,11 +38,11 @@ namespace klein::camera {
         viewport.setView(view);
     }
 
-    void Camera2d::snap(sf::Vector2f offset) {
+    void Camera2d::snap(const sf::Vector2f offset) {
         center_pos += offset;
     }
 
-    void Camera2d::update(const entt::registry& registry, sf::Time dt) {
+    void Camera2d::update(const entt::registry& registry, const sf::Time dt) {
         const sf::Vector2f subject_pos = registry.get<sf::Transform>(subject).transformPoint({});
 
         sf::Vector2f target_pos = config.leeway_enable
