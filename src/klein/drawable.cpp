@@ -1,9 +1,9 @@
 #include "klein/drawable.hpp"
-#include "SFML/Graphics/RenderStates.hpp"
 
 #include <memory>
 #include <entt/entity/fwd.hpp>
 #include <SFML/Graphics/Drawable.hpp>
+#include <SFML/Graphics/RenderStates.hpp>
 
 namespace klein::drawable {
     void render_drawable(

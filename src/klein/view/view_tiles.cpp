@@ -9,12 +9,12 @@
 #include <SFML/Graphics/Transform.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/StencilMode.hpp>
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/Text.hpp>
+#include <SFML/Graphics/Texture.hpp>
 
-#include "SFML/Graphics/Color.hpp"
-#include "SFML/Graphics/Rect.hpp"
-#include "SFML/Graphics/RectangleShape.hpp"
-#include "SFML/Graphics/Text.hpp"
-#include "SFML/Graphics/Texture.hpp"
 #include "klein/drawable.hpp"
 #include "klein/tilemap/tilemap.hpp"
 #include "klein/view/view_raycast.hpp"

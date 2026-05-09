@@ -1,5 +1,5 @@
 #pragma once
-#include "SFML/Graphics/RenderStates.hpp"
+#include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <entt/entt.hpp>
