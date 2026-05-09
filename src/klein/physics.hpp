@@ -20,6 +20,7 @@ namespace klein::physics {
         const float gravity = 32.0 * 9.81f
     );
 
+    /// Step physics forward by dt
     void step_physics(
         entt::registry& registry,
         const sf::Time& dt

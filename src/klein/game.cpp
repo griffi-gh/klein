@@ -16,7 +16,6 @@
 #include <SFML/Window/ContextSettings.hpp>
 #include <variant>
 
-#include "SFML/Graphics/RectangleShape.hpp"
 #include "klein/drawable.hpp"
 #include "klein/input.hpp"
 #include "klein/physics.hpp"
