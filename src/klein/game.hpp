@@ -10,9 +10,11 @@
 
 namespace klein::game {
     constexpr const camera::CameraConfig MAIN_CAMERA_CONFIG {
-        .smooth = true,
+        .smooth_enable = true,
         .smooth_fac = 6.,
-        .size_option = camera::SizeOption::FitInside,
+        .leeway_enable = true,
+        .leeway = { 32., 80. },
+        .base_size_option = camera::SizeOption::FitInside,
         .base_size = { 1920, 1080 },
     };
 

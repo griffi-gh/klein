@@ -16,11 +16,16 @@ namespace klein::camera {
     };
 
     struct CameraConfig {
-        bool smooth = false;
-        float smooth_fac = 8.;
-        float scale = 1.0;
-        SizeOption size_option = SizeOption::None;
+        bool smooth_enable = false;
+        float smooth_fac = 1.0;
+
+        bool leeway_enable = false;
+        sf::Vector2f leeway { };
+
+        SizeOption base_size_option = SizeOption::None;
         sf::Vector2f base_size {};
+
+        float view_scale = 1.0;
     };
 
     class Camera2d {

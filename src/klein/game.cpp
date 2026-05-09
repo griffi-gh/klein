@@ -96,7 +96,10 @@ namespace klein::game {
         while (const std::optional event = window.pollEvent())
         {
             ImGui::SFML::ProcessEvent(window, *event);
-            if (event->is<sf::Event::Closed>()) window.close();
+
+            if (event->is<sf::Event::Closed>())
+                window.close();
+
             if (const auto *resized = event->getIf<sf::Event::Resized>()) {
                 sf::FloatRect area({0.f, 0.f}, sf::Vector2f(resized->size));
                 window.setView(sf::View(area));
@@ -130,10 +133,10 @@ namespace klein::game {
     }
 
     void Game::render() {
-        window.clear(sf::Color::Black, {0});
+        window.clear(sf::Color::Black);
 
         sf::RenderTarget& render_target = camera.render_target();
-        render_target.clear(sf::Color::Black, {0});
+        render_target.clear(sf::Color::Transparent, {0});
 
         // raycast
         const auto raycast = view::raycast_view(registry);
