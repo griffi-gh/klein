@@ -76,11 +76,11 @@ namespace klein::player {
                 if (std::holds_alternative<tilemap::TilePortal>(attributes)) {
                     const auto &portal = std::get<tilemap::TilePortal>(attributes);
                     const uint8_t face_mask = 1 << std::to_underlying(crosses_side);
-                    const sf::Vector2f portal_trans(portal.trans_x, portal.trans_y);
-                    const sf::Vector2f portal_trans_s = portal_trans.componentWiseMul(tilemap::TILE_SCREEN_SIZE);
+                    const sf::Vector2f port_trans(portal.trans_x, portal.trans_y);
+                    const sf::Vector2f port_trans_ss = port_trans.componentWiseMul(tilemap::TILE_SCREEN_SIZE) ;
                     if (portal.face_mask & face_mask) {
-                        trans = trans.translate(portal_trans_s);
-                        camera.snap(portal_trans_s);
+                        trans = trans.translate(port_trans_ss);
+                        camera.snap(port_trans_ss);
                     }
                 }
 

@@ -97,6 +97,8 @@ namespace klein::view {
                         exiting_portal = std::nullopt;
 
                         step_result.offset += trans;
+
+                        return step_result; // HACK (this is *bad*)
                     }
 
                     bool is_inside_soft = false;

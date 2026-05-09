@@ -15,7 +15,7 @@ namespace klein::game {
         .leeway_enable = true,
         .leeway = { 32., 80. },
         .base_size_option = camera::SizeOption::FitInside,
-        .base_size = { 1920, 1080 },
+        .base_size = { 1600, 900 },
     };
 
     class Game {
