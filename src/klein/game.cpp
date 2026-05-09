@@ -112,7 +112,6 @@ namespace klein::game {
         const auto dt = clock.restart();
 
         ImGui::SFML::Update(window, dt);
-
 #ifndef NDEBUG
         debug::debug_ui();
 #endif
@@ -120,8 +119,8 @@ namespace klein::game {
         input.update();
 
         player::update_player_movement(registry, input);
-
         physics::update_gravity(registry, dt);
+        player::detect_player_portal_cross(registry, dt, camera);
         physics::step_physics(registry, dt);
 
         camera.resize(window.getSize(), {

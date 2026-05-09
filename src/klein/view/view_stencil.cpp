@@ -12,8 +12,8 @@
 #include <spdlog/spdlog.h>
 
 #include "klein/tilemap/tilemap.hpp"
-#include "klein/view/raycast_impl.hpp"
 #include "klein/view/view_raycast.hpp"
+#include "klein/view/raycast.hpp"
 
 using std::views::zip, std::views::iota;
 

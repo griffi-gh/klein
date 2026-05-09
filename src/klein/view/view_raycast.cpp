@@ -14,8 +14,9 @@
 
 #include "klein/player.hpp"
 #include "klein/tilemap/tilemap.hpp"
-#include "klein/view/raycast_impl.hpp"
 #include "util/hash_combine.hpp"
+#include "klein/view/raycast.hpp"
+#include "klein/view/raycast_impl.hpp"
 
 using std::views::zip, std::views::iota;
 
@@ -37,7 +38,7 @@ namespace klein::view {
 
     RaycastViewResponse raycast_view(entt::registry &registry) {
         // get player
-        const auto player_view = registry.view<player::Player, sf::Transform>();
+        const auto player_view = registry.view<const player::Player, const sf::Transform>();
         auto [_, player_transform] = player_view.get(player_view.front());
 
         const auto player_tile = player_transform
@@ -99,9 +100,7 @@ namespace klein::view {
                     }
 
                     bool is_inside_soft = false;
-
-                    // TODO: fix multiple maps here
-                    for (auto [map_entity, map]: registry.view<tilemap::TileMap>().each()) {
+                    for (const auto &[map_entity, map]: registry.view<const tilemap::TileMap>().each()) {
                         const auto *special_layer = map.get_layer_by_name(tilemap::LAYER_SPECIAL);
                         if (!special_layer) continue;
 

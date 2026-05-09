@@ -5,6 +5,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <entt/entity/fwd.hpp>
 
+#include "klein/camera.hpp"
 #include "klein/input.hpp"
 
 namespace klein::player {
@@ -25,5 +26,11 @@ namespace klein::player {
     void update_player_movement(
         entt::registry& registry,
         const input::InputState &input
+    );
+
+    void detect_player_portal_cross(
+        entt::registry& registry,
+        const sf::Time &dt,
+        camera::Camera2d &camera
     );
 }

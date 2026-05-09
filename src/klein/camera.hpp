@@ -41,6 +41,8 @@ namespace klein::camera {
         inline Camera2d() = default;
         inline Camera2d(CameraConfig config): config(config) {}
 
+        void snap(sf::Vector2f offset);
+
         void update(const entt::registry& registry, sf::Time dt);
 
         void resize(sf::Vector2u resolution, sf::ContextSettings settings = {});

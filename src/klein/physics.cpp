@@ -13,8 +13,8 @@ namespace klein::physics {
         entt::registry& registry,
         sf::Vector2i tile
     ) {
-        for (auto [_, map]: registry.view<tilemap::TileMap>().each()) {
-            for (const auto& layer : map.layers) {
+        for (const auto &[_, map]: registry.view<const tilemap::TileMap>().each()) {
+            for (const auto& layer: map.layers) {
                 if (!layer.collider) continue;
                 if (layer.get(tile)) return true;
             }
@@ -58,7 +58,7 @@ namespace klein::physics {
         const sf::Time& dt,
         const float gravity
     ) {
-        const auto view = registry.view<Velocity, KinematicBody>();
+        const auto view = registry.view<Velocity, const KinematicBody>();
         for (const auto &[entity, vel, _]: view.each()) {
             vel.v.y += gravity * dt.asSeconds();
         }

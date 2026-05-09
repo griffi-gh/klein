@@ -10,7 +10,7 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <entt/entt.hpp>
 
-#include "klein/view/raycast_impl.hpp"
+#include "klein/view/raycast.hpp"
 
 namespace klein::view {
     constexpr int VIEW_RAY_COUNT = 1024;

@@ -6,30 +6,9 @@
 #include <SFML/System/Vector2.hpp>
 #include <entt/entt.hpp>
 
+#include "klein/view/raycast.hpp"
+
 namespace klein::view {
-    struct StepResult {
-        sf::Vector2f offset {};
-        bool block = false;
-    };
-
-    /// which side the ray crossed to enter/exit this tile
-    ///
-    enum class TileFace: uint8_t {
-        Top    = 0,
-        Left   = 1,
-        Right  = 2,
-        Bottom = 3,
-    };
-
-    struct Hit {
-        sf::Vector2i tile;
-        float distance;
-        TileFace entry_face;
-        TileFace exit_face;
-    };
-
-    constexpr float RAYCAST_MAX_DISTANCE_TILES = 64.0;
-
     /// Traces a ray through the tilemap(s), calling the callback for each step taken
     /// (implementation of the DDA algorithm)
     ///

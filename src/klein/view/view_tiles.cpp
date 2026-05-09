@@ -112,7 +112,7 @@ namespace klein::view {
             if (!dirty) continue;
 
             texture.target.clear(sf::Color { 32, 32, 32, 255 });
-            for (const auto entity: registry.view<drawable::drawable_ptr, TileMap>()) {
+            for (const auto entity: registry.view<const drawable::drawable_ptr, const TileMap>()) {
                 drawable::render_drawable(registry, texture.target, entity);
             }
 

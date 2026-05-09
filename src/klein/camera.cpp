@@ -38,6 +38,10 @@ namespace klein::camera {
         viewport.setView(view);
     }
 
+    void Camera2d::snap(sf::Vector2f offset) {
+        center_pos += offset;
+    }
+
     void Camera2d::update(const entt::registry& registry, sf::Time dt) {
         const sf::Vector2f subject_pos = registry.get<sf::Transform>(subject).transformPoint({});
 
