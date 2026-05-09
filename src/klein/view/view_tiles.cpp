@@ -14,6 +14,7 @@
 #include "SFML/Graphics/Rect.hpp"
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Graphics/Text.hpp"
+#include "SFML/Graphics/Texture.hpp"
 #include "klein/drawable.hpp"
 #include "klein/tilemap/tilemap.hpp"
 #include "klein/view/view_raycast.hpp"
@@ -114,7 +115,9 @@ namespace klein::view {
             for (const auto entity: registry.view<drawable::drawable_ptr, TileMap>()) {
                 drawable::render_drawable(registry, texture.target, entity);
             }
+
             texture.target.display();
+            const bool _ = texture.target.generateMipmap();
         }
     }
 
@@ -129,19 +132,23 @@ namespace klein::view {
             states.stencilMode.stencilReference = sf::StencilValue((unsigned int) meta.stencil_idx);
 
             const auto &texture = offscreen_pool.at(view);
-            sf::Sprite sprite(texture.target.getTexture());
+
+            sf::Sprite sprite(
+                texture.target.getTexture(),
+                {
+                    sf::Vector2i(
+                        sf::Vector2f(meta.visible_aabb_min - texture.current_min_aabb)
+                            .componentWiseMul(tilemap::TILE_SCREEN_SIZE)),
+                    sf::Vector2i (
+                        sf::Vector2f(meta.visible_aabb_max - meta.visible_aabb_min + sf::Vector2i(1, 1))
+                            .componentWiseMul(tilemap::TILE_SCREEN_SIZE))
+                }
+            );
+
             sprite.setPosition(
                 (sf::Vector2f(meta.visible_aabb_min) - view.trans)
                     .componentWiseMul(tilemap::TILE_SCREEN_SIZE)
             );
-            sprite.setTextureRect({
-                sf::Vector2i(
-                    sf::Vector2f(meta.visible_aabb_min - texture.current_min_aabb)
-                        .componentWiseMul(tilemap::TILE_SCREEN_SIZE)),
-                sf::Vector2i(
-                    sf::Vector2f(meta.visible_aabb_max - meta.visible_aabb_min + sf::Vector2i(1, 1))
-                        .componentWiseMul(tilemap::TILE_SCREEN_SIZE))
-            });
 
             if (debug::flags.debug_tile_composer) {
                 sf::Color hash_color(static_cast<uint32_t>(0xA7F3C91D ^ ViewKeyHash{}(view)) | 0xff);
