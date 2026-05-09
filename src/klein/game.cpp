@@ -12,10 +12,15 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/WindowEnums.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Window/ContextSettings.hpp>
 
+#include "SFML/Graphics/RectangleShape.hpp"
 #include "klein/drawable.hpp"
 #include "klein/input.hpp"
+#include "klein/physics.hpp"
 #include "klein/player.hpp"
+#include "klein/camera.hpp"
 #include "klein/tilemap/tilemap.hpp"
 #include "klein/tilemap/tilemap_drawable.hpp"
 #include "klein/tilemap/tilemap_loader.hpp"
@@ -39,19 +44,17 @@ namespace klein::game {
 
     void Game::init() {
         window = sf::RenderWindow(
-            sf::VideoMode({1280, 720}),
+            sf::VideoMode(sf::Vector2u(MAIN_CAMERA_CONFIG.base_size)),
             "klein",
             sf::State::Windowed,
-            sf::ContextSettings{
-                .depthBits = 0,
-                .stencilBits = 8,
-                .sRgbCapable = false, // todo
+            sf::ContextSettings {
+                .sRgbCapable = false,
             }
         );
         window.setVerticalSyncEnabled(true);
 
         if (!ImGui::SFML::Init(window))
-            throw new std::runtime_error("ImGui init failed");
+            throw std::runtime_error("ImGui init failed");
 
         auto spritesheet_path = vfs::asset_path("spritesheet.png");
 
@@ -73,15 +76,22 @@ namespace klein::game {
         );
         registry.emplace<tilemap::TileMap>(tilemap_entity, std::move(map));
 
-        sf::CircleShape player_drawable(10.);
-        player_drawable.setPosition({-5., -5.});
 
         auto player_entity = registry.create();
+
+        sf::RectangleShape player_drawable({30., 48.});
+        player_drawable.setOrigin(player_drawable.getSize().componentWiseMul({ 0.5, 0.5 }));
         registry.emplace<drawable::drawable_ptr>(player_entity,
-            std::make_unique<sf::CircleShape>(std::move(player_drawable)));
+            std::make_unique<sf::RectangleShape>(std::move(player_drawable)));
         registry.emplace<player::Player>(player_entity);
         registry.emplace<sf::Transform>(player_entity,
             sf::Transform{}.translate({500., 200.}));
+        registry.emplace<physics::KinematicBody>(player_entity, physics::KinematicBody {
+            .size = player_drawable.getSize()
+        });
+        registry.emplace<physics::Velocity>(player_entity);
+
+        camera.subject = player_entity;
 
         spdlog::info("init done");
     }
@@ -103,18 +113,31 @@ namespace klein::game {
         const auto dt = clock.restart();
 
         ImGui::SFML::Update(window, dt);
+
 #ifndef NDEBUG
         debug::debug_ui();
 #endif
 
         input.update();
-        player::update_player_movement(registry, input, dt);
+
+        player::update_player_movement(registry, input);
+
+        physics::update_gravity(registry, dt);
+        physics::step_physics(registry, dt);
+
+        camera.resize(window.getSize(), {
+            .depthBits = 0,
+            .stencilBits = 8,
+            .sRgbCapable = window.isSrgb(),
+        });
+        camera.update(registry, dt);
     }
 
     void Game::render() {
-        window.clear(sf::Color::Black, sf::StencilValue(0));
+        window.clear(sf::Color::Black, {0});
 
-        // Tilemap/world rendering
+        sf::RenderTarget& render_target = camera.render_target();
+        render_target.clear(sf::Color::Black, {0});
 
         // raycast
         const auto raycast = view::raycast_view(registry);
@@ -129,22 +152,26 @@ namespace klein::game {
         view_stencil.upload_staging();
 
         // draw to window stencil
-        view_stencil.draw_stencil(window, raycast);
+        view_stencil.draw_stencil(render_target, raycast);
 
         // draw view textures using the stencil
-        view_tiles.compose_views(window, raycast);
+        view_tiles.compose_views(render_target, raycast);
 
         // debug overlays
-        if (debug::flags.enable_segments) view_stencil.draw_debug(window);
-        if (debug::flags.enable_rays) raycast.draw_debug(window);
+        if (debug::flags.enable_segments) view_stencil.draw_debug(render_target);
+        if (debug::flags.enable_rays) raycast.draw_debug(render_target);
 
         // player
         drawable::render_drawable(
             registry,
-            window,
+            render_target,
             entt::const_runtime_view{}
                 .iterate(registry.storage<player::Player>())
         );
+
+        camera.display();
+        sf::Sprite camera_sprite(camera.texture());
+        window.draw(camera_sprite);
 
         // debug ui/imgui
         ImGui::SFML::Render(window);

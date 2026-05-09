@@ -7,12 +7,12 @@
 
 namespace klein::player {
     struct Player {
-        float move_speed = 200.0f; // units/sec
+        float move_vel = 300.0f; // units/sec
+        float jump_vel = 250.0f;// units/sec
     };
 
     void update_player_movement(
         entt::registry& registry,
-        const input::InputState &input,
-        const sf::Time &dt
+        const input::InputState &input
     );
 }

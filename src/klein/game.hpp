@@ -3,11 +3,19 @@
 #include <entt/entity/registry.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
+#include "klein/camera.hpp"
 #include "klein/input.hpp"
 #include "klein/view/view_stencil.hpp"
 #include "klein/view/view_tiles.hpp"
 
 namespace klein::game {
+    constexpr const camera::CameraConfig MAIN_CAMERA_CONFIG {
+        .smooth = true,
+        .smooth_fac = 6.,
+        .size_option = camera::SizeOption::FitInside,
+        .base_size = { 1920, 1080 },
+    };
+
     class Game {
     private:
         entt::registry registry = {};
@@ -17,6 +25,7 @@ namespace klein::game {
         view::ViewStencilState view_stencil {};
         view::ViewTilesState view_tiles {};
         input::InputState input {};
+        camera::Camera2d camera{ MAIN_CAMERA_CONFIG };
 
         void init();
         void process_events();

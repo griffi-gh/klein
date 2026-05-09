@@ -5,7 +5,10 @@
 #include <entt/entity/fwd.hpp>
 
 namespace klein::physics {
-    struct Body {};
+    struct KinematicBody {
+        sf::Vector2f size;
+        bool on_ground = false;
+    };
 
     struct Velocity {
         sf::Vector2f v{0.f, 0.f};
@@ -14,7 +17,7 @@ namespace klein::physics {
     void update_gravity(
         entt::registry& registry,
         const sf::Time& dt,
-        const float gravity = 9.8f
+        const float gravity = 32.0 * 9.81f
     );
 
     void step_physics(
