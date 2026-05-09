@@ -11,7 +11,7 @@ namespace klein::player {
     entt::entity create_player_entity(entt::registry &registry, sf::Vector2f translate) {
         auto entity = registry.create();
 
-        sf::RectangleShape player_drawable({30., 48.});
+        sf::RectangleShape player_drawable({30., 60.});
         player_drawable.setOrigin(player_drawable.getSize().componentWiseMul({ 0.5, 0.5 }));
         registry.emplace<drawable::drawable_ptr>(entity,
             std::make_unique<sf::RectangleShape>(std::move(player_drawable)));
