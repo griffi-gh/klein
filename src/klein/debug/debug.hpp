@@ -6,6 +6,7 @@ namespace klein::debug {
         bool enable_rays = false;
         bool enable_segments = false;
         bool debug_tile_composer = false;
+        bool tile_composer_purge = false;
     };
 
     extern DebugFlags flags;

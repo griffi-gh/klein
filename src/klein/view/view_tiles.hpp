@@ -11,12 +11,14 @@
 
 namespace klein::view {
     // constexpr float TILE_RENDER_TICKRATE = 1. / 10.; // 10 fps
+    constexpr unsigned int MAX_TILE_RESOLUTION = 4096;
 
     struct RenderedTile {
         bool active = false;
         bool dirty = true;
+        sf::Vector2i current_min_aabb {};
+        sf::Vector2i current_max_aabb {};
         sf::RenderTexture target {};
-        // sf::Clock render_time {};
         uint8_t _debug_state = 0;
     };
 

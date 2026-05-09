@@ -27,10 +27,9 @@ namespace klein::tilemap {
             return TilePortal {
                 .trans_x = attributes["trans_x"],
                 .trans_y = attributes["trans_y"],
-                // .scale_x = attributes["scale_x"],
-                // .scale_y = attributes["scale_y"],
-                .pgroup = attributes["pgroup"],
                 .face_mask = attributes["face_mask"],
+                .flip_v = attributes["flip_v"].get<uint8_t>() != 0,
+                .flip_h = attributes["flip_h"].get<uint8_t>() != 0,
             };
 
         return TileBase {};

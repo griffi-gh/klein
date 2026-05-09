@@ -23,7 +23,6 @@ namespace klein::view {
     ViewKey ViewKey::operator*(const ViewKey& other) const noexcept {
         return {
             .trans = trans + other.trans,
-            // .scale = scale.componentWiseMul(other.scale)
         };
     }
 

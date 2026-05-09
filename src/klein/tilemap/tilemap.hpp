@@ -24,12 +24,14 @@ namespace klein::tilemap {
     };
     struct TilePortal: TileBase {
         const static constexpr std::string type = "portal";
-        float trans_x;
-        float trans_y;
-        float scale_x;
-        float scale_y;
-        uint16_t pgroup;
-        uint8_t face_mask;
+        float trans_x = 0.f;
+        float trans_y = 0.f;
+        float scale_x = 0.f;
+        float scale_y = 0.f;
+        // flags
+        uint8_t face_mask: 4 = 0;
+        bool flip_v: 1 = 0;
+        bool flip_h: 1 = 0;
     };
     struct TileHard: TileBase {
         const static constexpr std::string type = "hard";

@@ -21,15 +21,24 @@
 
 using klein::tilemap::TileMap;
 
+
 namespace klein::view {
-    constexpr unsigned int MAX_TILE_RESOLUTION = 4096;
+
+    // TODO: im VERY much aware this is extremely over engineered
+    //
+    // this wouldve been better off as a basic grid-based tile renderer...
+    // instead of texture-per-ViewKey (when viewkey isnt even used as part of the rendering process lmao)
+    //
+    // but..... whatever, it works and thats all that matters
+    // (wish i had time to rewrite it from scratch though)
 
     void ViewTilesState::render_views_offscreen(
         entt::registry& registry,
         const RaycastViewResponse& raycast
     ) {
-        // TODO culling
-        // TODO cache view textures
+        if (debug::flags.tile_composer_purge) {
+            offscreen_pool.clear();
+        }
 
         for (auto &tex: offscreen_pool | std::views::values) {
             tex.active = false;
@@ -56,22 +65,22 @@ namespace klein::view {
             sf::Vector2u current_resolution = texture.target.getSize();
             // minimum acceptable resolution
             const sf::Vector2u needs_resolution {
-                sf::Vector2f(meta.visible_aabb_max - meta.visible_aabb_min)
+                sf::Vector2f(meta.visible_aabb_max - meta.visible_aabb_min + sf::Vector2i{1, 1})
                     .componentWiseMul(tilemap::TILE_SCREEN_SIZE)
             };
+            // (round to nearest power of two on each axis)
+            // TODO: cap out at window size
+            const sf::Vector2u desired_resolution(
+                std::min(std::bit_ceil(std::max(current_resolution.x, needs_resolution.x)), MAX_TILE_RESOLUTION),
+                std::min(std::bit_ceil(std::max(current_resolution.y, needs_resolution.y)), MAX_TILE_RESOLUTION)
+            );
 
-            if (current_resolution.x < needs_resolution.x ||
-                current_resolution.y < needs_resolution.y
+            if ((current_resolution.x < needs_resolution.x ||
+                 current_resolution.y < needs_resolution.y) &&
+                 desired_resolution != current_resolution
             ) {
-                // (round to nearest power of two on each axis)
-                // TODO: cap out at window size
-                const sf::Vector2u desired_resolution(
-                    std::min(std::bit_ceil(std::max(current_resolution.x, needs_resolution.x)), MAX_TILE_RESOLUTION),
-                    std::min(std::bit_ceil(std::max(current_resolution.x, needs_resolution.y)), MAX_TILE_RESOLUTION)
-                );
-
                 if (!texture.target.resize(desired_resolution))
-                    throw new std::runtime_error("Texture::resize failed");
+                    throw std::runtime_error("Texture::resize failed");
 
                 spdlog::debug(
                     "ViewTilesState: resizing id {}; {}x{} -> {}x{}",
@@ -84,21 +93,18 @@ namespace klein::view {
                 dirty = true;
             }
 
-            // texture.target.setView(sf::View(sf::FloatRect {
-            //     sf::Vector2f(0, 0),
-            //     sf::Vector2f(current_resolution)
-            // }));
-
-            // ensure viewport match
-            // TODO: more efficient viewport reuse
-            // like we dont need to re-render if new viewport is smaller
-            const auto current_viewport = texture.target.getView();
-            const auto needs_viewport = sf::View(sf::FloatRect {
-                sf::Vector2f(0, 0),
-                sf::Vector2f(current_resolution)
-            });
-            if (current_viewport.getViewport() != needs_viewport.getViewport()) {
-                texture.target.setView(needs_viewport);
+            if (texture.current_min_aabb.x > meta.visible_aabb_min.x ||
+                texture.current_min_aabb.y > meta.visible_aabb_min.y ||
+                texture.current_max_aabb.x < meta.visible_aabb_max.x ||
+                texture.current_max_aabb.y < meta.visible_aabb_max.y ||
+                dirty // (if re-rendering anyway might as well update the view)
+            ) {
+                texture.target.setView(sf::View(sf::FloatRect {
+                    sf::Vector2f(meta.visible_aabb_min).componentWiseMul(tilemap::TILE_SCREEN_SIZE),
+                    sf::Vector2f(current_resolution)
+                }));
+                texture.current_min_aabb = meta.visible_aabb_min;
+                texture.current_max_aabb = meta.visible_aabb_max;
                 dirty = true;
             }
 
@@ -106,8 +112,6 @@ namespace klein::view {
 
             texture.target.clear(sf::Color { 32, 32, 32, 255 });
             for (const auto entity: registry.view<drawable::drawable_ptr, TileMap>()) {
-                // sf::RenderStates states;
-                // states.transform = sf::Transform{}.translate(view.trans.componentWiseMul(-tilemap::TILE_SCREEN_SIZE));
                 drawable::render_drawable(registry, texture.target, entity);
             }
             texture.target.display();
@@ -120,11 +124,24 @@ namespace klein::view {
     ) const {
         sf::RenderStates states {};
         states.stencilMode.stencilComparison = sf::StencilComparison::Equal;
+
         for (const auto &[view, meta]: raycast.views) {
-            const auto &texture = offscreen_pool.at(view);
             states.stencilMode.stencilReference = sf::StencilValue((unsigned int) meta.stencil_idx);
+
+            const auto &texture = offscreen_pool.at(view);
             sf::Sprite sprite(texture.target.getTexture());
-            sprite.setPosition(view.trans.componentWiseMul(-tilemap::TILE_SCREEN_SIZE));
+            sprite.setPosition(
+                (sf::Vector2f(meta.visible_aabb_min) - view.trans)
+                    .componentWiseMul(tilemap::TILE_SCREEN_SIZE)
+            );
+            sprite.setTextureRect({
+                sf::Vector2i(
+                    sf::Vector2f(meta.visible_aabb_min - texture.current_min_aabb)
+                        .componentWiseMul(tilemap::TILE_SCREEN_SIZE)),
+                sf::Vector2i(
+                    sf::Vector2f(meta.visible_aabb_max - meta.visible_aabb_min + sf::Vector2i(1, 1))
+                        .componentWiseMul(tilemap::TILE_SCREEN_SIZE))
+            });
 
             if (debug::flags.debug_tile_composer) {
                 sf::Color hash_color(static_cast<uint32_t>(0xA7F3C91D ^ ViewKeyHash{}(view)) | 0xff);
