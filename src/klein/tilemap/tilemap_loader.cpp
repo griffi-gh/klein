@@ -31,6 +31,8 @@ namespace klein::tilemap {
                 .flip_v = attributes["flip_v"].get<uint8_t>() != 0,
                 .flip_h = attributes["flip_h"].get<uint8_t>() != 0,
             };
+        if (decl_type == TilePlayerSpawn::type)
+            return TilePlayerSpawn{};
 
         return TileBase {};
     }

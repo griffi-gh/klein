@@ -14,6 +14,7 @@
 #include <SFML/Window/WindowEnums.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Window/ContextSettings.hpp>
+#include <variant>
 
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "klein/drawable.hpp"
@@ -56,42 +57,38 @@ namespace klein::game {
         if (!ImGui::SFML::Init(window))
             throw std::runtime_error("ImGui init failed");
 
-        auto spritesheet_path = vfs::asset_path("spritesheet.png");
-
-        sf::Texture texture;
-        if (!texture.loadFromFile(spritesheet_path))
-            throw std::runtime_error("spritesheet loading failed");
-
-        auto spritesheet = std::make_shared<tilemap::Spritesheet>(tilemap::Spritesheet {
-            .texture = texture,
-            .tile_size = sf::Vector2u(32, 32),
+        // load spritesheet
+        const auto spritesheet_path = vfs::asset_path("spritesheet.png");
+        const auto spritesheet = std::make_shared<tilemap::Spritesheet>(tilemap::Spritesheet {
+            .texture = sf::Texture(spritesheet_path),
+            .tile_size = { 32, 32 },
         });
-        auto map = tilemap::load_tile_map_data("map.json.gz", "map");
-        tilemap::TileMapDrawable map_drawable(spritesheet, map);
 
-        auto tilemap_entity = registry.create();
+        //load map json
+        const auto map = tilemap::load_tile_map_data("map.json.gz", "map");
+        const tilemap::TileMapDrawable map_drawable(spritesheet, map);
+
+        // Tilemap entity
+        const entt::entity tilemap_entity = registry.create();
         registry.emplace<drawable::drawable_ptr>(
             tilemap_entity,
             std::make_unique<tilemap::TileMapDrawable>(std::move(map_drawable))
         );
         registry.emplace<tilemap::TileMap>(tilemap_entity, std::move(map));
 
+        // figure out player spawn pnt
+        sf::Vector2f spawn_point;
+        if (const auto *layer = map.get_layer_by_name(tilemap::LAYER_SPECIAL)) {
+            for (const auto &tile: layer->tiles) {
+                if (!std::holds_alternative<tilemap::TilePlayerSpawn>(tile.attributes)) continue;
+                spawn_point = sf::Vector2f(tile.pos).componentWiseMul(tilemap::TILE_SCREEN_SIZE);
+                break;
+            }
+        }
 
-        auto player_entity = registry.create();
-
-        sf::RectangleShape player_drawable({30., 48.});
-        player_drawable.setOrigin(player_drawable.getSize().componentWiseMul({ 0.5, 0.5 }));
-        registry.emplace<drawable::drawable_ptr>(player_entity,
-            std::make_unique<sf::RectangleShape>(std::move(player_drawable)));
-        registry.emplace<player::Player>(player_entity);
-        registry.emplace<sf::Transform>(player_entity,
-            sf::Transform{}.translate({500., 200.}));
-        registry.emplace<physics::KinematicBody>(player_entity, physics::KinematicBody {
-            .size = player_drawable.getSize()
-        });
-        registry.emplace<physics::Velocity>(player_entity);
-
-        camera.subject = player_entity;
+        // Player entity
+        const entt::entity player = player::create_player_entity(registry, spawn_point);
+        camera.subject = player;
 
         spdlog::info("init done");
     }

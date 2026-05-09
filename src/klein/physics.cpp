@@ -79,12 +79,13 @@ namespace klein::physics {
             const float next_y = pos.y + vel.v.y * dt.asSeconds();
             if (vel.v.y > 0.f) {
                 const float next_bottom = next_y + body.size.y * 0.5;
-                if (check_row_worldspace(
+                const bool hit = check_row_worldspace(
                     registry,
                     next_bottom,
                     pos.x - body.size.x * 0.5,
                     pos.x + body.size.x * 0.5
-                )) {
+                );
+                if (hit) {
                     const int tile_y = std::floor(next_bottom / tilemap::TILE_SCREEN_SIZE.y);
                     advance.y = tile_y * tilemap::TILE_SCREEN_SIZE.y - body.size.y * 0.5 - pos.y;
                     vel.v.y = 0.f;
@@ -94,12 +95,13 @@ namespace klein::physics {
                 }
             } else if (vel.v.y < 0.f) {
                 const float next_top = next_y - body.size.y * 0.5;
-                if (check_row_worldspace(
+                const bool hit = check_row_worldspace(
                     registry,
                     next_top,
                     pos.x - body.size.x * 0.5,
                     pos.x + body.size.x * 0.5
-                )) {
+                );
+                if (hit) {
                     const int tile_y = std::floor(next_top / tilemap::TILE_SCREEN_SIZE.y);
                     advance.y = (tile_y + 1) * tilemap::TILE_SCREEN_SIZE.y + body.size.y * 0.5 - pos.y;
                     vel.v.y = 0.f;

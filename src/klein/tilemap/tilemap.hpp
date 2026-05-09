@@ -39,7 +39,16 @@ namespace klein::tilemap {
     struct TileSoft: TileBase {
         const static constexpr std::string type = "soft";
     };
-    using TileAttributes = std::variant<TileBase, TilePortal, TileHard, TileSoft>;
+    struct TilePlayerSpawn: TileBase {
+        const static constexpr std::string type = "player_spawn";
+    };
+
+    using TileAttributes = std::variant<
+        TileBase,
+        TilePortal,
+        TileHard,
+        TileSoft,
+        TilePlayerSpawn>;
 
     struct Tile {
         sf::Vector2i pos; /**< Global position (NOT offset by layer's aabb_origin */
