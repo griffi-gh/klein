@@ -21,7 +21,7 @@ namespace klein::view {
     // juuuust following the "if it works, it works, don't touch it" principle here :p
     struct ViewKey {
         sf::Vector2f trans {0, 0};
-        sf::Vector2f scale {1, 1}; // (currently unused)
+        // sf::Vector2f scale {1, 1}; // (currently unused)
         ViewKey operator*(const ViewKey&) const noexcept;
         bool operator==(const ViewKey&) const noexcept = default;
     };

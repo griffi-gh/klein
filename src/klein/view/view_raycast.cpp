@@ -23,7 +23,7 @@ namespace klein::view {
     ViewKey ViewKey::operator*(const ViewKey& other) const noexcept {
         return {
             .trans = trans + other.trans,
-            .scale = scale.componentWiseMul(other.scale)
+            // .scale = scale.componentWiseMul(other.scale)
         };
     }
 
@@ -31,8 +31,8 @@ namespace klein::view {
         size_t seed = 0;
         util::hash_combine(seed, k.trans.x);
         util::hash_combine(seed, k.trans.y);
-        util::hash_combine(seed, k.scale.x);
-        util::hash_combine(seed, k.scale.y);
+        // util::hash_combine(seed, k.scale.x);
+        // util::hash_combine(seed, k.scale.y);
         return seed;
     }
 
