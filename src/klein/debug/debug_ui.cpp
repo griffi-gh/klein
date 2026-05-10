@@ -1,5 +1,6 @@
 #include "klein/debug/debug_ui.hpp"
 
+#include <array> // IWYU pragma: keep
 #include <vector> // IWYU pragma: keep
 #include <deque>
 #include <SFML/System/Time.hpp>
