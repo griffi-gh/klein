@@ -4,19 +4,6 @@ project(vendor NONE)
 
 set(CMAKE_FOLDER "vendor")
 
-# hack for msvc/vs to not show vendor target sln files
-function(set_folder_recursive dir folder)
-  get_property(targets DIRECTORY "${dir}" PROPERTY BUILDSYSTEM_TARGETS)
-  foreach(t ${targets})
-    set_target_properties(${t} PROPERTIES FOLDER "${folder}")
-  endforeach()
-  get_property(subs DIRECTORY "${dir}" PROPERTY SUBDIRECTORIES)
-  foreach(s ${subs})
-    set_folder_recursive("${s}" "${folder}")
-  endforeach()
-endfunction()
-set_folder_recursive("${CMAKE_CURRENT_SOURCE_DIR}/" "vendor")
-
 set(IMGUI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/imgui" CACHE PATH "" FORCE)
 
 set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
