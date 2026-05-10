@@ -91,8 +91,28 @@ namespace klein::view {
 
                         viewkey_acc = viewkey_acc * ViewKey(trans);
 
-                        response.views.emplace(viewkey_acc, ViewMeta{});
-                        ray.segments.push_back(RayTransition { viewkey_acc, hit.distance, hit.tile });
+                        const sf::Vector2i prob_target_tile(sf::Vector2f(hit.tile) + trans);
+
+                        const auto [it, inserted] = response.views.try_emplace(viewkey_acc, ViewMeta {
+                            .visible_aabb_min = { prob_target_tile.x, prob_target_tile.y },
+                            .visible_aabb_max = { prob_target_tile.x, prob_target_tile.y },
+                        });
+                        if (!inserted) {
+                            it->second.visible_aabb_min = {
+                                std::min(prob_target_tile.x, it->second.visible_aabb_min.x),
+                                std::min(prob_target_tile.y, it->second.visible_aabb_min.y)
+                            };
+                            it->second.visible_aabb_max = {
+                                std::max(prob_target_tile.x, it->second.visible_aabb_max.x),
+                                std::max(prob_target_tile.y, it->second.visible_aabb_max.y)
+                            };
+                        }
+
+                        ray.segments.push_back(RayTransition {
+                            .view = viewkey_acc,
+                            .distance = hit.distance,
+                            .tile = hit.tile,
+                        });
 
                         exiting_portal = std::nullopt;
 
