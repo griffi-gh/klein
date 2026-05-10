@@ -11,7 +11,7 @@ constexpr float EPSILON = 0.001f;
 namespace klein::physics {
     static bool check_point_tilespace(
         entt::registry& registry,
-        sf::Vector2i tile
+        const sf::Vector2i tile
     ) {
         for (const auto &[_, map]: registry.view<const tilemap::TileMap>().each()) {
             for (const auto& layer: map.layers) {
@@ -25,9 +25,9 @@ namespace klein::physics {
 
     static std::optional<sf::Vector2i> check_row_worldspace(
         entt::registry& registry,
-        float y,
-        float x_from,
-        float x_to
+        const float y,
+        const float x_from,
+        const float x_to
     ) {
         const int tile_y = std::floor(y / tilemap::TILE_SCREEN_SIZE.y);
         const int tile_x0 = std::floor(x_from / tilemap::TILE_SCREEN_SIZE.x);
@@ -40,9 +40,9 @@ namespace klein::physics {
 
     static std::optional<sf::Vector2i> check_col_worldspace(
         entt::registry& registry,
-        float x,
-        float y_from,
-        float y_to
+        const float x,
+        const float y_from,
+        const float y_to
     ) {
         const int tile_x = std::floor(x / tilemap::TILE_SCREEN_SIZE.x);
         const int tile_y0 = std::floor(y_from / tilemap::TILE_SCREEN_SIZE.y);

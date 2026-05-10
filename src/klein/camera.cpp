@@ -59,9 +59,15 @@ namespace klein::camera {
         update_view();
     }
 
-    void Camera2d::resize(const sf::Vector2u resolution, const sf::ContextSettings settings) {
+    void Camera2d::reinit(const sf::ContextSettings context_settings) {
+        this->context_settings = context_settings;
+        if (!viewport.resize(viewport.getSize(), context_settings))
+            throw std::runtime_error("Failed to resize viewport");
+    }
+
+    void Camera2d::try_resize(const sf::Vector2u resolution) {
         if (viewport.getSize() == resolution) return;
-        if (!viewport.resize(resolution, settings))
+        if (!viewport.resize(resolution, context_settings))
             throw std::runtime_error("Failed to resize viewport");
         update_view();
     }

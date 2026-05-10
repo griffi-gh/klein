@@ -20,10 +20,10 @@ namespace klein::tilemap {
     };
 
     struct TileBase {
-        inline const static std::string type = "";
+        static constexpr std::string_view type = "";
     };
     struct TilePortal: TileBase {
-        inline const static std::string type = "portal";
+        static constexpr std::string_view type = "portal";
         float trans_x = 0.f;
         float trans_y = 0.f;
         float scale_x = 0.f;
@@ -34,13 +34,13 @@ namespace klein::tilemap {
         bool flip_h: 1 = 0;
     };
     struct TileHard: TileBase {
-        inline const static std::string type = "hard";
+        static constexpr std::string_view type = "hard";
     };
     struct TileSoft: TileBase {
-        inline const static std::string type = "soft";
+        static constexpr std::string_view type = "soft";
     };
     struct TilePlayerSpawn: TileBase {
-        inline const static std::string type = "player_spawn";
+        static constexpr std::string_view type = "player_spawn";
     };
 
     using TileAttributes = std::variant<

@@ -57,7 +57,7 @@ namespace klein::game {
             throw std::runtime_error("ImGui init failed");
 
         // load spritesheet
-        const auto spritesheet_path = vfs::asset_path("spritesheet.png");
+        const auto spritesheet_path = vfs::resolve_asset_path("spritesheet.png");
         const auto spritesheet = std::make_shared<tilemap::Spritesheet>(tilemap::Spritesheet {
             .texture = sf::Texture(spritesheet_path),
             .tile_size = { 32, 32 },
@@ -87,6 +87,8 @@ namespace klein::game {
 
         // Player entity
         const entt::entity player = player::create_player_entity(registry, spawn_point);
+
+        // update camera to follow the player
         camera.subject = player;
 
         spdlog::info("init done");
@@ -112,22 +114,21 @@ namespace klein::game {
         const auto dt = clock.restart();
 
         ImGui::SFML::Update(window, dt);
+
 #ifndef NDEBUG
         debug::debug_ui();
 #endif
 
         input.update();
 
+        // XXX: the exact order is quite important here
+        //
         player::update_player_movement(registry, input);
         physics::update_gravity(registry, dt);
         player::detect_player_portal_cross(registry, dt, camera);
         physics::step_physics(registry, dt);
 
-        camera.resize(window.getSize(), {
-            .depthBits = 0,
-            .stencilBits = 8,
-            .sRgbCapable = window.isSrgb(),
-        });
+        camera.try_resize(window.getSize());
         camera.update(registry, dt);
     }
 

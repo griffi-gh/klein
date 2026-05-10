@@ -31,6 +31,7 @@ namespace klein::camera {
     class Camera2d {
     private:
         sf::RenderTexture viewport {};
+        sf::ContextSettings context_settings;
         sf::Vector2f center_pos {};
         void update_view();
 
@@ -39,13 +40,18 @@ namespace klein::camera {
         CameraConfig config {};
 
         inline Camera2d() = default;
-        inline Camera2d(CameraConfig config): config(config) {}
+        inline Camera2d(CameraConfig config)
+            : config(config) {};
+        inline Camera2d(CameraConfig config, sf::ContextSettings context_settings)
+            : context_settings(context_settings)
+            , config(config) {};
 
         void snap(sf::Vector2f offset);
 
         void update(const entt::registry& registry, sf::Time dt);
 
-        void resize(sf::Vector2u resolution, sf::ContextSettings settings = {});
+        void reinit(sf::ContextSettings context_settings);
+        void try_resize(sf::Vector2u resolution);
         void display();
 
         inline sf::RenderTarget& render_target() { return viewport; }

@@ -1,13 +1,15 @@
 #include "klein/vfs/vfs_assets.hpp"
 
-#include <format>
+#include <filesystem>
 #include <spdlog/spdlog.h>
 
 namespace klein::vfs {
-    std::filesystem::path asset_path(const std::string asset) {
-        auto path_str = std::format(ASSETS_PATH "/{}", asset);
-        auto path_normalized = std::filesystem::path(path_str).lexically_normal();
-        spdlog::debug("asset path resolved: {} -> {}", asset, path_normalized.string());
-        return path_normalized;
+
+    std::filesystem::path resolve_asset_path(const std::filesystem::path& asset) {
+        static const std::filesystem::path assets_path = ASSETS_PATH;
+        auto resolved = (assets_path / asset).lexically_normal();
+        spdlog::debug("asset path resolved: {} -> {}",
+            asset.string(), resolved.string());
+        return resolved;
     }
 }

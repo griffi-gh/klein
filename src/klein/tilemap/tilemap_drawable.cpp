@@ -92,7 +92,7 @@ namespace klein::tilemap {
     TileMapDrawable::TileMapDrawable(std::vector<TileMapDrawableLayer> layers)
         :layers(std::move(layers)) {}
 
-    TileMapDrawable::TileMapDrawable(std::shared_ptr<Spritesheet> tile_set, const TileMap &map) {
+    TileMapDrawable::TileMapDrawable(const std::shared_ptr<Spritesheet> tile_set, const TileMap &map) {
         layers.reserve(map.layers.size());
         for (const auto &layer: map.layers) {
             layers.push_back(TileMapDrawableLayer(tile_set, layer));

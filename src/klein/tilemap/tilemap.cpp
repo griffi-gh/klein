@@ -43,7 +43,7 @@ namespace klein::tilemap {
             name, aabb.position.x, aabb.position.y, aabb.size.x, aabb.size.y);
     }
 
-    const Tile* TileMapLayer::get(sf::Vector2i tile_coord) const {
+    const Tile* TileMapLayer::get(const sf::Vector2i tile_coord) const {
         const auto aabb_coord = tile_coord - aabb.position;
 
         if (

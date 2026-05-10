@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SFML/Window/ContextSettings.hpp>
 #include <entt/entity/registry.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
@@ -9,13 +10,18 @@
 #include "klein/view/view_tiles.hpp"
 
 namespace klein::game {
-    constexpr const camera::CameraConfig MAIN_CAMERA_CONFIG {
+    constexpr camera::CameraConfig MAIN_CAMERA_CONFIG {
         .smooth_enable = true,
         .smooth_fac = 6.,
         .leeway_enable = true,
         .leeway = { 32., 80. },
         .base_size_option = camera::SizeOption::FitInside,
         .base_size = { 1600, 900 },
+    };
+    constexpr sf::ContextSettings MAIN_CAMERA_CONTEXT_SETTINGS {
+        .depthBits = 0,
+        .stencilBits = 8,
+        .sRgbCapable = false,
     };
 
     class Game {
@@ -27,7 +33,7 @@ namespace klein::game {
         view::ViewStencilState view_stencil {};
         view::ViewTilesState view_tiles {};
         input::InputState input {};
-        camera::Camera2d camera{ MAIN_CAMERA_CONFIG };
+        camera::Camera2d camera { MAIN_CAMERA_CONFIG, MAIN_CAMERA_CONTEXT_SETTINGS };
 
         void init();
         void process_events();

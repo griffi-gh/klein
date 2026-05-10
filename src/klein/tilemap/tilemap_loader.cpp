@@ -37,16 +37,20 @@ namespace klein::tilemap {
         return TileBase {};
     }
 
-    TileMap load_tile_map_data(std::string asset, std::string name, bool compressed) {
+    TileMap load_tile_map_data(
+        const std::filesystem::path &asset,
+        const std::string_view name,
+        const bool compressed
+    ) {
         spdlog::info("loading map data for \"{}\" ({}, {})",
-            name, asset, compressed ? "compressed" : "raw");
+            name, asset.string(), compressed ? "compressed" : "raw");
 
-        auto asset_path = vfs::asset_path(asset);
+        const auto asset_path = vfs::resolve_asset_path(asset);
 
         std::string json_data;
 
         if (compressed) {
-            gzFile file = gzopen(asset_path.c_str(), "rb");
+            const gzFile file = gzopen(asset_path.string().c_str(), "rb");
             if (!file) throw std::runtime_error("gzopen failed");
 
             char buffer[4096];
