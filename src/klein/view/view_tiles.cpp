@@ -163,7 +163,7 @@ namespace klein::view {
                 r.setOutlineColor(sf::Color::Red);
                 r.setOutlineThickness(1.);
                 r.setPosition(sprite.getPosition());
-                r.setSize({texture_rect.size});
+                r.setSize(sf::Vector2f(texture_rect.size));
                 target.draw(r);
             }
 
