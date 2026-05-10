@@ -57,9 +57,9 @@ namespace klein::player {
         auto view = registry.view<sf::Transform, const physics::Velocity, const Player>();
         for (auto [entity, trans, velocity, _]: view.each()) {
             const sf::Vector2f pos_cur = trans.transformPoint({});
-            const sf::Vector2i tile_cur = { pos_cur.componentWiseDiv(tilemap::TILE_SCREEN_SIZE) };
+            const sf::Vector2i tile_cur(pos_cur.componentWiseDiv(tilemap::TILE_SCREEN_SIZE));
             const sf::Vector2f pos_next = pos_cur + velocity.v * dt.asSeconds();
-            const sf::Vector2i tile_next = { pos_next.componentWiseDiv(tilemap::TILE_SCREEN_SIZE) };
+            const sf::Vector2i tile_next(pos_next.componentWiseDiv(tilemap::TILE_SCREEN_SIZE));
 
             if (tile_next == tile_cur) return;
 
