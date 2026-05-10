@@ -80,6 +80,7 @@ namespace klein::tilemap {
                 std::istreambuf_iterator<char>()
             );
             if (file.bad()) throw std::runtime_error("ifstream read failed");
+            file.close();
         }
 
         auto data = nlohmann::json::parse(json_data);
