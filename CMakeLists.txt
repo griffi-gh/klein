@@ -23,15 +23,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 
 add_compile_options(-fdiagnostics-color=always)
-
-add_compile_definitions(
-  $<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>
-  ENTT_STANDARD_CPP
-  ENTT_USE_ATOMIC
-  ENTT_ID_TYPE=uint64_t
-)
-set(SPDLOG_USE_STD_FORMAT ON CACHE BOOL "" FORCE)
-set(SPDLOG_NO_EXCEPTIONS ON CACHE BOOL "" FORCE)
+add_compile_definitions($<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>)
 
 # vendored deps:
 add_subdirectory(vendor EXCLUDE_FROM_ALL)
@@ -39,7 +31,7 @@ add_subdirectory(vendor EXCLUDE_FROM_ALL)
 # project
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
   src/*.cpp
-)
+  src/*.cc)
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE src/)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23)
