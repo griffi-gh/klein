@@ -2,7 +2,12 @@ cmake_minimum_required(VERSION 3.28)
 
 project(klein VERSION 1.0 LANGUAGES CXX)
 
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+if (MSVC)
+  set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+  set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+  set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreadedDLL$<$<CONFIG:Debug>:Debug>)
+  add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+endif()
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
@@ -16,9 +21,7 @@ set(CMAKE_CXX_CLANG_TIDY "")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 
-if(MSVC)
-  add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
-else()
+if(NOT MSVC)
   add_compile_options(-fdiagnostics-color=always)
 endif()
 
