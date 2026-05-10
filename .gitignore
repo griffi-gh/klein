@@ -38,5 +38,5 @@ perf.data
 *.perf
 
 /.vs
-/CMakeSettings.json
+# /CMakeSettings.json
 /enc_temp_folder
