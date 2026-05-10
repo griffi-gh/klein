@@ -50,10 +50,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   spdlog::spdlog
   ImGui-SFML::ImGui-SFML
 )
-target_compile_options(${PROJECT_NAME} PRIVATE
-  -Wall
-  $<$<CONFIG:Debug>:-Og>
-)
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
+if(NOT MSVC)
+  target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-Og>)
+endif()
+
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     $<$<CONFIG:Debug>:DEBUG>
     $<$<CONFIG:Debug>:ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets">
