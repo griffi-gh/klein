@@ -133,16 +133,16 @@ namespace klein::view {
 
             const auto &texture = offscreen_pool.at(view);
 
-            sf::Sprite sprite(
+            const sf::IntRect texture_rect (
+                sf::Vector2i(sf::Vector2f(meta.visible_aabb_min - texture.current_min_aabb)
+                    .componentWiseMul(tilemap::TILE_SCREEN_SIZE)),
+                sf::Vector2i(sf::Vector2f(meta.visible_aabb_max - meta.visible_aabb_min + sf::Vector2i(1, 1))
+                    .componentWiseMul(tilemap::TILE_SCREEN_SIZE))
+            );
+
+            sf::Sprite sprite (
                 texture.target.getTexture(),
-                {
-                    sf::Vector2i(
-                        sf::Vector2f(meta.visible_aabb_min - texture.current_min_aabb)
-                            .componentWiseMul(tilemap::TILE_SCREEN_SIZE)),
-                    sf::Vector2i (
-                        sf::Vector2f(meta.visible_aabb_max - meta.visible_aabb_min + sf::Vector2i(1, 1))
-                            .componentWiseMul(tilemap::TILE_SCREEN_SIZE))
-                }
+                texture_rect
             );
 
             sprite.setPosition(
@@ -162,8 +162,8 @@ namespace klein::view {
                 r.setFillColor(sf::Color::Transparent);
                 r.setOutlineColor(sf::Color::Red);
                 r.setOutlineThickness(1.);
-                r.setSize({texture.target.getSize()});
                 r.setPosition(sprite.getPosition());
+                r.setSize({texture_rect.size});
                 target.draw(r);
             }
 
