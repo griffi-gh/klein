@@ -7,8 +7,8 @@
 
 namespace klein::drawable {
     void render_drawable(
-        entt::registry &registry,
-        sf::RenderTarget &sf_target,
+        const entt::registry &registry,
+        sf::RenderTarget &target,
         const entt::entity entity,
         const sf::RenderStates& states
     ) {
@@ -19,7 +19,7 @@ namespace klein::drawable {
         if (auto *transform_ptr = registry.try_get<sf::Transform>(entity))
             states_copy.transform = *transform_ptr * states.transform;
 
-        sf_target.draw(sf_drawable, states_copy);
+        target.draw(sf_drawable, states_copy);
     }
 
     void render_drawable(

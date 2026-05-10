@@ -33,8 +33,7 @@
 namespace klein::game {
     void Game::run() {
         init();
-        while (window.isOpen())
-        {
+        while (window.isOpen()) {
             process_events();
             update();
             render();

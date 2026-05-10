@@ -60,7 +60,7 @@ namespace klein::tilemap {
         return &tiles[tile_idx_plus_one - 1];
     }
 
-    const TileMapLayer* TileMap::get_layer_by_name(const std::string &name) const {
+    const TileMapLayer* TileMap::get_layer_by_name(const std::string_view name) const {
         // TODO O(1) lookup?
         for (const auto &layer: layers)
             if (layer.name == name) return &layer;

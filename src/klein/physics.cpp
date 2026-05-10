@@ -10,7 +10,7 @@ constexpr float EPSILON = 0.001f;
 
 namespace klein::physics {
     static bool check_point_tilespace(
-        entt::registry& registry,
+        const entt::registry& registry,
         const sf::Vector2i tile
     ) {
         for (const auto &[_, map]: registry.view<const tilemap::TileMap>().each()) {
@@ -24,7 +24,7 @@ namespace klein::physics {
 
 
     static std::optional<sf::Vector2i> check_row_worldspace(
-        entt::registry& registry,
+        const entt::registry& registry,
         const float y,
         const float x_from,
         const float x_to
@@ -39,7 +39,7 @@ namespace klein::physics {
     }
 
     static std::optional<sf::Vector2i> check_col_worldspace(
-        entt::registry& registry,
+        const entt::registry& registry,
         const float x,
         const float y_from,
         const float y_to

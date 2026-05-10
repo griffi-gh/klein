@@ -11,7 +11,7 @@ namespace klein::tilemap {
 
     TileMap load_tile_map_data(
         const std::filesystem::path &asset,
-        std::string_view name,
+        std::string_view name = "default_name",
         bool compressed = true
     );
 }

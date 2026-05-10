@@ -8,15 +8,15 @@ namespace klein::drawable {
     using drawable_ptr = std::unique_ptr<sf::Drawable>;
 
     void render_drawable(
-        entt::registry &registry,
+        const entt::registry &registry,
         sf::RenderTarget &target,
-        entt::const_runtime_view view,
+        entt::entity entity,
         const sf::RenderStates& states = {}
     );
     void render_drawable(
-        entt::registry &registry,
-        sf::RenderTarget &sf_target,
-        const entt::entity entity,
+        entt::registry &registry, // (cannot be const due to .storage() usage)
+        sf::RenderTarget &target,
+        entt::const_runtime_view view,
         const sf::RenderStates& states = {}
     );
 }

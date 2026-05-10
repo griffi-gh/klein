@@ -10,8 +10,6 @@
 #include "klein/debug/debug.hpp"
 #include "klein/tilemap/tilemap.hpp"
 
-using std::views::reverse;
-
 namespace klein::tilemap {
     TileMapDrawableLayer::TileMapDrawableLayer(std::shared_ptr<Spritesheet> tile_set)
         : spritesheet(std::move(tile_set)) {}
@@ -99,8 +97,8 @@ namespace klein::tilemap {
         }
     }
 
-    void TileMapDrawable::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-        for (const auto &layer: layers | reverse) {
+    void TileMapDrawable::draw(sf::RenderTarget& target, const sf::RenderStates states) const {
+        for (const auto &layer: layers | std::views::reverse) {
             if (layer.is_special && !debug::flags.show_special) continue;
             target.draw(layer, states);
         }

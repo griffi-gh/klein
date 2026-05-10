@@ -56,6 +56,7 @@ namespace klein::camera {
 
         inline sf::RenderTarget& render_target() { return viewport; }
         inline const sf::RenderTarget& render_target() const { return viewport; }
+
         inline const sf::Texture& texture() const { return viewport.getTexture(); }
     };
 }

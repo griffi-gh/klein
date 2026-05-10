@@ -12,7 +12,10 @@
 #include "klein/view/raycast.hpp"
 
 namespace klein::player {
-    entt::entity create_player_entity(entt::registry &registry, sf::Vector2f translate) {
+    entt::entity create_player_entity(
+        entt::registry &registry,
+        const sf::Vector2f translate
+    ) {
         auto entity = registry.create();
 
         registry.emplace<sf::Transform>(entity, sf::Transform{}.translate(translate));
@@ -46,7 +49,11 @@ namespace klein::player {
         }
     }
 
-    void detect_player_portal_cross(entt::registry& registry, const sf::Time &dt, camera::Camera2d &camera) {
+    void detect_player_portal_cross(
+        entt::registry& registry,
+        const sf::Time &dt,
+        camera::Camera2d &camera
+    ) {
         auto view = registry.view<sf::Transform, const physics::Velocity, const Player>();
         for (auto [entity, trans, velocity, _]: view.each()) {
             const sf::Vector2f pos_cur = trans.transformPoint({});

@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include <variant>
 #include <vector>
 #include <SFML/Graphics/Rect.hpp>
@@ -11,7 +12,7 @@
 namespace klein::tilemap {
     constexpr sf::Vector2f TILE_SCREEN_SIZE { 32, 32 };
 
-    constexpr std::string LAYER_SPECIAL = "_special";
+    constexpr std::string_view LAYER_SPECIAL = "_special";
 
     class Spritesheet {
     public:
@@ -97,6 +98,6 @@ namespace klein::tilemap {
         sf::Vector2u map_size = {};
         std::vector<TileMapLayer> layers = {};
 
-        const TileMapLayer* get_layer_by_name(const std::string& name) const;
+        const TileMapLayer* get_layer_by_name(std::string_view name) const;
     };
 };
