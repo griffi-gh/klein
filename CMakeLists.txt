@@ -51,9 +51,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   ImGui-SFML::ImGui-SFML
 )
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
-if(NOT MSVC)
-  target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-Og>)
-endif()
+target_compile_options(${PROJECT_NAME} PRIVATE
+    $<$<CONFIG:Debug>:-O1 -g>
+)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     $<$<CONFIG:Debug>:DEBUG>
