@@ -34,18 +34,18 @@ namespace klein::view {
 
             if (direction.x < 0) {
                 step.x = -1;
-                side.x = (pos.x - tile.x) * delta.x;
+                side.x = (pos.x - (float)tile.x) * delta.x;
             } else {
                 step.x =  1;
-                side.x = (tile.x + 1.0f - pos.x) * delta.x;
+                side.x = ((float)tile.x + 1.0f - pos.x) * delta.x;
             }
 
             if (direction.y < 0) {
                 step.y = -1;
-                side.y = (pos.y - tile.y) * delta.y;
+                side.y = (pos.y - (float)tile.y) * delta.y;
             } else {
                 step.y =  1;
-                side.y = (tile.y + 1.0f - pos.y) * delta.y;
+                side.y = ((float)tile.y + 1.0f - pos.y) * delta.y;
             }
         };
         recompute_sides();

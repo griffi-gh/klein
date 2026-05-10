@@ -66,23 +66,23 @@ namespace klein::game {
         const auto map = tilemap::load_tile_map_data("map.json.gz", "map");
         const tilemap::TileMapDrawable map_drawable(spritesheet, map);
 
-        // Tilemap entity
-        const entt::entity tilemap_entity = registry.create();
-        registry.emplace<drawable::drawable_ptr>(
-            tilemap_entity,
-            std::make_unique<tilemap::TileMapDrawable>(std::move(map_drawable))
-        );
-        registry.emplace<tilemap::TileMap>(tilemap_entity, std::move(map));
-
         // figure out player spawn pnt
         sf::Vector2f spawn_point;
-        if (const auto *layer = map.get_layer_by_name(tilemap::LAYER_SPECIAL)) {
-            for (const auto &tile: layer->tiles) {
+        if (const auto* layer = map.get_layer_by_name(tilemap::LAYER_SPECIAL)) {
+            for (const auto& tile : layer->tiles) {
                 if (!std::holds_alternative<tilemap::TilePlayerSpawn>(tile.attributes)) continue;
                 spawn_point = sf::Vector2f(tile.pos).componentWiseMul(tilemap::TILE_SCREEN_SIZE);
                 break;
             }
         }
+
+        // Tilemap entity
+        const entt::entity tilemap_entity = registry.create();
+        registry.emplace<drawable::drawable_ptr>(
+            tilemap_entity,
+            std::make_unique<tilemap::TileMapDrawable>(map_drawable)
+        );
+        registry.emplace<tilemap::TileMap>(tilemap_entity, map);
 
         // Player entity
         const entt::entity player = player::create_player_entity(registry, spawn_point);

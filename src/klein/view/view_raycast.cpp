@@ -55,6 +55,13 @@ namespace klein::view {
 
         response.views.emplace(response.default_view, ViewMeta {});
 
+        const auto tilemap_view = registry.view<const tilemap::TileMap>();
+        static std::vector<tilemap::TileMap> tilemap_view_cache;
+        tilemap_view_cache.clear();
+		for (const auto& [_tilemap_entity, tilemap]: tilemap_view.each()) {
+            tilemap_view_cache.push_back(tilemap);
+        }
+
         for (int i = 0; i < VIEW_RAY_COUNT; ++i){
             const float a = ((float)i / (float)VIEW_RAY_COUNT) * 2 * M_PI;
 
@@ -125,7 +132,7 @@ namespace klein::view {
                     }
 
                     bool is_inside_soft = false;
-                    for (const auto &[map_entity, map]: registry.view<const tilemap::TileMap>().each()) {
+                    for (const auto &map: tilemap_view_cache) {
                         const auto *special_layer = map.get_layer_by_name(tilemap::LAYER_SPECIAL);
                         if (!special_layer) continue;
 

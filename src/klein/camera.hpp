@@ -39,7 +39,7 @@ namespace klein::camera {
         entt::entity subject {};
         CameraConfig config {};
 
-        inline Camera2d() = default;
+        inline Camera2d() {};
         inline Camera2d(CameraConfig config)
             : config(config) {};
         inline Camera2d(CameraConfig config, sf::ContextSettings context_settings)

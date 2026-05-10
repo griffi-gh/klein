@@ -7,9 +7,8 @@ if (MSVC)
   set_property(GLOBAL PROPERTY USE_FOLDERS ON)
   add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
   # HACK: avoid /RTC1 in debug builds
-  string(REGEX REPLACE "/RTC[1csu]+" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
-  string(REGEX REPLACE "/Od" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
-  # set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreadedDLL$<$<CONFIG:Debug>:Debug>)
+  #string(REGEX REPLACE "/RTC[1csu]+" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+  #string(REGEX REPLACE "/Od" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
 endif()
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -53,10 +52,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   spdlog::spdlog
   ImGui-SFML::ImGui-SFML
 )
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
-target_compile_options(${PROJECT_NAME} PRIVATE
-    $<$<CONFIG:Debug>:-O1 -g>
-)
+#target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-O1>)
+#if (NOT MSVC)
+#    target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-g>)
+#endif()
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     $<$<CONFIG:Debug>:DEBUG>
