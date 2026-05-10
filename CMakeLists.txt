@@ -70,8 +70,10 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
     $<$<NOT:$<CONFIG:Debug>>:ASSETS_PATH="./assets">
 )
 
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
+install(FILES $<TARGET_RUNTIME_DLLS:${PROJECT_NAME}> DESTINATION .)
+
 if(WIN32)
-  install(FILES $<TARGET_RUNTIME_DLLS:${PROJECT_NAME}> TYPE BIN)
   add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       $<TARGET_RUNTIME_DLLS:${PROJECT_NAME}>
@@ -79,3 +81,8 @@ if(WIN32)
     COMMAND_EXPAND_LISTS
   )
 endif()
+
+install(DIRECTORY assets/
+  DESTINATION assets
+  CONFIGURATIONS Release RelWithDebInfo MinSizeRel
+)
