@@ -6,6 +6,9 @@ if (MSVC)
   set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
   set_property(GLOBAL PROPERTY USE_FOLDERS ON)
   add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+  # HACK: avoid /RTC1 in debug builds
+  string(REGEX REPLACE "/RTC[1csu]+" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+  string(REGEX REPLACE "/Od" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
   # set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreadedDLL$<$<CONFIG:Debug>:Debug>)
 endif()
 
