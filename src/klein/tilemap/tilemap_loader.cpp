@@ -50,7 +50,11 @@ namespace klein::tilemap {
         std::string json_data;
 
         if (compressed) {
-            const gzFile file = gzopen(asset_path.string().c_str(), "rb");
+#if defined(_WIN32)
+            const gzFile file = gzopen_w(asset_path.c_str(), "rb");
+#else
+            const gzFile file = gzopen(asset_path.c_str(), "rb");
+#endif
             if (!file) throw std::runtime_error("gzopen failed");
 
             char buffer[4096];
