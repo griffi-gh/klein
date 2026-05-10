@@ -22,19 +22,13 @@ else()
   add_compile_options(-fdiagnostics-color=always)
 endif()
 
-set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(SFML_BUILD_TEST_SUITE OFF CACHE BOOL "" FORCE)
-add_compile_definitions(
-  ENTT_STANDARD_CPP
-  ENTT_USE_ATOMIC
-  ENTT_ID_TYPE=uint64_t)
-set(ZLIB_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(SPDLOG_USE_STD_FORMAT ON CACHE BOOL "" FORCE)
-set(SPDLOG_NO_EXCEPTIONS ON CACHE BOOL "" FORCE)
-set(IMGUI_SFML_FIND_SFML OFF CACHE BOOL "" FORCE)
-
 # vendored deps:
 add_subdirectory(vendor EXCLUDE_FROM_ALL SYSTEM)
+
+target_compile_definitions(EnTT INTERFACE
+    ENTT_STANDARD_CPP
+    ENTT_USE_ATOMIC
+    ENTT_ID_TYPE=uint64_t)
 
 # project
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
@@ -44,23 +38,21 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE src/)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23)
 target_link_libraries(${PROJECT_NAME} PRIVATE
-  sfml-graphics
-  sfml-window
-  sfml-system
+  SFML::Graphics
+  SFML::Window
+  SFML::System
   EnTT::EnTT
   nlohmann_json::nlohmann_json
-  zlib
-  spdlog
+  ZLIB::ZLIB
+  spdlog::spdlog
   ImGui-SFML::ImGui-SFML
 )
 target_compile_options(${PROJECT_NAME} PRIVATE
   -Wall
   $<$<CONFIG:Debug>:-Og>
 )
-target_compile_definitions(${PROJECT_NAME}
-  PRIVATE
+target_compile_definitions(${PROJECT_NAME} PRIVATE
     $<$<CONFIG:Debug>:DEBUG>
-  PUBLIC
     $<$<CONFIG:Debug>:ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets">
     $<$<NOT:$<CONFIG:Debug>>:ASSETS_PATH="./assets">
 )
