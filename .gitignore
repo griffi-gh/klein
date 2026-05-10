@@ -36,3 +36,5 @@ Thumbs.db
 imgui.ini
 perf.data
 *.perf
+
+/.vs
