@@ -1,7 +1,6 @@
 #include "klein/view/view_raycast.hpp"
 
 #define _USE_MATH_DEFINES
-
 #include <cmath>
 #include <cstdint>
 #include <optional>
@@ -17,6 +16,10 @@
 #include "util/hash_combine.hpp"
 #include "klein/view/raycast.hpp"
 #include "klein/view/raycast_impl.hpp"
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 using std::views::zip, std::views::iota;
 
