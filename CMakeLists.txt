@@ -2,16 +2,10 @@ cmake_minimum_required(VERSION 3.28)
 
 project(klein VERSION 1.0 LANGUAGES CXX)
 
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
-endif()
-
-if(MSVC)
-  add_compile_options(
-    $<$<CONFIG:>:/MT>
-    $<$<CONFIG:Debug>:/MTd>
-    $<$<CONFIG:Release>:/MT>
-  )
 endif()
 
 set(CMAKE_CXX_STANDARD 23)
@@ -22,8 +16,11 @@ set(CMAKE_CXX_CLANG_TIDY "")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 
-add_compile_options(-fdiagnostics-color=always)
-add_compile_definitions($<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>)
+if(MSVC)
+  add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+else()
+  add_compile_options(-fdiagnostics-color=always)
+endif()
 
 set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(SFML_BUILD_TEST_SUITE OFF CACHE BOOL "" FORCE)
@@ -68,6 +65,12 @@ target_compile_definitions(${PROJECT_NAME}
     $<$<NOT:$<CONFIG:Debug>>:ASSETS_PATH="./assets">
 )
 
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
-
-install(FILES $<TARGET_RUNTIME_DLLS:${PROJECT_NAME}> TYPE BIN)
+if(WIN32)
+  install(FILES $<TARGET_RUNTIME_DLLS:${PROJECT_NAME}> TYPE BIN)
+  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      $<TARGET_RUNTIME_DLLS:${PROJECT_NAME}>
+      $<TARGET_FILE_DIR:${PROJECT_NAME}>
+    COMMAND_EXPAND_LISTS
+  )
+endif()
