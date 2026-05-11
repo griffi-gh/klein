@@ -15,8 +15,8 @@ namespace klein::animation {
     struct AnimationMeta {
         std::string name;
         std::vector<sf::IntRect> frames{};
-        unsigned int framerate;
-        int priority;
+        unsigned int framerate = 0;
+        int priority = 0;
     };
 
     enum class AnimationType {
