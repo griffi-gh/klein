@@ -14,7 +14,7 @@ if (MSVC)
     CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO
     CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
     CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-      string(REGEX REPLACE "/RTC(su|[1su])" "" ${flag_var} "${${flag_var}}")
+    string(REGEX REPLACE "/RTC(su|[1su])" "" ${flag_var} "${${flag_var}}")
   endforeach(flag_var)
 endif()
 
@@ -61,7 +61,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 )
 target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-O1>)
 if (NOT MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-g>)
+  target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-g>)
 endif()
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
@@ -82,7 +82,9 @@ if(WIN32)
   )
 endif()
 
+install(FILES assets-src/CREDITS.md
+  DESTINATION .
+  CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 install(DIRECTORY assets/
   DESTINATION assets
-  CONFIGURATIONS Release RelWithDebInfo MinSizeRel
-)
+  CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
