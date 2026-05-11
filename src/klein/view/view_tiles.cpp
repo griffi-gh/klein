@@ -119,7 +119,8 @@ namespace klein::view {
             }
 
             texture.target.display();
-            const bool _ = texture.target.generateMipmap();
+            if (!texture.target.generateMipmap())
+				throw std::runtime_error("Texture::generateMipmap failed");
         }
     }
 

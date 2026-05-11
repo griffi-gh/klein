@@ -122,7 +122,7 @@ namespace klein::view {
 
                 // update buffer_offset
                 chunk.buffer_offset = buffer_head;
-                buffer_head += chunk.vertices.size();
+                buffer_head += static_cast<unsigned int>(chunk.vertices.size());
             }
         }
     }

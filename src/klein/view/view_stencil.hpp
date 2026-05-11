@@ -14,8 +14,8 @@
 namespace klein::view {
     struct ViewStencilChunk {
         std::vector<sf::Vertex> vertices{};
-        unsigned int buffer_offset;
-        uint8_t stencil_value;
+        unsigned int buffer_offset = 0;
+        uint8_t stencil_value = 0;
 
         // implementation detail
         size_t _last_ray_idx = SIZE_MAX;

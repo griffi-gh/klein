@@ -45,28 +45,28 @@ namespace klein::tilemap {
 
             vertices.insert(vertices.end(), std::initializer_list<sf::Vertex>{
                 {
-                    .position = sf::Vector2f(x * spritesheet->tile_size.x, y * spritesheet->tile_size.y),
-                    .texCoords = sf::Vector2f(tex_x * spritesheet->tile_size.x, tex_y * spritesheet->tile_size.y),
+                    .position = sf::Vector2f(static_cast<float>(x * spritesheet->tile_size.x), static_cast<float>(y * spritesheet->tile_size.y)),
+                    .texCoords = sf::Vector2f(static_cast<float>(tex_x * spritesheet->tile_size.x), static_cast<float>(tex_y * spritesheet->tile_size.y)),
                 },
                 {
-                    .position = sf::Vector2f((x + 1) * spritesheet->tile_size.x, y * spritesheet->tile_size.y),
-                    .texCoords = sf::Vector2f((tex_x + 1) * spritesheet->tile_size.x, tex_y * spritesheet->tile_size.y),
+                    .position = sf::Vector2f(static_cast<float>((x + 1) * spritesheet->tile_size.x), static_cast<float>(y * spritesheet->tile_size.y)),
+                    .texCoords = sf::Vector2f(static_cast<float>((tex_x + 1) * spritesheet->tile_size.x), static_cast<float>(tex_y * spritesheet->tile_size.y)),
                 },
                 {
-                    .position = sf::Vector2f(x * spritesheet->tile_size.x, (y + 1) * spritesheet->tile_size.y),
-                    .texCoords = sf::Vector2f(tex_x * spritesheet->tile_size.x, (tex_y + 1) * spritesheet->tile_size.y),
+                    .position = sf::Vector2f(static_cast<float>(x * spritesheet->tile_size.x), static_cast<float>((y + 1) * spritesheet->tile_size.y)),
+                    .texCoords = sf::Vector2f(static_cast<float>(tex_x * spritesheet->tile_size.x), static_cast<float>((tex_y + 1) * spritesheet->tile_size.y)),
                 },
                 {
-                    .position = sf::Vector2f(x * spritesheet->tile_size.x, (y + 1) * spritesheet->tile_size.y),
-                    .texCoords = sf::Vector2f(tex_x * spritesheet->tile_size.x, (tex_y + 1) * spritesheet->tile_size.y),
+                    .position = sf::Vector2f(static_cast<float>(x * spritesheet->tile_size.x), static_cast<float>((y + 1) * spritesheet->tile_size.y)),
+                    .texCoords = sf::Vector2f(static_cast<float>(tex_x * spritesheet->tile_size.x), static_cast<float>((tex_y + 1) * spritesheet->tile_size.y)),
                 },
                 {
-                    .position = sf::Vector2f((x + 1) * spritesheet->tile_size.x, y * spritesheet->tile_size.y),
-                    .texCoords = sf::Vector2f((tex_x + 1) * spritesheet->tile_size.x, tex_y * spritesheet->tile_size.y),
+                    .position = sf::Vector2f(static_cast<float>((x + 1) * spritesheet->tile_size.x), static_cast<float>(y * spritesheet->tile_size.y)),
+                    .texCoords = sf::Vector2f(static_cast<float>((tex_x + 1) * spritesheet->tile_size.x), static_cast<float>(tex_y * spritesheet->tile_size.y)),
                 },
                 {
-                    .position = sf::Vector2f((x + 1) * spritesheet->tile_size.x, (y + 1) * spritesheet->tile_size.y),
-                    .texCoords = sf::Vector2f((tex_x + 1) * spritesheet->tile_size.x, (tex_y + 1) * spritesheet->tile_size.y),
+                    .position = sf::Vector2f(static_cast<float>((x + 1) * spritesheet->tile_size.x), static_cast<float>((y + 1) * spritesheet->tile_size.y)),
+                    .texCoords = sf::Vector2f(static_cast<float>((tex_x + 1) * spritesheet->tile_size.x), static_cast<float>((tex_y + 1) * spritesheet->tile_size.y)),
                 }
             });
         }
