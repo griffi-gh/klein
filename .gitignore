@@ -43,3 +43,6 @@ perf.data
 
 /.zed
 x64
+
+# (only used on master branch)
+/vendor/SFML
