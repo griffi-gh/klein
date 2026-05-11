@@ -90,8 +90,8 @@ namespace klein::view {
             return res.block;
         };
 
-        const auto maybe_hit = get_potential_hit(0.0f);
-        const auto res = step_callback(maybe_hit);
+        auto maybe_hit = get_potential_hit(0.0f);
+        auto res = step_callback(maybe_hit);
         if (handle_result(res, 0.0f, 0.0f)) // XXX: local_t == 0 is bad
             return maybe_hit;
 
@@ -111,8 +111,8 @@ namespace klein::view {
             if (dist_total > RAYCAST_MAX_DISTANCE_TILES)
                 return std::nullopt;
 
-            const auto maybe_hit = get_potential_hit(dist_total);
-            const auto res = step_callback(maybe_hit);
+            maybe_hit = get_potential_hit(dist_total);
+            res = step_callback(maybe_hit);
             if (handle_result(res, local_t, dist_total))
                 return maybe_hit;
         }

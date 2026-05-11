@@ -18,7 +18,7 @@
 #include "klein/view/raycast_impl.hpp"
 
 #ifndef M_PI
-#define M_PI 3.14159265358979323846
+#define M_PI 3.14159265358979323846f
 #endif
 
 using std::views::zip, std::views::iota;
@@ -63,7 +63,7 @@ namespace klein::view {
         }
 
         for (int i = 0; i < VIEW_RAY_COUNT; ++i){
-            const float a = ((float)i / (float)VIEW_RAY_COUNT) * 2 * M_PI;
+            const float a = ((float)i / (float)VIEW_RAY_COUNT) * 2.f * M_PI;
 
             RayPath &ray = response.rays[i];
             ray.origin_t = player_tile;
