@@ -1,11 +1,15 @@
 #include "klein/player.hpp"
 
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Transform.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <entt/entt.hpp>
 #include <spdlog/spdlog.h>
 
+#include "klein/animation/animation.hpp"
+#include "klein/animation/animation_loader.hpp"
 #include "klein/physics.hpp"
 #include "klein/drawable.hpp"
 #include "klein/tilemap/tilemap.hpp"
@@ -14,38 +18,81 @@
 namespace klein::player {
     entt::entity create_player_entity(
         entt::registry &registry,
+        const sf::Texture animation_texture,
+        const animation::LoadedAnimations animation,
         const sf::Vector2f translate
     ) {
         auto entity = registry.create();
 
         registry.emplace<sf::Transform>(entity, sf::Transform{}.translate(translate));
 
-        sf::RectangleShape player_drawable({30., 60.});
-        player_drawable.setOrigin(player_drawable.getSize().componentWiseMul({ 0.5, 0.5 }));
-        registry.emplace<drawable::drawable_ptr>(entity,
-            std::make_unique<sf::RectangleShape>(std::move(player_drawable))
-        );
+        registry.emplace<Player>(entity);
+        registry.emplace<RespawnPoint>(entity, translate);
 
-        registry.emplace<player::Player>(entity);
-        registry.emplace<player::RespawnPoint>(entity, translate);
-
-        registry.emplace<physics::KinematicBody>(entity, physics::KinematicBody {
-            .size = player_drawable.getSize()
-        });
+        registry.emplace<physics::KinematicBody>(entity, PLAYER_COLLIDER_SIZE);
         registry.emplace<physics::Velocity>(entity);
+
+        // sf::RectangleShape rect(PLAYER_COLLIDER_SIZE);
+        // rect.setFillColor(sf::Color::White);
+        // rect.setOrigin(rect.getSize().componentWiseMul({ 0.5, 0.5 }));
+        // registry.emplace<sf::RectangleShape>(entity, rect);
+
+        // TODO: move this to json
+        animation::AnimationDrawable anim(animation_texture, animation.animations);
+        anim.origin = sf::Vector2f(64., 95.);
+        anim.push_animation("idle", animation::AnimationType::Sustain);
+        registry.emplace<animation::AnimationDrawable>(entity, anim);
+
+        registry.emplace<drawable::Drawable>(
+            entity,
+            drawable::draw_components<animation::AnimationDrawable>
+        );
 
         return entity;
     }
 
-    void update_player_movement(
-        entt::registry& registry,
-        const input::InputState &input
-    ) {
+    void update_player_movement(entt::registry& registry, const input::InputState &input) {
         auto view = registry.view<const Player, physics::Velocity, const physics::KinematicBody>();
-        for (auto [entity, player, vel, body]: view.each()) {
+        for (auto [entity, player, vel, body] : view.each()) {
             vel.v.x = input.movement.x * player.move_vel;
             if (input.jump && vel.v.y == 0.0f && body.on_ground)
                 vel.v.y = -player.jump_vel;
+            else if (!input.jump && vel.v.y < 0.0f)
+                vel.v.y = std::max(vel.v.y, -player.min_jump_vel);
+        }
+    }
+
+    void update_player_animations(
+        entt::registry& registry,
+        const input::InputState &input
+    ) {
+        auto view = registry.view<const Player, const physics::Velocity, const physics::KinematicBody, animation::AnimationDrawable>();
+        for (auto [entity, player, vel, body, anim]: view.each()) {
+            anim.toggle_animation("walk", body.on_ground && input.movement.x != 0);
+            if (input.movement.x != 0) {
+                anim.scale.x = input.movement.x < 0. ? -1.0f : 1.0f;
+            }
+
+            static bool prev_on_ground = body.on_ground;
+            const bool just_landed = !prev_on_ground && body.on_ground;
+            prev_on_ground = body.on_ground;
+
+            // if in air, use air idle
+            anim.toggle_animation("air", !body.on_ground, animation::AnimationType::Sustain);
+
+            // if just jumped, push jump animation
+            if (body.on_ground && input.jump && vel.v.y == 0.0f) {
+                anim.push_animation("jump", animation::AnimationType::Oneshot);
+            }
+
+            // if falling, cancel jump
+            // if (vel.v.y > 0.0) anim.pop_animation("jump");
+
+            // if just landed, cancel jump and play land
+            if (just_landed) {
+                anim.pop_animation("jump");
+                anim.push_animation("land", animation::AnimationType::Oneshot);
+            }
         }
     }
 
@@ -96,5 +143,21 @@ namespace klein::player {
 
         }
 
+    }
+
+    void debug_draw_player_hitbox(
+        const entt::registry& registry,
+        sf::RenderTarget &target
+    ) {
+        for (const auto &player: registry.view<player::Player>()) {
+            const auto &[body, trans] = registry.get<const physics::KinematicBody, const sf::Transform>(player);
+            sf::RectangleShape hitbox_shape(body.size);
+            hitbox_shape.setPosition(trans.transformPoint({}));
+            hitbox_shape.setFillColor(sf::Color::Transparent);
+            hitbox_shape.setOutlineColor(sf::Color::Green);
+            hitbox_shape.setOutlineThickness(2.f);
+            hitbox_shape.setOrigin(body.size.componentWiseMul({0.5f, 0.5f}));
+            target.draw(hitbox_shape);
+        }
     }
 }

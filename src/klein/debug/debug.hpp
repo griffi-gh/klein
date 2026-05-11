@@ -7,6 +7,7 @@ namespace klein::debug {
         bool enable_segments = false;
         bool debug_tile_composer = false;
         bool tile_composer_purge = false;
+        bool player_hitbox = false;
     };
 
     extern DebugFlags flags;

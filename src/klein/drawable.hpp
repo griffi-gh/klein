@@ -1,22 +1,45 @@
 #pragma once
+
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <entt/entt.hpp>
 
 namespace klein::drawable {
-    using drawable_ptr = std::unique_ptr<sf::Drawable>;
+    // HACK: i know i should've used entt::poly for this
 
-    void render_drawable(
-        const entt::registry &registry,
-        sf::RenderTarget &target,
-        entt::entity entity,
-        const sf::RenderStates& states = {}
+    using draw_fn = void(*)(
+        const entt::registry&,
+        entt::entity,
+        sf::RenderTarget&,
+        sf::RenderStates
     );
-    void render_drawable(
-        entt::registry &registry, // (cannot be const due to .storage() usage)
+
+    template <typename... Ts>
+    inline void draw_components(
+        const entt::registry& registry,
+        entt::entity entity,
+        sf::RenderTarget& target,
+        sf::RenderStates states
+    ) {
+        (..., target.draw(
+            static_cast<const sf::Drawable&>(
+                registry.get<const Ts>(entity)
+            ),
+            states
+        ));
+    }
+
+    struct Drawable {
+        draw_fn draw;
+        inline Drawable() = delete;
+        inline Drawable(const draw_fn draw): draw(draw) {}
+    };
+
+    void draw_entity(
+        const entt::registry &registry,
+        entt::entity entity,
         sf::RenderTarget &target,
-        entt::const_runtime_view view,
         const sf::RenderStates& states = {}
     );
 }

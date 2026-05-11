@@ -1,5 +1,7 @@
 #include "klein/game.hpp"
 
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/Transform.hpp>
 #include <imgui_internal.h>
 #include <memory>
 #include <stdexcept>
@@ -63,12 +65,11 @@ namespace klein::game {
         });
 
         //load map json
-        const auto map = tilemap::load_tile_map_data("map.json.gz", "map");
-        const tilemap::TileMapDrawable map_drawable(spritesheet, map);
+        const auto tilemap = tilemap::load_tile_map_data("map.json.gz", "map");
 
         // figure out player spawn pnt
         sf::Vector2f spawn_point;
-        if (const auto* layer = map.get_layer_by_name(tilemap::LAYER_SPECIAL)) {
+        if (const auto* layer = tilemap.get_layer_by_name(tilemap::LAYER_SPECIAL)) {
             for (const auto& tile : layer->tiles) {
                 if (!std::holds_alternative<tilemap::TilePlayerSpawn>(tile.attributes)) continue;
                 spawn_point = sf::Vector2f(tile.pos).componentWiseMul(tilemap::TILE_SCREEN_SIZE);
@@ -78,14 +79,25 @@ namespace klein::game {
 
         // Tilemap entity
         const entt::entity tilemap_entity = registry.create();
-        registry.emplace<drawable::drawable_ptr>(
+        registry.emplace<tilemap::TileMap>(tilemap_entity, tilemap);
+        registry.emplace<tilemap::TileMapDrawable>(tilemap_entity, spritesheet, tilemap);
+        registry.emplace<drawable::Drawable>(
             tilemap_entity,
-            std::make_unique<tilemap::TileMapDrawable>(map_drawable)
-        );
-        registry.emplace<tilemap::TileMap>(tilemap_entity, map);
+            drawable::draw_components<tilemap::TileMapDrawable>);
+
+        // load player animation
+        const auto animation_texture_path = vfs::resolve_asset_path("character.png");
+        const auto animation_texture = sf::Texture(animation_texture_path);
+        const auto animations_path = vfs::resolve_asset_path("character.json");
+        const auto animations = animation::load_animation_json(animations_path);
 
         // Player entity
-        const entt::entity player = player::create_player_entity(registry, spawn_point);
+        const entt::entity player = player::create_player_entity(
+            registry,
+            animation_texture,
+            animations,
+            spawn_point
+        );
 
         // update camera to follow the player
         camera.subject = player;
@@ -122,6 +134,7 @@ namespace klein::game {
 
         // XXX: the exact order is quite important here
         //
+        player::update_player_animations(registry, input);
         player::update_player_movement(registry, input);
         physics::update_gravity(registry, dt);
         player::detect_player_portal_cross(registry, dt, camera);
@@ -155,18 +168,22 @@ namespace klein::game {
         // draw view textures using the stencil
         view_tiles.compose_views(render_target, raycast);
 
-        // debug overlays
-        if (debug::flags.enable_segments) view_stencil.draw_debug(render_target);
-        if (debug::flags.enable_rays) raycast.draw_debug(render_target);
+        // debug overlays (under player)
+        if (debug::flags.enable_segments)
+            view_stencil.draw_debug(render_target);
+        if (debug::flags.enable_rays)
+            raycast.draw_debug(render_target);
 
         // player
-        drawable::render_drawable(
-            registry,
-            render_target,
-            entt::const_runtime_view{}
-                .iterate(registry.storage<player::Player>())
-        );
+        for (const auto &player: registry.view<player::Player>()) {
+            drawable::draw_entity(registry, player, render_target);
+        }
 
+        // debug overlays (over player)
+        if (debug::flags.player_hitbox)
+            player::debug_draw_player_hitbox(registry, render_target);
+
+        // draw main game display
         camera.display();
         sf::Sprite camera_sprite(camera.texture());
         window.draw(camera_sprite);

@@ -39,6 +39,7 @@ namespace klein::debug {
         ImGui::Checkbox("Enable segments", &flags.enable_segments);
         ImGui::Checkbox("Enable debug tile composer", &flags.debug_tile_composer);
         ImGui::Checkbox("Purge/disable tile composer cache (slow!)", &flags.tile_composer_purge);
+        ImGui::Checkbox("Show player hitbox", &flags.player_hitbox);
 
         ImGui::End();
     }

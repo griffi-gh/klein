@@ -82,7 +82,7 @@ if(WIN32)
   )
 endif()
 
-install(FILES assets-src/CREDITS.md
+install(FILES CREDITS.md
   DESTINATION .
   CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 install(DIRECTORY assets/

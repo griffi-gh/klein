@@ -8,6 +8,8 @@ namespace klein::physics {
     struct KinematicBody {
         sf::Vector2f size;
         bool on_ground = false;
+
+        inline KinematicBody(sf::Vector2f size): size(size) {};
     };
 
     struct Velocity {

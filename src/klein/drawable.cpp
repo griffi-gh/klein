@@ -1,35 +1,23 @@
 #include "klein/drawable.hpp"
 
-#include <memory>
 #include <entt/entity/fwd.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
 
 namespace klein::drawable {
-    void render_drawable(
+    void draw_entity(
         const entt::registry &registry,
-        sf::RenderTarget &target,
         const entt::entity entity,
+        sf::RenderTarget &target,
         const sf::RenderStates& states
     ) {
-        const auto &drawable = registry.get<const drawable_ptr>(entity);
-        const sf::Drawable& sf_drawable = *drawable.get();
+        const auto *drawable_ptr = registry.try_get<const Drawable>(entity);
+        if (!drawable_ptr) return;
 
-        sf::RenderStates states_copy(states);
-        if (auto *transform_ptr = registry.try_get<sf::Transform>(entity))
+        sf::RenderStates states_copy = states;
+        if (const auto *transform_ptr = registry.try_get<const sf::Transform>(entity))
             states_copy.transform = *transform_ptr * states.transform;
 
-        target.draw(sf_drawable, states_copy);
-    }
-
-    void render_drawable(
-        entt::registry &registry,
-        sf::RenderTarget &target,
-        entt::const_runtime_view view,
-        const sf::RenderStates& states
-    ) {
-        view.iterate(registry.storage<drawable_ptr>());
-        for (const auto entity: view)
-            render_drawable(registry, target, entity, states);
+        drawable_ptr->draw(registry, entity, target, states_copy);
     }
 }

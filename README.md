@@ -43,7 +43,7 @@ Use CMakeLists.txt/CMakeSettings.json provided with the project.
 ## License
 
 All code under src/ is licensed under the terms of the PolyForm Non-Commercial License,\
-Check LICENSE.md for more details.
+Go to [LICENSE.md](LICENSE.md) for more details.
 
 Some assets might be licensed under different terms.
 
@@ -54,6 +54,10 @@ Some assets might be licensed under different terms.
 
 - **Free Prototype 2D Platformer 32×32 Pixel Tileset**\
   Source: <https://craftpix.net/freebies/free-prototype-2d-platformer-32x32-pixel-tileset/>\
+  License: <https://craftpix.net/file-licenses/>
+
+- **Free Pixel Art Prototype Character Sprites**\
+  Source: <https://craftpix.net/freebies/free-pixel-art-prototype-character-sprites/>\
   License: <https://craftpix.net/file-licenses/>
 
 ## Note

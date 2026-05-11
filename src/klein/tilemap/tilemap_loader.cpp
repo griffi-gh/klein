@@ -42,8 +42,10 @@ namespace klein::tilemap {
         const std::string_view name,
         const bool compressed
     ) {
-        spdlog::info("loading map data for \"{}\" ({}, {})",
-            name, asset.string(), compressed ? "compressed" : "raw");
+        spdlog::info(
+            "loading map data for \"{}\" ({}, {})",
+            name, asset.string(), compressed ? "compressed" : "raw"
+        );
 
         const auto asset_path = vfs::resolve_asset_path(asset);
 
