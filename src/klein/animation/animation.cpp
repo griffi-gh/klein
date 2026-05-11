@@ -39,8 +39,7 @@ namespace klein::animation {
         for (auto it = animation_stack.begin(); it != animation_stack.end(); ++it) {
             const auto &meta = animations.at(it->name);
             if (is_expired(*it, meta, it->clock.getElapsedTime())) {
-                animation_stack.erase(it);
-                --it;
+                animation_stack.erase(it--);
                 continue;
             }
             if (it->name == animation) return;
