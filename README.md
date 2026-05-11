@@ -5,7 +5,8 @@
 2D side-scroller platformer game using 2D raytraced portals to create confusing,
 non-eucledian worlds
 
-This project has been inspired significantly by [AAAAXY](https://divverent.github.io/aaaaxy/) (by [divVerent](https://github.com/divVerent))
+This project has been inspired significantly by 
+[AAAAXY](https://divverent.github.io/aaaaxy/) (by [divVerent](https://github.com/divVerent))
 
 ## License
 
