@@ -1,3 +1,0 @@
-CompileFlags:
-  Compiler: clang++
-  Remove: [--driver-mode=*]
