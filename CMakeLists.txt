@@ -62,16 +62,18 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     $<$<CONFIG:Debug>:DEBUG>
     $<$<CONFIG:Debug>:ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets">
-    $<$<NOT:$<CONFIG:Debug>>:ASSETS_PATH="./assets">
+    $<$<NOT:$<CONFIG:Debug>>:ASSETS_PATH="./assets/">
 )
-
-target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-O1>)
+target_compile_options(${PROJECT_NAME} PRIVATE 
+    $<$<CONFIG:Debug>:-O1>
+)
 if (MSVC)
-    # disable console window in release builds
     set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE $<NOT:$<CONFIG:Debug>>)
+    set_target_properties(${PROJECT_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 else()
     target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-g>)
 endif()
+set_target_properties(${PROJECT_NAME} PROPERTIES WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
 install(FILES $<TARGET_RUNTIME_DLLS:${PROJECT_NAME}> DESTINATION .)
