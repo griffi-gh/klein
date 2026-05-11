@@ -19,7 +19,7 @@ namespace klein::animation {
     AnimationDrawable::AnimationDrawable(
         const sf::Texture texture,
         const std::span<const AnimationMeta> animations
-    ): texture(std::move(texture)) {
+    ): texture(texture) {
         for (const auto& animation: animations)
             this->animations[animation.name] = animation;
     }
