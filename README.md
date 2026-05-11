@@ -21,6 +21,12 @@ ninja -C build
 (Default configuration is `RelWithDebInfo`; to build in `Debug` mode pass
 `-DCMAKE_BUILD_TYPE=Debug` to the `cmake` command)
 
+On Windows, use Visual Studio's built-it CMake support.
+
+- Make sure you have `git` installed in your `PATH` (system-wide) on your host machine,\
+  it is required to configure the project (and is not a core part of VS2026)\
+  (to quickly install it run `winget install Git.Git`)
+
 ## License
 
 All code under src/ is licensed under the terms of the PolyForm Non-Commercial License,\
