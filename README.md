@@ -10,13 +10,16 @@ This project has been inspired significantly by
 
 ## Build instructions
 
-This project is built and developed primarily using Nix and CMake:
+This project is built and developed *primarily* using Nix and CMake:
 
 ```bash
 nix develop # or, use direnv: direnv allow
 cmake -B build -G Ninja
 ninja -C build
 ```
+
+(Default configuration is `RelWithDebInfo`; to build in `Debug` mode pass
+`-DCMAKE_BUILD_TYPE=Debug` to the `cmake` command)
 
 ## License
 
