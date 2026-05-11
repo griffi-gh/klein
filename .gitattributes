@@ -1,3 +1,10 @@
 # Vendored dependencies: keep out of GitHub language statistics (linguist)
 vendor/** linguist-vendored
 vendor/** linguist-generated
+
+# Generated assets
+assets/** binary
+assets/** linguist-generated
+
+# Assets project files
+assets-src/** binary
