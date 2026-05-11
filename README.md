@@ -8,6 +8,16 @@ non-eucledian worlds
 This project has been inspired significantly by 
 [AAAAXY](https://divverent.github.io/aaaaxy/) (by [divVerent](https://github.com/divVerent))
 
+## Build instructions
+
+This project is built and developed primarily using Nix and CMake:
+
+```bash
+nix develop # or, use direnv: direnv allow
+cmake -B build -G Ninja
+ninja -C build
+```
+
 ## License
 
 All code under src/ is licensed under the terms of the PolyForm Non-Commercial License,\
