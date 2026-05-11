@@ -39,6 +39,7 @@ int WINAPI WinMain(
     _In_     LPSTR     lpCmdLine,
     _In_     int       nShowCmd
 ) {
+	(void)hInstance, (void)hPrevInstance, (void)lpCmdLine, (void)nShowCmd;
     return main(__argc, __argv);
 }
 #endif
