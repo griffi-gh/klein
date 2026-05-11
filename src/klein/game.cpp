@@ -16,6 +16,7 @@
 #include <SFML/Window/WindowEnums.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Window/ContextSettings.hpp>
+#include <SFML/System/Exception.hpp>
 #include <variant>
 
 #include "klein/drawable.hpp"

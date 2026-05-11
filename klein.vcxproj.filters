@@ -1,0 +1,311 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\klein">
+      <UniqueIdentifier>{6e7c99d8-57b9-42c5-ba39-f4b0e4d83062}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\klein">
+      <UniqueIdentifier>{c2925e55-6798-41f4-b5ae-79448da3d0b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\klein\view">
+      <UniqueIdentifier>{1c29ac28-3b71-41ba-a09b-231c922646e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\klein\animation">
+      <UniqueIdentifier>{83b48a57-cf17-4d31-ab48-df11c26b2a11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\klein\tilemap">
+      <UniqueIdentifier>{aa644865-2d8d-492e-b62e-ce39be8fbead}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\klein\vfs">
+      <UniqueIdentifier>{ac9022dc-09cf-44d1-afb7-b447fe102809}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\klein\vfs">
+      <UniqueIdentifier>{42e4f758-2458-42bc-b478-b9bf5dfffedc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\klein\view">
+      <UniqueIdentifier>{bcc93f02-a274-49f4-9e35-cb59a6d02e2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\klein\animation">
+      <UniqueIdentifier>{8fb5263a-03ea-48b5-9ed9-502c24b572e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\klein\tilemap">
+      <UniqueIdentifier>{d18deba8-f1a8-4883-a6b7-c5431d649628}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\util">
+      <UniqueIdentifier>{68be6a1c-5b3d-4f52-8c04-3465c2e3d79f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\klein\camera.cpp">
+      <Filter>Source Files\klein</Filter>
+    </ClCompile>
+    <ClCompile Include="src\klein\debug\debug.cpp">
+      <Filter>Source Files\klein</Filter>
+    </ClCompile>
+    <ClCompile Include="src\klein\debug\debug_ui.cpp">
+      <Filter>Source Files\klein</Filter>
+    </ClCompile>
+    <ClCompile Include="src\klein\drawable.cpp">
+      <Filter>Source Files\klein</Filter>
+    </ClCompile>
+    <ClCompile Include="src\klein\game.cpp">
+      <Filter>Source Files\klein</Filter>
+    </ClCompile>
+    <ClCompile Include="src\klein\input.cpp">
+      <Filter>Source Files\klein</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source Files\klein</Filter>
+    </ClCompile>
+    <ClCompile Include="src\klein\physics.cpp">
+      <Filter>Source Files\klein</Filter>
+    </ClCompile>
+    <ClCompile Include="src\klein\player.cpp">
+      <Filter>Source Files\klein</Filter>
+    </ClCompile>
+    <ClCompile Include="src\klein\view\view_raycast.cpp">
+      <Filter>Source Files\klein\view</Filter>
+    </ClCompile>
+    <ClCompile Include="src\klein\view\view_stencil.cpp">
+      <Filter>Source Files\klein\view</Filter>
+    </ClCompile>
+    <ClCompile Include="src\klein\view\view_tiles.cpp">
+      <Filter>Source Files\klein\view</Filter>
+    </ClCompile>
+    <ClCompile Include="src\klein\vfs\vfs_assets.cpp">
+      <Filter>Source Files\klein\vfs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\klein\animation\animation.cpp">
+      <Filter>Source Files\klein\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\klein\animation\animation_loader.cpp">
+      <Filter>Source Files\klein\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\klein\tilemap\tilemap.cpp">
+      <Filter>Source Files\klein\tilemap</Filter>
+    </ClCompile>
+    <ClCompile Include="src\klein\tilemap\tilemap_drawable.cpp">
+      <Filter>Source Files\klein\tilemap</Filter>
+    </ClCompile>
+    <ClCompile Include="src\klein\tilemap\tilemap_loader.cpp">
+      <Filter>Source Files\klein\tilemap</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\imgui\imgui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\imgui\imgui_demo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\imgui\imgui_draw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\imgui\imgui_tables.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\imgui\imgui_widgets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\imgui-sfml\imgui-SFML.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\zlib\adler32.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\zlib\compress.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\zlib\crc32.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\zlib\deflate.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\zlib\gzclose.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\zlib\gzlib.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\zlib\gzread.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\zlib\gzwrite.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\zlib\infback.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\zlib\inffast.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\zlib\inflate.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\zlib\inftrees.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\zlib\trees.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\zlib\uncompr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\zlib\zutil.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\klein\camera.hpp">
+      <Filter>Header Files\klein</Filter>
+    </ClInclude>
+    <ClInclude Include="src\klein\debug\debug.hpp">
+      <Filter>Header Files\klein</Filter>
+    </ClInclude>
+    <ClInclude Include="src\klein\debug\debug_ui.hpp">
+      <Filter>Header Files\klein</Filter>
+    </ClInclude>
+    <ClInclude Include="src\klein\drawable.hpp">
+      <Filter>Header Files\klein</Filter>
+    </ClInclude>
+    <ClInclude Include="src\klein\game.hpp">
+      <Filter>Header Files\klein</Filter>
+    </ClInclude>
+    <ClInclude Include="src\klein\input.hpp">
+      <Filter>Header Files\klein</Filter>
+    </ClInclude>
+    <ClInclude Include="src\klein\physics.hpp">
+      <Filter>Header Files\klein</Filter>
+    </ClInclude>
+    <ClInclude Include="src\klein\player.hpp">
+      <Filter>Header Files\klein</Filter>
+    </ClInclude>
+    <ClInclude Include="src\klein\view\view_raycast.hpp">
+      <Filter>Header Files\klein\view</Filter>
+    </ClInclude>
+    <ClInclude Include="src\klein\view\view_stencil.hpp">
+      <Filter>Header Files\klein\view</Filter>
+    </ClInclude>
+    <ClInclude Include="src\klein\view\view_tiles.hpp">
+      <Filter>Header Files\klein\view</Filter>
+    </ClInclude>
+    <ClInclude Include="src\klein\animation\animation.hpp">
+      <Filter>Header Files\klein\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\klein\animation\animation_loader.hpp">
+      <Filter>Header Files\klein\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\klein\tilemap\tilemap.hpp">
+      <Filter>Header Files\klein\tilemap</Filter>
+    </ClInclude>
+    <ClInclude Include="src\klein\tilemap\tilemap_drawable.hpp">
+      <Filter>Header Files\klein\tilemap</Filter>
+    </ClInclude>
+    <ClInclude Include="src\klein\tilemap\tilemap_loader.hpp">
+      <Filter>Header Files\klein\tilemap</Filter>
+    </ClInclude>
+    <ClInclude Include="src\klein\view\raycast_impl.hpp">
+      <Filter>Header Files\klein\view</Filter>
+    </ClInclude>
+    <ClInclude Include="src\klein\view\raycast.hpp">
+      <Filter>Header Files\klein\view</Filter>
+    </ClInclude>
+    <ClInclude Include="src\klein\vfs\vfs_assets.hpp">
+      <Filter>Header Files\klein\vfs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\hash_combine.hpp">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\imgui\imconfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\imgui\imgui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\imgui\imgui_internal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\imgui\imstb_rectpack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\imgui\imstb_textedit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\imgui\imstb_truetype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\imgui-sfml\imconfig-SFML.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\imgui-sfml\imgui-SFML.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\imgui-sfml\imgui-SFML_export.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\entt\src\entt\entt.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\entt\src\entt\fwd.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\entt\src\entt\tools.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\zlib\crc32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\zlib\deflate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\zlib\gzguts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\zlib\inffast.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\zlib\inffixed.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\zlib\inflate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\zlib\inftrees.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\zlib\trees.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\zlib\zconf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\zlib\zlib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\zlib\zutil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="vendor\zlib\treebuild.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="vendor\zlib\zconf.h.in" />
+    <None Include="vendor\zlib\zlib.3" />
+    <None Include="vendor\zlib\zlib.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="vendor\zlib\win32\VisualC.txt" />
+  </ItemGroup>
+</Project>
