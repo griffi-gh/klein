@@ -3,6 +3,10 @@
 #include <filesystem>
 #include <spdlog/spdlog.h>
 
+#ifndef ASSETS_PATH
+#define ASSETS_PATH "./assets/"
+#endif
+
 namespace klein::vfs {
     std::filesystem::path resolve_asset_path(const std::filesystem::path& asset) {
         std::filesystem::path assets_path = ASSETS_PATH;

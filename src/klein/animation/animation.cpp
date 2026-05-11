@@ -68,8 +68,8 @@ namespace klein::animation {
     sf::IntRect AnimationDrawable::resolve_rect() const {
         if (animation_stack.empty()) return {};
 
-        const AnimationState *state;
-        const AnimationMeta *meta;
+        const AnimationState *state = nullptr;
+        const AnimationMeta *meta = nullptr;
         sf::Time elapsed;
         for (const auto &maybe_state: animation_stack | std::views::reverse) {
             state = &maybe_state;
@@ -81,11 +81,13 @@ namespace klein::animation {
 
             break;
         }
+        if (!state) return {};
+        if (!meta) return {};
 
         if (meta->frames.empty()) return {};
         if (meta->framerate == 0) return meta->frames[0];
 
-        const float frame_delay = 1. / (float)meta->framerate;
+        const float frame_delay = 1.f / (float)meta->framerate;
         const size_t frame_unbounded = static_cast<size_t>(std::floor(elapsed.asSeconds() / frame_delay));
         const size_t frame = state->type == AnimationType::Loop
             ? (frame_unbounded % meta->frames.size())

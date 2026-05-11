@@ -30,7 +30,7 @@ namespace klein::debug {
         // copy to array
         std::copy(samples.begin(), samples.end(), temp.begin());
         std::string frametime_text = std::format("AVG {:.5f}ms ({:.01f} FPS)", dt_avg, 1. / dt_avg);
-        ImGui::PlotLines("Frametime", temp.data(), temp.size(), 0, frametime_text.c_str(), 0.0f, 1 / 60.0f, ImVec2(0, 80));
+        ImGui::PlotLines("Frametime", temp.data(), static_cast<int>(temp.size()), 0, frametime_text.c_str(), 0.0f, 1 / 60.0f, ImVec2(0, 80));
 
         ImGui::SeparatorText("Flags");
 
