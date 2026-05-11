@@ -88,3 +88,11 @@ install(FILES CREDITS.md
 install(DIRECTORY assets/
   DESTINATION assets
   CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_custom_command(TARGET myapp POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/assets
+            $<TARGET_FILE_DIR:myapp>/assets
+    )
+endif()
