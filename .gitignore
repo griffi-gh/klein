@@ -40,3 +40,5 @@ perf.data
 /.vs
 # /CMakeSettings.json
 /enc_temp_folder
+
+/.zed
