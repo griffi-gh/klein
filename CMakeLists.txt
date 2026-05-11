@@ -3,19 +3,19 @@ cmake_minimum_required(VERSION 3.28)
 project(klein VERSION 1.0 LANGUAGES CXX)
 
 if (MSVC)
-  set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
-  set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-  add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
-  # HACK: avoid /RTC1 in debug builds
-  cmake_policy(SET CMP0184 NEW)
-  set(CMAKE_MSVC_RUNTIME_CHECKS "")
-  foreach(flag_var
-    CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
-    CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO
-    CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
-    CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-    string(REGEX REPLACE "/RTC(su|[1su])" "" ${flag_var} "${${flag_var}}")
-  endforeach(flag_var)
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+    set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+    # HACK: avoid /RTC1 in debug builds
+    cmake_policy(SET CMP0184 NEW)
+    set(CMAKE_MSVC_RUNTIME_CHECKS "")
+    foreach(flag_var
+        CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
+        CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO
+        CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+        CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+        string(REGEX REPLACE "/RTC(su|[1su])" "" ${flag_var} "${${flag_var}}")
+    endforeach(flag_var)
 endif()
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -59,16 +59,19 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   spdlog::spdlog
   ImGui-SFML::ImGui-SFML
 )
-target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-O1>)
-if (NOT MSVC)
-  target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-g>)
-endif()
-
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     $<$<CONFIG:Debug>:DEBUG>
     $<$<CONFIG:Debug>:ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets">
     $<$<NOT:$<CONFIG:Debug>>:ASSETS_PATH="./assets">
 )
+
+target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-O1>)
+if (MSVC)
+    # disable console window in release builds
+    set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE $<NOT:$<CONFIG:Debug>>)
+else()
+    target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-g>)
+endif()
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
 install(FILES $<TARGET_RUNTIME_DLLS:${PROJECT_NAME}> DESTINATION .)
@@ -90,9 +93,10 @@ install(DIRECTORY assets/
   CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-    add_custom_command(TARGET myapp POST_BUILD
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_SOURCE_DIR}/assets
             $<TARGET_FILE_DIR:myapp>/assets
     )
 endif()
+
