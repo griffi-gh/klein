@@ -75,7 +75,7 @@ namespace klein::tilemap {
             }
             gzclose(file);
         } else {
-            std::ifstream file(asset);
+            std::ifstream file(asset_path);
             if (!file.is_open()) throw std::runtime_error("ifstream failed");
             json_data.assign(
                 (std::istreambuf_iterator<char>(file)),
