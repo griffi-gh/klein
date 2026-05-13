@@ -12,7 +12,8 @@ Made as an intake assignment for BUas.
 
 ## Cloning and building
 
-Important: If you obtained this source repository by manually cloning it with `git`,
+Important (only applies if cloned with git):\
+If you obtained this source repository by manually cloning it with `git`,
 make sure to initialize the git submodules first:
 
 ```bash
