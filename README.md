@@ -8,6 +8,8 @@ confusing, non-eucledian worlds
 This project has been inspired significantly by
 [AAAAXY](https://divverent.github.io/aaaaxy/) (by [divVerent](https://github.com/divVerent))
 
+Made as an intake assignment for BUas.
+
 ## Cloning and building
 
 Important: If you obtained this source repository by manually cloning it with `git`,
@@ -23,7 +25,7 @@ On Windows, both Visual Studio and CMake are supported:
 
 ### Windows build instructions (Visual Studio)
 
-Open the `klein.sln` solution in Visual Studio.  
+Open the `klein.slnx` solution in Visual Studio.  \
 The build has been verified on latest version of VS2026 Enterprise.
 
 ### Windows build instructions (CMake)

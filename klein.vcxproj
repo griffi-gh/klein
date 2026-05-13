@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>18.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{fc456507-6915-406c-aa2d-2e1a05944b23}</ProjectGuid>
+    <RootNamespace>klein</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp23</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)vendor\SFML-3.1.0\include;$(ProjectDir)vendor\imgui;$(ProjectDir)vendor\imgui-sfml;$(ProjectDir)vendor\spdlog\include;$(ProjectDir)vendor\zlib;$(ProjectDir)vendor\entt\src;$(ProjectDir)vendor\nlohmann_json\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)vendor\SFML-3.1.0\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;opengl32.lib;freetype.lib;winmm.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "$(SolutionDir)vendor\SFML-3.1.0\bin\*.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp23</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)vendor\SFML-3.1.0\include;$(ProjectDir)vendor\imgui;$(ProjectDir)vendor\imgui-sfml;$(ProjectDir)vendor\spdlog\include;$(ProjectDir)vendor\zlib;$(ProjectDir)vendor\entt\src;$(ProjectDir)vendor\nlohmann_json\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)vendor\SFML-3.1.0\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;opengl32.lib;freetype.lib;winmm.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "$(SolutionDir)vendor\SFML-3.1.0\bin\*.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\klein\animation\animation.cpp" />
+    <ClCompile Include="src\klein\animation\animation_loader.cpp" />
+    <ClCompile Include="src\klein\camera.cpp" />
+    <ClCompile Include="src\klein\debug\debug.cpp" />
+    <ClCompile Include="src\klein\debug\debug_ui.cpp" />
+    <ClCompile Include="src\klein\drawable.cpp" />
+    <ClCompile Include="src\klein\game.cpp" />
+    <ClCompile Include="src\klein\input.cpp" />
+    <ClCompile Include="src\klein\physics.cpp" />
+    <ClCompile Include="src\klein\player.cpp" />
+    <ClCompile Include="src\klein\tilemap\tilemap.cpp" />
+    <ClCompile Include="src\klein\tilemap\tilemap_drawable.cpp" />
+    <ClCompile Include="src\klein\tilemap\tilemap_loader.cpp" />
+    <ClCompile Include="src\klein\vfs\vfs_assets.cpp" />
+    <ClCompile Include="src\klein\view\view_raycast.cpp" />
+    <ClCompile Include="src\klein\view\view_stencil.cpp" />
+    <ClCompile Include="src\klein\view\view_tiles.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="vendor\imgui-sfml\imgui-SFML.cpp" />
+    <ClCompile Include="vendor\imgui\imgui.cpp" />
+    <ClCompile Include="vendor\imgui\imgui_demo.cpp" />
+    <ClCompile Include="vendor\imgui\imgui_draw.cpp" />
+    <ClCompile Include="vendor\imgui\imgui_tables.cpp" />
+    <ClCompile Include="vendor\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="vendor\zlib\adler32.c" />
+    <ClCompile Include="vendor\zlib\compress.c" />
+    <ClCompile Include="vendor\zlib\crc32.c" />
+    <ClCompile Include="vendor\zlib\deflate.c" />
+    <ClCompile Include="vendor\zlib\gzclose.c" />
+    <ClCompile Include="vendor\zlib\gzlib.c" />
+    <ClCompile Include="vendor\zlib\gzread.c" />
+    <ClCompile Include="vendor\zlib\gzwrite.c" />
+    <ClCompile Include="vendor\zlib\infback.c" />
+    <ClCompile Include="vendor\zlib\inffast.c" />
+    <ClCompile Include="vendor\zlib\inflate.c" />
+    <ClCompile Include="vendor\zlib\inftrees.c" />
+    <ClCompile Include="vendor\zlib\trees.c" />
+    <ClCompile Include="vendor\zlib\uncompr.c" />
+    <ClCompile Include="vendor\zlib\zutil.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\klein\animation\animation.hpp" />
+    <ClInclude Include="src\klein\animation\animation_loader.hpp" />
+    <ClInclude Include="src\klein\camera.hpp" />
+    <ClInclude Include="src\klein\debug\debug.hpp" />
+    <ClInclude Include="src\klein\debug\debug_ui.hpp" />
+    <ClInclude Include="src\klein\drawable.hpp" />
+    <ClInclude Include="src\klein\game.hpp" />
+    <ClInclude Include="src\klein\input.hpp" />
+    <ClInclude Include="src\klein\physics.hpp" />
+    <ClInclude Include="src\klein\player.hpp" />
+    <ClInclude Include="src\klein\tilemap\tilemap.hpp" />
+    <ClInclude Include="src\klein\tilemap\tilemap_drawable.hpp" />
+    <ClInclude Include="src\klein\tilemap\tilemap_loader.hpp" />
+    <ClInclude Include="src\klein\vfs\vfs_assets.hpp" />
+    <ClInclude Include="src\klein\view\raycast.hpp" />
+    <ClInclude Include="src\klein\view\raycast_impl.hpp" />
+    <ClInclude Include="src\klein\view\view_raycast.hpp" />
+    <ClInclude Include="src\klein\view\view_stencil.hpp" />
+    <ClInclude Include="src\klein\view\view_tiles.hpp" />
+    <ClInclude Include="src\util\hash_combine.hpp" />
+    <ClInclude Include="vendor\entt\src\entt\entt.hpp" />
+    <ClInclude Include="vendor\entt\src\entt\fwd.hpp" />
+    <ClInclude Include="vendor\entt\src\entt\tools.hpp" />
+    <ClInclude Include="vendor\imgui-sfml\imconfig-SFML.h" />
+    <ClInclude Include="vendor\imgui-sfml\imgui-SFML.h" />
+    <ClInclude Include="vendor\imgui-sfml\imgui-SFML_export.h" />
+    <ClInclude Include="vendor\imgui\imconfig.h" />
+    <ClInclude Include="vendor\imgui\imgui.h" />
+    <ClInclude Include="vendor\imgui\imgui_internal.h" />
+    <ClInclude Include="vendor\imgui\imstb_rectpack.h" />
+    <ClInclude Include="vendor\imgui\imstb_textedit.h" />
+    <ClInclude Include="vendor\imgui\imstb_truetype.h" />
+    <ClInclude Include="vendor\zlib\crc32.h" />
+    <ClInclude Include="vendor\zlib\deflate.h" />
+    <ClInclude Include="vendor\zlib\gzguts.h" />
+    <ClInclude Include="vendor\zlib\inffast.h" />
+    <ClInclude Include="vendor\zlib\inffixed.h" />
+    <ClInclude Include="vendor\zlib\inflate.h" />
+    <ClInclude Include="vendor\zlib\inftrees.h" />
+    <ClInclude Include="vendor\zlib\trees.h" />
+    <ClInclude Include="vendor\zlib\zconf.h" />
+    <ClInclude Include="vendor\zlib\zlib.h" />
+    <ClInclude Include="vendor\zlib\zutil.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="vendor\zlib\treebuild.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="vendor\zlib\zconf.h.in" />
+    <None Include="vendor\zlib\zlib.3" />
+    <None Include="vendor\zlib\zlib.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="vendor\zlib\win32\VisualC.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
