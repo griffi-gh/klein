@@ -120,8 +120,8 @@ NOTE: This is also available in CREDITS.md in this repository and release builds
 
 ## Note
 
-No AI/LLM agents, generated code or documentation have been directly used for
-the development this project (and no such contributions will be made/accepted in the future)
+No AI/LLM "agents", generated code or documentation have been directly used during the
+development this project (and no such contributions will be made/accepted in the future)
 
 (I have used Copilot auto-complete, and LLM(s) to assist in debugging
 during development though.)
