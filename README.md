@@ -26,7 +26,7 @@ On Windows, both Visual Studio and CMake are supported:
 
 ### Windows build instructions (Visual Studio)
 
-Open the `klein.slnx` solution in Visual Studio.  \
+Open and build the `klein.slnx` solution in Visual Studio.  \
 The build has been verified on latest version of VS2026 Enterprise.
 
 ### Windows build instructions (CMake)
