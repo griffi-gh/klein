@@ -48,6 +48,10 @@ cmake -B build -G Ninja
 ninja -C build
 ```
 
+All of the required dependencies and tools (including cmake and compiler) are 
+provided as a part of the Nix `flake.nix`; there's no need to instal them manually.\
+You only need `nix` CLI installed on your system.
+
 (Default configuration is `Debug`; to build in release mode pass
 `-DCMAKE_BUILD_TYPE=RelWithDebInfo` to the `cmake` command)
 
