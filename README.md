@@ -66,6 +66,31 @@ Explore the confusing non-eucledian world and try to find the exit.
 Debug menu can be used to visualize rendering internals.
 (It is only available if the game is built in debug mode/profile.)
 
+## Map editing/authoring
+
+To view/edit the tilemap file, use the [SpriteFusion Editor](https://www.spritefusion.com/editor)
+
+Make sure to load the `assets-src/klein.json` file, 
+NOT the final `map.json/.json.gz` that can be found in `assets/`
+
+Export the map as JSON (Ctrl-Shift-S), and extract it into `assetss/` replacing exisitng files.
+
+To make the map loadable in-game, it needs to be compressed with `gzip` first:
+
+```bash
+gzip -f assets/map.json
+```
+
+## Technical description
+
+The main unique point of the game is it's rendering pipeline:
+
+1. First, it casts rays in all directions from the player's position. Rays are allowed to cross portals.
+2. Each time ray crosses a portal, its segmented off into a separate segment;
+3. These segments are used to construct and draw to a stencil buffer (which is used to determine which parts of the map are rendered at each part of the screen)
+4. Then, game renders each unique portal view separately (each view is actually cached, so it only needs to be done once; unless the player moves and reveals new part of the map by doing so)
+5. Finally, the views generated on Step 4 are composed together using the buffer from Step 3.
+
 ## License
 
 All code under src/ is licensed under the terms of the PolyForm Non-Commercial License,\
@@ -90,8 +115,8 @@ NOTE: This is also available in CREDITS.md in this repository and release builds
 
 ## Note
 
-No AI/LLM agents, generated code or documentation has been *directly* used for
-this project (and no such contributions will be made/accepted in the future)
+No AI/LLM agents, generated code or documentation have been directly used for
+the development this project (and no such contributions will be made/accepted in the future)
 
-(I have used Copilot auto-complete and LLM(s) to assist in debugging
+(I have used Copilot auto-complete, and LLM(s) to assist in debugging
 during development though.)
