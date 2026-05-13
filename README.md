@@ -31,7 +31,7 @@ The build has been verified on latest version of VS2026 Enterprise.
 
 ### Windows build instructions (CMake)
 
-Use CMakeLists.txt/CMakeSettings.json provided with the project.
+Use CMakeLists.txt/CMakeSettings.json provided with the project with VS2026.
 
 - Make sure to select `klein.exe` as the build target.
 - Make sure you have `git` installed in your `PATH` (system-wide) on your host machine,\
