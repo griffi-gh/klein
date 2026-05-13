@@ -91,6 +91,8 @@ The main unique point of the game is it's rendering pipeline:
 
 ## License
 
+> Required Notice: Luna Prasol (https://git.lunya.cc/luna/klein)
+
 All code under src/ is licensed under the terms of the PolyForm Non-Commercial License,\
 Go to [LICENSE.md](LICENSE.md) for more details.
 
