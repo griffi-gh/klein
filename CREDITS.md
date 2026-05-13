@@ -1,4 +1,4 @@
-# Third-party Asset Licenses
+# Third-party Asset Licenses/Attribution
 
 - **KMR Editor Icon Set** by komorra\
   License: [CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/)

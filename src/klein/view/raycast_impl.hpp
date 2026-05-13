@@ -22,13 +22,20 @@ namespace klein::view {
         sf::Vector2f pos = origin_tile;
 
         sf::Vector2i tile(
-            (int)std::floor(pos.x), (int)std::floor(pos.y));
+            (int)std::floor(pos.x),
+            (int)std::floor(pos.y)
+        );
         sf::Vector2f delta(
-            std::abs(1.0f / direction.x), std::abs(1.0f / direction.y));
+            std::abs(1.0f / direction.x),
+            std::abs(1.0f / direction.y)
+        );
 
         sf::Vector2i step {};
         sf::Vector2f side {};
         const auto recompute_sides = [&]() {
+            tile.x = (int)std::floor(pos.x);
+            tile.y = (int)std::floor(pos.y);
+
             step = {0, 0};
             side = {0, 0};
 
@@ -79,11 +86,11 @@ namespace klein::view {
             float distance
         ) -> bool {
             if (res.offset.x != 0. || res.offset.y != 0.) {
-                constexpr float NUDGE = 1e-5f; // (HACK: workaround hangs when ray is redirected and local_t == 0)
+                // HACK: workaround hangs when ray is redirected and local_t == 0
+                // (this can happen in the edge case the player is inside portal the moment ray starts)
+                constexpr float NUDGE = 1e-5f;
                 pos.x += direction.x * (local_t + NUDGE) + res.offset.x;
                 pos.y += direction.y * (local_t + NUDGE) + res.offset.y;
-                tile.x = (int)std::floor(pos.x);
-                tile.y = (int)std::floor(pos.y);
                 recompute_sides();
                 dist_accum = distance;
             }

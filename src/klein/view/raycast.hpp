@@ -19,11 +19,14 @@ namespace klein::view {
     };
 
     struct Hit {
-        sf::Vector2i tile;
-        float distance;
-        TileFace entry_face;
-        TileFace exit_face;
+        sf::Vector2i tile; /**< tile that was/is going to be hit */
+        float distance; /**< total combined distance passed from the starting point */
+        TileFace entry_face; /**< face of the tile that was passed to enter the tile */
+        TileFace exit_face; /**< face of the tile that will be passed to exit the tile */
     };
 
+    /// Maximum distance ray is allowed to pass before it stops
+    /// (in tiles)
+    ///
     constexpr float RAYCAST_MAX_DISTANCE_TILES = 64.0;
 }
