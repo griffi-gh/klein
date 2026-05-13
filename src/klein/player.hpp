@@ -10,7 +10,7 @@
 #include "klein/input.hpp"
 
 namespace klein::player {
-    constexpr sf::Vector2f PLAYER_COLLIDER_SIZE = sf::Vector2f(40., 68.);
+    constexpr sf::Vector2f PLAYER_COLLIDER_SIZE = sf::Vector2f(40.f, 68.f);
 
     struct Player {
         float move_vel = 300.0f; // units/sec
@@ -49,4 +49,14 @@ namespace klein::player {
         const entt::registry& registry,
         sf::RenderTarget &target
     );
+
+    struct Dead {
+        sf::Clock when {};
+        float respawn_time = 3.f; //**< in secs */
+    };
+
+    void detect_player_spikes(entt::registry& registry);
+
+    /// Check for respawnable player that are Dead and respawn em
+    void handle_respawn(entt::registry& registry);
 }

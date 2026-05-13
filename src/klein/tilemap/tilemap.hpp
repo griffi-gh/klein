@@ -43,13 +43,17 @@ namespace klein::tilemap {
     struct TilePlayerSpawn: TileBase {
         static constexpr std::string_view type = "player_spawn";
     };
+    struct TileSpikes: TileBase {
+        static constexpr std::string_view type = "spikes";
+    };
 
     using TileAttributes = std::variant<
         TileBase,
         TilePortal,
         TileHard,
         TileSoft,
-        TilePlayerSpawn>;
+        TilePlayerSpawn,
+        TileSpikes>;
 
     struct Tile {
         sf::Vector2i pos; /**< Global position (NOT offset by layer's aabb_origin */

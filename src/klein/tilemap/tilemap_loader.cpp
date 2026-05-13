@@ -33,6 +33,8 @@ namespace klein::tilemap {
             };
         if (decl_type == TilePlayerSpawn::type)
             return TilePlayerSpawn{};
+        if (decl_type == TileSpikes::type)
+            return TileSpikes{};
 
         return TileBase {};
     }

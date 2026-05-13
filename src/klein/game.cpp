@@ -132,13 +132,16 @@ namespace klein::game {
 
         input.update();
 
-        // XXX: the exact order is quite important here
+        // XXX: the exact order for these is quite important here
         //
-        player::update_player_animations(registry, input);
-        player::update_player_movement(registry, input);
-        physics::update_gravity(registry, dt);
-        player::detect_player_portal_cross(registry, dt, camera);
+        player::update_player_animations(registry, input); // must be before movement
+        player::update_player_movement(registry, input); // must be before update_gravity and step_physics
+        physics::update_gravity(registry, dt); // must be before step_physics
+        player::detect_player_portal_cross(registry, dt, camera); // must be just before step_physics but after any systems that can affect velocity
         physics::step_physics(registry, dt);
+
+        player::detect_player_spikes(registry);
+        player::handle_respawn(registry);
 
         camera.try_resize(window.getSize());
         camera.update(registry, dt);
