@@ -70,16 +70,14 @@ Debug menu can be used to visualize rendering internals.
 
 To view/edit the tilemap file, use the [SpriteFusion Editor](https://www.spritefusion.com/editor)
 
-Make sure to load the `assets-src/klein.json` file, 
-NOT the final `map.json/.json.gz` that can be found in `assets/`
+- Make sure to load the `assets-src/klein.json` file, NOT the final `map.json/.json.gz` that can be found in `assets/`
+- Export the map as JSON (Ctrl-Shift-S), and extract it into `assets/` replacing exisitng files.
+- To make the map loadable in-game, it needs to be compressed with `gzip` first:\
+  ```bash
+  gzip -f assets/map.json
+  ```
 
-Export the map as JSON (Ctrl-Shift-S), and extract it into `assetss/` replacing exisitng files.
-
-To make the map loadable in-game, it needs to be compressed with `gzip` first:
-
-```bash
-gzip -f assets/map.json
-```
+(Save the updated `klein.json` (Ctrl-S) into `assets-src/` before committing the new binary map into the repository)
 
 ## Technical description
 
