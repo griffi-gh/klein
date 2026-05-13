@@ -38,9 +38,9 @@ Use CMakeLists.txt/CMakeSettings.json provided with the project.
   it is required to configure the project (and is not a core part of VS2026)\
   (to quickly install it, run `winget install Git.Git`)
 
-### Linux build instructions (CMake)
+### Linux/macOS build instructions (CMake)
 
-On Linux, this project can be built using Nix and CMake:
+On Linux (and macOS, although untested), this project can be built using Nix and CMake:
 
 ```bash
 nix develop # or, use direnv: direnv allow
