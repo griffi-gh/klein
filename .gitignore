@@ -44,3 +44,6 @@ perf.data
 /.zed
 x64
 *.vcxproj.user
+
+#uncompressed map data
+/assets/map.json

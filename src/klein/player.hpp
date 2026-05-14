@@ -14,8 +14,8 @@ namespace klein::player {
 
     struct Player {
         float move_vel = 300.0f; // units/sec
-        float jump_vel = 250.0f; // units/sec
-        float min_jump_vel = 100.0f;
+        float jump_vel = 300.0f; // units/sec
+        float min_jump_vel = 150.0f;
     };
 
     struct RespawnPoint {
